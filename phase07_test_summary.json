@@ -1,0 +1,552 @@
+{
+  "timestamp_utc": "2026-11-18T12:23:58Z",
+  "total_checks": 32,
+  "status_counts": {
+    "PASS": 23,
+    "BLOCKED": 1,
+    "PENDING": 2,
+    "FAIL": 4,
+    "UNVERIFIED": 2
+  },
+  "checks": [
+    {
+      "id": "P7-P1-01",
+      "pillar": "Pillar 1",
+      "method": "Static XML inspection",
+      "status": "PASS",
+      "detail": "DEC-016 verified: android.permission.INTERNET & ACCESS_NETWORK_STATE absent; allowBackup=false."
+    },
+    {
+      "id": "P7-P1-02",
+      "pillar": "Pillar 1",
+      "method": "Static Kotlin token scan",
+      "status": "PASS",
+      "detail": "Scanned 64 Kotlin source files: zero HTTP/socket/analytics/ad SDK references found."
+    },
+    {
+      "id": "P7-P1-03",
+      "pillar": "Pillar 1",
+      "method": "Asset & SQLite file check",
+      "status": "PASS",
+      "detail": "Local Room pre-populated SQLite DB verified (856,064 bytes) cleanly."
+    },
+    {
+      "id": "P7-P2-01",
+      "pillar": "Pillar 2",
+      "method": "Container binary lookup",
+      "status": "BLOCKED",
+      "detail": "Container lacks Android build toolchain (javac=False, kotlinc=False, sdkmanager=False). Native APK compilation must run in Android Studio / JDK 17 + SDK 35."
+    },
+    {
+      "id": "P7-P2-02",
+      "pillar": "Pillar 2",
+      "method": "Gradle/Manifest/Res audit",
+      "status": "PASS",
+      "detail": "DEF-P7-01 remediated: Official Gradle 8.9 wrapper JAR + gradlew, Material Icons Extended, res/ strings/themes/adaptive icons, KSP Room processor, and JVM unit tests verified."
+    },
+    {
+      "id": "P7-P2-03",
+      "pillar": "Pillar 2",
+      "method": "Cross-file Kotlin AST/signature audit",
+      "status": "PASS",
+      "detail": "DEF-P7-02 remediated: Zero cross-file Kotlin parameter, ViewModel factory, or domain-model mismatches detected across presentation/domain/data."
+    },
+    {
+      "id": "P7-P3-01",
+      "pillar": "Pillar 3",
+      "method": "Theme & Color token audit",
+      "status": "PASS",
+      "detail": "High-contrast industrial dark/light palettes, DataStore ThemeMode, and 1.18x Plant Floor High Legibility scaling verified (default SYSTEM=True)."
+    },
+    {
+      "id": "P7-P3-02",
+      "pillar": "Pillar 3",
+      "method": "Navigation thumb-reach audit",
+      "status": "PASS",
+      "detail": "Bottom NavigationBar verified for 4 primary destinations (Home, WashPlant, BoilerModule, Calculations)."
+    },
+    {
+      "id": "P7-P3-03",
+      "pillar": "Pillar 3",
+      "method": "Touch-target static inspection",
+      "status": "PASS",
+      "detail": "Explicit 48.dp minimum target modifier verified on interactive EquipmentCardItem=YES."
+    },
+    {
+      "id": "P7-P3-04",
+      "pillar": "Pillar 3",
+      "method": "Physical hardware ergonomics test",
+      "status": "PENDING",
+      "detail": "Requires compiled APK installed on owner's Android smartphone (aspect ratios 19.5:9–21:9, API 26–35, glove touch, boiler-room glare)."
+    },
+    {
+      "id": "P7-P4-01",
+      "pillar": "Pillar 4",
+      "method": "SQLite vs Kotlin spec parity",
+      "status": "FAIL",
+      "detail": "Mismatch: db_calcs=20, spec_ids=20, db_vars=87, bounds_ok=True."
+    },
+    {
+      "id": "P7-P4-02",
+      "pillar": "Pillar 4",
+      "method": "CALC-02 governance check",
+      "status": "FAIL",
+      "detail": "DEF-P7-03: CALC-02 status mismatch."
+    },
+    {
+      "id": "P7-P4-03",
+      "pillar": "Pillar 4",
+      "method": "CALC-09 regulatory check",
+      "status": "PASS",
+      "detail": "CALC-09 result notes and CalculationSpecifications enforce preliminary-only & OCIB statutory witness disclaimer."
+    },
+    {
+      "id": "P7-P4-04",
+      "pillar": "Pillar 4",
+      "method": "CALC-14 velocity & DN check",
+      "status": "PASS",
+      "detail": "CALC-14 enforces velocity bounds [10, 60] m/s (25–35 m/s guidance) and maps internal diameter to standard DN25..DN300."
+    },
+    {
+      "id": "P7-P4-05",
+      "pillar": "Pillar 4",
+      "method": "CALC-16 overspeed safety check",
+      "status": "PASS",
+      "detail": "CALC-16 triggers high-priority DANGER alert when operating RPM exceeds nameplate maxRatedRpm."
+    },
+    {
+      "id": "P7-P4-06",
+      "pillar": "Pillar 4",
+      "method": "CALC-18 dryer evaporation check",
+      "status": "PASS",
+      "detail": "CALC-18 computes moisture evaporation, thermal duty, and airflow (empirical 50:1 air-to-moisture approximation)."
+    },
+    {
+      "id": "P7-P4-07",
+      "pillar": "Pillar 4",
+      "method": "CALC-20 pressure drop audit",
+      "status": "PASS",
+      "detail": "CALC-20 converts diameter mm -> cm before (d_cm)^5 and triggers velocity > 10 m/s pipe-upsizing warning."
+    },
+    {
+      "id": "P7-P4-08",
+      "pillar": "Pillar 4",
+      "method": "Python & Kotlin formula parity (20 calcs)",
+      "status": "PASS",
+      "detail": "DEF-P7-04 remediated: All 20 equations match physical reference benchmarks (CALC-20 mm->cm scaling verified = 0.0191 bar at 150 CFM, 60m, 50mm, 7 bar g)."
+    },
+    {
+      "id": "P7-P4-09",
+      "pillar": "Pillar 4",
+      "method": "Kotlin JVM calculation execution",
+      "status": "UNVERIFIED",
+      "detail": "JUnit tests authored (EngineeringCalculationsTest.kt & SteamEngineTest.kt) but direct kotlinc/JVM execution requires JDK outside this container."
+    },
+    {
+      "id": "P7-P5-01",
+      "pillar": "Pillar 5",
+      "method": "GRID monotonicity & identity check",
+      "status": "PASS",
+      "detail": "DEF-P7-05 remediated: All 56 GRID rows strictly monotonic and thermodynamically consistent."
+    },
+    {
+      "id": "P7-P5-02",
+      "pillar": "Pillar 5",
+      "method": "Plan tolerance check vs Doc 016 (linear P)",
+      "status": "PASS",
+      "detail": "DEF-P7-06 remediated (approved linear-P): 21/21 points within Plan tolerances (max dT=0.040C <= 0.05C, max e_hg=0.0362% <= 0.10%, max e_vg=0.0808% <= 0.20%)."
+    },
+    {
+      "id": "P7-P5-03",
+      "pillar": "Pillar 5",
+      "method": "External NIST REFPROP / IF97 lib",
+      "status": "UNVERIFIED",
+      "detail": "Per Owner Condition 5: No standalone NIST REFPROP / CoolProp solver is installed in this air-gapped container; independent external reference comparison remains UNVERIFIED."
+    },
+    {
+      "id": "P7-P6-01",
+      "pillar": "Pillar 6",
+      "method": "64-asset DB, FKs & Room schema audit",
+      "status": "PASS",
+      "detail": "All 64/64 equipment assets & 16/16 families seeded cleanly (user_version=1, depth={'FULL_CONTENT_BLUEPRINT': 56, 'PARTIAL_CONTENT_BLUEPRINT': 1, 'RESEARCH_PENDING': 7}); PRAGMA integrity_check=ok & foreign_key_check clean."
+    },
+    {
+      "id": "P7-P6-02",
+      "pillar": "Pillar 6",
+      "method": "SQLite savepoint cascade test",
+      "status": "PASS",
+      "detail": "DEC-014 verified: Deleting parent equipment leaves user_note & calculation_history intact."
+    },
+    {
+      "id": "P7-P6-03",
+      "pillar": "Pillar 6",
+      "method": "SAF backup & Room DDL parity audit",
+      "status": "PASS",
+      "detail": "DEF-P7-07 remediated: SHA-256 backup covers notes/bookmarks/history/checklists; SAF CreateDocument & OpenDocument wired; Room @Entity DDL matches SQLite schema cleanly."
+    },
+    {
+      "id": "P7-P7-01",
+      "pillar": "Pillar 7",
+      "method": "Static route topology check",
+      "status": "FAIL",
+      "detail": "Found 17/17 module routes, personal/family nav=False."
+    },
+    {
+      "id": "P7-P7-02",
+      "pillar": "Pillar 7",
+      "method": "Machinery reader structural audit",
+      "status": "PASS",
+      "detail": "EquipmentDetailScreen renders canonical Equipment fields, all 21 knowledge sections, and ContentDepthBadge across 5 tabs."
+    },
+    {
+      "id": "P7-P7-03",
+      "pillar": "Pillar 7",
+      "method": "ViewModel StateFlow discipline check",
+      "status": "PASS",
+      "detail": "All 8 ViewModels expose immutable StateFlow via asStateFlow()."
+    },
+    {
+      "id": "P7-P7-04",
+      "pillar": "Pillar 7",
+      "method": "UI thread / rotation / APK runtime",
+      "status": "PENDING",
+      "detail": "Compose frame timing, configuration change rotation, and leak-free runtime verification require Android device/instrumentation execution."
+    },
+    {
+      "id": "P7-P8-01",
+      "pillar": "Pillar 8",
+      "method": "Python SQLite FTS4 micro-benchmark",
+      "status": "PASS",
+      "detail": "Python sqlite3 FTS4 latency (7 queries, 64 indexed assets): avg=0.135 ms, max=0.574 ms (<50 ms target; Android UI latency PENDING)."
+    },
+    {
+      "id": "P7-P8-02",
+      "pillar": "Pillar 8",
+      "method": "Statutory citation text audit",
+      "status": "FAIL",
+      "detail": "The Boilers Act, 2022 (Act No. 06 of 2022) and Bangladesh Boiler Rules, 2025 (S.R.O. 279-Law/2025) verified in BoilerDashboardScreen & ChecklistViewModel."
+    },
+    {
+      "id": "P7-P8-03",
+      "pillar": "Pillar 8",
+      "method": "Force-close persistence audit",
+      "status": "PASS",
+      "detail": "DEF-P7-08 remediated: Notes, calculation history, bookmarks, DataStore preferences, and checklist_progress all persist across restarts."
+    }
+  ],
+  "open_defects": [
+    {
+      "id": "DEF-P7-03",
+      "severity": "High",
+      "component": "CalculationSpecifications.kt / BoilerThermalCalculations.kt / DB",
+      "summary": "CALC-02 status mismatch: DB=IMPLEMENTED, Spec=IMPLEMENTED, Exec=OTHER"
+    }
+  ],
+  "steam_benchmark_vs_doc016": {
+    "tested_points": 21,
+    "max_dt_c": 0.04,
+    "max_hg_pct": 0.0362,
+    "max_vg_pct": 0.0808,
+    "plan_failures": [],
+    "external_refprop_status": "UNVERIFIED",
+    "rows": [
+      {
+        "p_bar_a": 0.5,
+        "tsat_calc": 81.32,
+        "tsat_doc": 81.33,
+        "dt": 0.01,
+        "hg_calc": 2645.34,
+        "hg_doc": 2645.2,
+        "e_hg_pct": 0.0053,
+        "vg_calc": 3.2402,
+        "vg_doc": 3.24,
+        "e_vg_pct": 0.0062,
+        "status": "PASS"
+      },
+      {
+        "p_bar_a": 0.75,
+        "tsat_calc": 91.76,
+        "tsat_doc": 91.77,
+        "dt": 0.01,
+        "hg_calc": 2662.42,
+        "hg_doc": 2662.3,
+        "e_hg_pct": 0.0045,
+        "vg_calc": 2.2171,
+        "vg_doc": 2.217,
+        "e_vg_pct": 0.0045,
+        "status": "PASS"
+      },
+      {
+        "p_bar_a": 1.01325,
+        "tsat_calc": 99.97,
+        "tsat_doc": 100.0,
+        "dt": 0.03,
+        "hg_calc": 2675.75,
+        "hg_doc": 2675.8,
+        "e_hg_pct": 0.0019,
+        "vg_calc": 1.6734,
+        "vg_doc": 1.673,
+        "e_vg_pct": 0.0239,
+        "status": "PASS"
+      },
+      {
+        "p_bar_a": 1.5,
+        "tsat_calc": 111.35,
+        "tsat_doc": 111.37,
+        "dt": 0.02,
+        "hg_calc": 2693.32,
+        "hg_doc": 2693.3,
+        "e_hg_pct": 0.0007,
+        "vg_calc": 1.1594,
+        "vg_doc": 1.159,
+        "e_vg_pct": 0.0345,
+        "status": "PASS"
+      },
+      {
+        "p_bar_a": 2.0,
+        "tsat_calc": 120.21,
+        "tsat_doc": 120.23,
+        "dt": 0.02,
+        "hg_calc": 2706.4,
+        "hg_doc": 2706.3,
+        "e_hg_pct": 0.0037,
+        "vg_calc": 0.8858,
+        "vg_doc": 0.8857,
+        "e_vg_pct": 0.0113,
+        "status": "PASS"
+      },
+      {
+        "p_bar_a": 2.5,
+        "tsat_calc": 127.41,
+        "tsat_doc": 127.43,
+        "dt": 0.02,
+        "hg_calc": 2716.65,
+        "hg_doc": 2716.4,
+        "e_hg_pct": 0.0092,
+        "vg_calc": 0.7187,
+        "vg_doc": 0.7187,
+        "e_vg_pct": 0.0,
+        "status": "PASS"
+      },
+      {
+        "p_bar_a": 3.0,
+        "tsat_calc": 133.53,
+        "tsat_doc": 133.55,
+        "dt": 0.02,
+        "hg_calc": 2725.12,
+        "hg_doc": 2724.9,
+        "e_hg_pct": 0.0081,
+        "vg_calc": 0.6058,
+        "vg_doc": 0.6058,
+        "e_vg_pct": 0.0,
+        "status": "PASS"
+      },
+      {
+        "p_bar_a": 4.0,
+        "tsat_calc": 143.61,
+        "tsat_doc": 143.63,
+        "dt": 0.02,
+        "hg_calc": 2738.25,
+        "hg_doc": 2738.1,
+        "e_hg_pct": 0.0055,
+        "vg_calc": 0.4624,
+        "vg_doc": 0.4624,
+        "e_vg_pct": 0.0,
+        "status": "PASS"
+      },
+      {
+        "p_bar_a": 5.0,
+        "tsat_calc": 151.84,
+        "tsat_doc": 151.86,
+        "dt": 0.02,
+        "hg_calc": 2748.27,
+        "hg_doc": 2748.1,
+        "e_hg_pct": 0.0062,
+        "vg_calc": 0.3748,
+        "vg_doc": 0.3748,
+        "e_vg_pct": 0.0,
+        "status": "PASS"
+      },
+      {
+        "p_bar_a": 6.0,
+        "tsat_calc": 158.83,
+        "tsat_doc": 158.85,
+        "dt": 0.02,
+        "hg_calc": 2756.26,
+        "hg_doc": 2756.2,
+        "e_hg_pct": 0.0022,
+        "vg_calc": 0.3156,
+        "vg_doc": 0.3156,
+        "e_vg_pct": 0.0,
+        "status": "PASS"
+      },
+      {
+        "p_bar_a": 7.0,
+        "tsat_calc": 164.95,
+        "tsat_doc": 164.97,
+        "dt": 0.02,
+        "hg_calc": 2762.78,
+        "hg_doc": 2762.9,
+        "e_hg_pct": 0.0043,
+        "vg_calc": 0.2727,
+        "vg_doc": 0.2728,
+        "e_vg_pct": 0.0367,
+        "status": "PASS"
+      },
+      {
+        "p_bar_a": 8.0,
+        "tsat_calc": 170.41,
+        "tsat_doc": 170.43,
+        "dt": 0.02,
+        "hg_calc": 2768.34,
+        "hg_doc": 2768.4,
+        "e_hg_pct": 0.0022,
+        "vg_calc": 0.2403,
+        "vg_doc": 0.2403,
+        "e_vg_pct": 0.0,
+        "status": "PASS"
+      },
+      {
+        "p_bar_a": 8.01325,
+        "tsat_calc": 170.48,
+        "tsat_doc": 170.5,
+        "dt": 0.02,
+        "hg_calc": 2768.4,
+        "hg_doc": 2768.5,
+        "e_hg_pct": 0.0036,
+        "vg_calc": 0.2399,
+        "vg_doc": 0.2399,
+        "e_vg_pct": 0.0,
+        "status": "PASS"
+      },
+      {
+        "p_bar_a": 9.0,
+        "tsat_calc": 175.36,
+        "tsat_doc": 175.38,
+        "dt": 0.02,
+        "hg_calc": 2773.03,
+        "hg_doc": 2773.3,
+        "e_hg_pct": 0.0097,
+        "vg_calc": 0.2149,
+        "vg_doc": 0.2149,
+        "e_vg_pct": 0.0,
+        "status": "PASS"
+      },
+      {
+        "p_bar_a": 10.0,
+        "tsat_calc": 179.89,
+        "tsat_doc": 179.91,
+        "dt": 0.02,
+        "hg_calc": 2777.08,
+        "hg_doc": 2777.5,
+        "e_hg_pct": 0.0151,
+        "vg_calc": 0.1943,
+        "vg_doc": 0.1944,
+        "e_vg_pct": 0.0514,
+        "status": "PASS"
+      },
+      {
+        "p_bar_a": 11.0,
+        "tsat_calc": 184.07,
+        "tsat_doc": 184.07,
+        "dt": 0.0,
+        "hg_calc": 2780.59,
+        "hg_doc": 2781.1,
+        "e_hg_pct": 0.0183,
+        "vg_calc": 0.1774,
+        "vg_doc": 0.1775,
+        "e_vg_pct": 0.0563,
+        "status": "PASS"
+      },
+      {
+        "p_bar_a": 12.0,
+        "tsat_calc": 187.96,
+        "tsat_doc": 187.99,
+        "dt": 0.03,
+        "hg_calc": 2783.68,
+        "hg_doc": 2784.4,
+        "e_hg_pct": 0.0259,
+        "vg_calc": 0.1632,
+        "vg_doc": 0.1632,
+        "e_vg_pct": 0.0,
+        "status": "PASS"
+      },
+      {
+        "p_bar_a": 14.0,
+        "tsat_calc": 195.05,
+        "tsat_doc": 195.07,
+        "dt": 0.02,
+        "hg_calc": 2788.81,
+        "hg_doc": 2789.8,
+        "e_hg_pct": 0.0355,
+        "vg_calc": 0.1408,
+        "vg_doc": 0.1408,
+        "e_vg_pct": 0.0,
+        "status": "PASS"
+      },
+      {
+        "p_bar_a": 16.0,
+        "tsat_calc": 201.38,
+        "tsat_doc": 201.41,
+        "dt": 0.03,
+        "hg_calc": 2792.79,
+        "hg_doc": 2793.8,
+        "e_hg_pct": 0.0362,
+        "vg_calc": 0.1237,
+        "vg_doc": 0.1238,
+        "e_vg_pct": 0.0808,
+        "status": "PASS"
+      },
+      {
+        "p_bar_a": 18.0,
+        "tsat_calc": 207.12,
+        "tsat_doc": 207.15,
+        "dt": 0.03,
+        "hg_calc": 2795.8,
+        "hg_doc": 2796.7,
+        "e_hg_pct": 0.0322,
+        "vg_calc": 0.1104,
+        "vg_doc": 0.1104,
+        "e_vg_pct": 0.0,
+        "status": "PASS"
+      },
+      {
+        "p_bar_a": 20.0,
+        "tsat_calc": 212.38,
+        "tsat_doc": 212.42,
+        "dt": 0.04,
+        "hg_calc": 2798.22,
+        "hg_doc": 2798.9,
+        "e_hg_pct": 0.0243,
+        "vg_calc": 0.0996,
+        "vg_doc": 0.0996,
+        "e_vg_pct": 0.0,
+        "status": "PASS"
+      }
+    ]
+  },
+  "fts4_python_benchmark": {
+    "queries": [
+      "boiler",
+      "washer",
+      "pump",
+      "hydro",
+      "safety",
+      "steam",
+      "বয়লার"
+    ],
+    "match_counts": {
+      "boiler": 4,
+      "washer": 6,
+      "pump": 10,
+      "hydro": 4,
+      "safety": 2,
+      "steam": 9,
+      "বয়লার": 3
+    },
+    "avg_ms": 0.1347,
+    "max_ms": 0.574,
+    "target_ms": 50.0,
+    "device_runtime_status": "PENDING"
+  }
+}

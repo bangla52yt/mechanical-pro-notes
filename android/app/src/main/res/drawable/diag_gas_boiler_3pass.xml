@@ -1,0 +1,39 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:name="diagram_gas_boiler_3pass"
+    android:width="400dp"
+    android:height="240dp"
+    android:viewportWidth="400"
+    android:viewportHeight="240">
+    <path android:name="sheet_bg" android:fillColor="#F8FAFC" android:strokeColor="#CBD5E1" android:strokeWidth="1.5" android:pathData="M2,2 L398,2 L398,238 L2,238 Z" />
+    <path android:name="boiler_pressure_shell" android:fillColor="#E3F2FD" android:strokeColor="#263238" android:strokeWidth="3" android:pathData="M85,68 L315,68 L315,198 L85,198 Z" />
+    <path android:name="drum_steam_space" android:fillColor="#FFF8E1" android:pathData="M88,71 L312,71 L312,100 L88,100 Z" />
+    <path android:name="pass1_morrison_furnace_tube" android:fillColor="#FFE0B2" android:strokeColor="#E65100" android:strokeWidth="2.5" android:pathData="M85,148 L292,148 L292,182 L85,182 Z" />
+    <path android:name="wetback_reversal_chamber" android:fillColor="#FFCC80" android:strokeColor="#BF360C" android:strokeWidth="2" android:pathData="M292,115 L312,115 L312,186 L292,186 Z" />
+    <path android:name="pass2_pass3_smoke_tubes" android:strokeColor="#D84315" android:strokeWidth="2.5" android:pathData="M85,122 L292,122 M85,134 L292,134 M100,108 L292,108" />
+    <path android:name="natural_gas_burner_box" android:fillColor="#455A64" android:strokeColor="#263238" android:strokeWidth="2" android:pathData="M18,145 L85,145 L85,185 L18,185 Z" />
+    <path android:name="burner_combustion_flame" android:fillColor="#FF6D00" android:pathData="M95,156 L180,165 L95,174 Z" />
+    <path android:name="dual_spring_safety_valves" android:fillColor="#C62828" android:strokeColor="#8E0000" android:strokeWidth="2" android:pathData="M135,38 L152,38 L152,68 L135,68 Z M168,38 L185,38 L185,68 L168,68 Z" />
+    <path android:name="main_steam_stop_valve" android:fillColor="#00695C" android:strokeColor="#004D40" android:strokeWidth="2" android:pathData="M238,32 L262,32 L262,68 L238,68 Z" />
+    <path android:name="main_steam_outlet_header" android:strokeColor="#00695C" android:strokeWidth="3.5" android:pathData="M250,32 L250,15 L375,15" />
+    <path android:name="lwco_water_gauge_column" android:fillColor="#29B6F6" android:strokeColor="#01579B" android:strokeWidth="2" android:pathData="M95,78 L108,78 L108,130 L95,130 Z" />
+    <path android:name="economizer_flue_stack" android:fillColor="#78909C" android:strokeColor="#37474F" android:strokeWidth="2" android:pathData="M315,78 L368,78 L368,35 L345,35 L345,108 L315,108 Z" />
+    <path android:name="bottom_blowdown_line" android:strokeColor="#0277BD" android:strokeWidth="3" android:pathData="M280,198 L280,224 L350,224" />
+    <path android:name="arr_flue1_line" android:strokeColor="#E65100" android:strokeWidth="2.2" android:strokeLineCap="round" android:pathData="M 185.0,165.0 L 285.0,165.0" />
+    <path android:name="arr_flue1_head" android:fillColor="#E65100" android:pathData="M 285.0,165.0 L 279.1,168.8 L 279.1,161.2 Z" />
+    <path android:name="arr_flue2_line" android:strokeColor="#D84315" android:strokeWidth="2.2" android:strokeLineCap="round" android:pathData="M 285.0,122.0 L 195.0,122.0" />
+    <path android:name="arr_flue2_head" android:fillColor="#D84315" android:pathData="M 195.0,122.0 L 200.9,118.2 L 200.9,125.8 Z" />
+    <path android:name="arr_steam_out_line" android:strokeColor="#00695C" android:strokeWidth="2.2" android:strokeLineCap="round" android:pathData="M 265.0,15.0 L 372.0,15.0" />
+    <path android:name="arr_steam_out_head" android:fillColor="#00695C" android:pathData="M 372.0,15.0 L 366.1,18.8 L 366.1,11.2 Z" />
+    <path android:name="callout_bg_1" android:fillColor="#37474F" android:strokeColor="#FFFFFF" android:strokeWidth="1.4" android:pathData="M 27.5,132.0 A 8.5,8.5 0 1,0 44.5,132.0 A 8.5,8.5 0 1,0 27.5,132.0 Z" />
+    <path android:name="callout_num_1" android:strokeColor="#FFFFFF" android:strokeWidth="1.8" android:strokeLineCap="round" android:strokeLineJoin="round" android:pathData="M 34.2,129.6 L 36.4,128.0 L 36.4,136.0 M 34.0,136.0 L 38.4,136.0" />
+    <path android:name="callout_bg_2" android:fillColor="#E65100" android:strokeColor="#FFFFFF" android:strokeWidth="1.4" android:pathData="M 136.5,186.0 A 8.5,8.5 0 1,0 153.5,186.0 A 8.5,8.5 0 1,0 136.5,186.0 Z" />
+    <path android:name="callout_num_2" android:strokeColor="#FFFFFF" android:strokeWidth="1.8" android:strokeLineCap="round" android:strokeLineJoin="round" android:pathData="M 142.7,183.9 C 142.7,181.7 147.3,181.7 147.3,184.4 C 147.3,186.5 142.7,188.2 142.7,190.0 L 147.5,190.0" />
+    <path android:name="callout_bg_3" android:fillColor="#BF360C" android:strokeColor="#FFFFFF" android:strokeWidth="1.4" android:pathData="M 293.5,102.0 A 8.5,8.5 0 1,0 310.5,102.0 A 8.5,8.5 0 1,0 293.5,102.0 Z" />
+    <path android:name="callout_num_3" android:strokeColor="#FFFFFF" android:strokeWidth="1.8" android:strokeLineCap="round" android:strokeLineJoin="round" android:pathData="M 299.8,99.4 C 300.9,97.8 304.3,98.0 304.3,100.2 C 304.3,101.7 302.7,101.9 301.4,101.9 C 303.1,102.0 304.4,102.6 304.4,104.2 C 304.4,106.2 300.8,106.4 299.7,104.6" />
+    <path android:name="callout_bg_4" android:fillColor="#C62828" android:strokeColor="#FFFFFF" android:strokeWidth="1.4" android:pathData="M 151.5,24.0 A 8.5,8.5 0 1,0 168.5,24.0 A 8.5,8.5 0 1,0 151.5,24.0 Z" />
+    <path android:name="callout_num_4" android:strokeColor="#FFFFFF" android:strokeWidth="1.8" android:strokeLineCap="round" android:strokeLineJoin="round" android:pathData="M 161.5,28.0 L 161.5,20.0 L 157.5,25.4 L 162.7,25.4" />
+    <path android:name="callout_bg_5" android:fillColor="#01579B" android:strokeColor="#FFFFFF" android:strokeWidth="1.4" android:pathData="M 63.5,92.0 A 8.5,8.5 0 1,0 80.5,92.0 A 8.5,8.5 0 1,0 63.5,92.0 Z" />
+    <path android:name="callout_num_5" android:strokeColor="#FFFFFF" android:strokeWidth="1.8" android:strokeLineCap="round" android:strokeLineJoin="round" android:pathData="M 74.2,88.0 L 70.0,88.0 L 69.9,91.6 C 71.1,90.8 74.3,91.1 74.3,93.6 C 74.3,95.9 71.0,96.4 69.7,94.8" />
+    <path android:name="callout_bg_6" android:fillColor="#00695C" android:strokeColor="#FFFFFF" android:strokeWidth="1.4" android:pathData="M 256.5,42.0 A 8.5,8.5 0 1,0 273.5,42.0 A 8.5,8.5 0 1,0 256.5,42.0 Z" />
+    <path android:name="callout_num_6" android:strokeColor="#FFFFFF" android:strokeWidth="1.8" android:strokeLineCap="round" android:strokeLineJoin="round" android:pathData="M 267.0,38.9 C 265.4,37.5 262.7,38.8 262.7,42.6 C 262.7,45.8 267.3,46.2 267.3,43.5 C 267.3,41.1 262.9,41.1 262.7,43.2" />
+</vector>

@@ -1,0 +1,6 @@
+{
+  "name": "Mechanical Pro Notes",
+  "description": "Personal Mechanical Knowledge & Plant Maintenance Reference App covering general mechanical engineering, textile/garment washing plant machinery, and dedicated industrial boilers.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

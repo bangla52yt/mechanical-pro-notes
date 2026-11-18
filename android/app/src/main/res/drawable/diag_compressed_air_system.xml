@@ -1,0 +1,31 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:name="diagram_compressed_air_system"
+    android:width="400dp"
+    android:height="240dp"
+    android:viewportWidth="400"
+    android:viewportHeight="240">
+    <path android:name="sheet_bg" android:fillColor="#F8FAFC" android:strokeColor="#CBD5E1" android:strokeWidth="1.5" android:pathData="M2,2 L398,2 L398,238 L2,238 Z" />
+    <path android:name="screw_compressor_enclosure" android:fillColor="#ECEFF1" android:strokeColor="#263238" android:strokeWidth="2.5" android:pathData="M16,66 L104,66 L104,190 L16,190 Z" />
+    <path android:name="airend_oil_sump" android:fillColor="#FFE0B2" android:strokeColor="#E65100" android:strokeWidth="2" android:pathData="M28,118 L92,118 L92,174 L28,174 Z" />
+    <path android:name="air_receiver_tank" android:fillColor="#B3E5FC" android:strokeColor="#01579B" android:strokeWidth="2.5" android:pathData="M132,46 L186,46 L186,192 L132,192 Z" />
+    <path android:name="receiver_auto_drain" android:fillColor="#C62828" android:pathData="M152,192 L166,192 L166,214 L152,214 Z" />
+    <path android:name="refrigerated_dryer" android:fillColor="#E0F7FA" android:strokeColor="#006064" android:strokeWidth="2.5" android:pathData="M214,76 L282,76 L282,188 L214,188 Z" />
+    <path android:name="coalescing_carbon_filters" android:fillColor="#E8F5E9" android:strokeColor="#2E7D32" android:strokeWidth="2.2" android:pathData="M310,66 L332,66 L332,134 L310,134 Z M346,66 L368,66 L368,134 L346,134 Z" />
+    <path android:name="air_piping" android:strokeColor="#0277BD" android:strokeWidth="3" android:pathData="M104,90 L132,90 M186,90 L214,90 M282,90 L310,90 M332,90 L346,90 M368,90 L392,90" />
+    <path android:name="arr_ca1_line" android:strokeColor="#0277BD" android:strokeWidth="2.2" android:strokeLineCap="round" android:pathData="M 104.0,90.0 L 130.0,90.0" />
+    <path android:name="arr_ca1_head" android:fillColor="#0277BD" android:pathData="M 130.0,90.0 L 124.1,93.8 L 124.1,86.2 Z" />
+    <path android:name="arr_ca2_line" android:strokeColor="#2E7D32" android:strokeWidth="2.2" android:strokeLineCap="round" android:pathData="M 368.0,90.0 L 394.0,90.0" />
+    <path android:name="arr_ca2_head" android:fillColor="#2E7D32" android:pathData="M 394.0,90.0 L 388.1,93.8 L 388.1,86.2 Z" />
+    <path android:name="callout_bg_1" android:fillColor="#37474F" android:strokeColor="#FFFFFF" android:strokeWidth="1.4" android:pathData="M 51.5,48.0 A 8.5,8.5 0 1,0 68.5,48.0 A 8.5,8.5 0 1,0 51.5,48.0 Z" />
+    <path android:name="callout_num_1" android:strokeColor="#FFFFFF" android:strokeWidth="1.8" android:strokeLineCap="round" android:strokeLineJoin="round" android:pathData="M 58.2,45.6 L 60.4,44.0 L 60.4,52.0 M 58.0,52.0 L 62.4,52.0" />
+    <path android:name="callout_bg_2" android:fillColor="#E65100" android:strokeColor="#FFFFFF" android:strokeWidth="1.4" android:pathData="M 51.5,146.0 A 8.5,8.5 0 1,0 68.5,146.0 A 8.5,8.5 0 1,0 51.5,146.0 Z" />
+    <path android:name="callout_num_2" android:strokeColor="#FFFFFF" android:strokeWidth="1.8" android:strokeLineCap="round" android:strokeLineJoin="round" android:pathData="M 57.7,143.9 C 57.7,141.7 62.3,141.7 62.3,144.4 C 62.3,146.5 57.7,148.2 57.7,150.0 L 62.5,150.0" />
+    <path android:name="callout_bg_3" android:fillColor="#01579B" android:strokeColor="#FFFFFF" android:strokeWidth="1.4" android:pathData="M 150.5,30.0 A 8.5,8.5 0 1,0 167.5,30.0 A 8.5,8.5 0 1,0 150.5,30.0 Z" />
+    <path android:name="callout_num_3" android:strokeColor="#FFFFFF" android:strokeWidth="1.8" android:strokeLineCap="round" android:strokeLineJoin="round" android:pathData="M 156.8,27.4 C 157.9,25.8 161.3,26.0 161.3,28.2 C 161.3,29.7 159.7,29.9 158.4,29.9 C 160.1,30.0 161.4,30.6 161.4,32.2 C 161.4,34.2 157.8,34.4 156.7,32.6" />
+    <path android:name="callout_bg_4" android:fillColor="#006064" android:strokeColor="#FFFFFF" android:strokeWidth="1.4" android:pathData="M 239.5,58.0 A 8.5,8.5 0 1,0 256.5,58.0 A 8.5,8.5 0 1,0 239.5,58.0 Z" />
+    <path android:name="callout_num_4" android:strokeColor="#FFFFFF" android:strokeWidth="1.8" android:strokeLineCap="round" android:strokeLineJoin="round" android:pathData="M 249.5,62.0 L 249.5,54.0 L 245.5,59.4 L 250.7,59.4" />
+    <path android:name="callout_bg_5" android:fillColor="#2E7D32" android:strokeColor="#FFFFFF" android:strokeWidth="1.4" android:pathData="M 330.5,48.0 A 8.5,8.5 0 1,0 347.5,48.0 A 8.5,8.5 0 1,0 330.5,48.0 Z" />
+    <path android:name="callout_num_5" android:strokeColor="#FFFFFF" android:strokeWidth="1.8" android:strokeLineCap="round" android:strokeLineJoin="round" android:pathData="M 341.2,44.0 L 337.0,44.0 L 336.9,47.6 C 338.1,46.8 341.3,47.1 341.3,49.6 C 341.3,51.9 338.0,52.4 336.7,50.8" />
+    <path android:name="callout_bg_6" android:fillColor="#0277BD" android:strokeColor="#FFFFFF" android:strokeWidth="1.4" android:pathData="M 373.5,114.0 A 8.5,8.5 0 1,0 390.5,114.0 A 8.5,8.5 0 1,0 373.5,114.0 Z" />
+    <path android:name="callout_num_6" android:strokeColor="#FFFFFF" android:strokeWidth="1.8" android:strokeLineCap="round" android:strokeLineJoin="round" android:pathData="M 384.0,110.9 C 382.4,109.5 379.7,110.8 379.7,114.6 C 379.7,117.8 384.3,118.2 384.3,115.5 C 384.3,113.1 379.9,113.1 379.7,115.2" />
+</vector>

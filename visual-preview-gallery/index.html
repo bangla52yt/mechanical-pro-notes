@@ -1,0 +1,2042 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Mechanical Pro Notes — Visual Preview Gallery &amp; UI Audit</title>
+<style>
+  :root {
+    --shell-bg: #0b0d11;
+    --shell-panel: #151922;
+    --shell-border: #2a3140;
+    --shell-text: #e6ecf5;
+    --shell-muted: #93a0b8;
+    --accent: #63b3ed;
+    --amber: #f6ad55;
+    --green: #68d391;
+    --red: #fc8181;
+    --blue-badge: #2a4365;
+    --phone-w: 380px;
+  }
+
+  /* Android App Material 3 Theme Variables inside Phone Frame */
+  .phone-frame[data-theme="dark"] {
+    --m3-bg: #121418;
+    --m3-surface: #1A1D24;
+    --m3-surface-var: #242832;
+    --m3-outline: #3E4452;
+    --m3-text: #EAECEF;
+    --m3-text-var: #A0AEC0;
+    --m3-primary: #63B3ED;
+    --m3-on-primary: #003355;
+    --m3-primary-cont: #2A4365;
+    --m3-on-primary-cont: #D6EBFF;
+    --m3-secondary: #F6AD55;
+    --m3-sec-cont: #473219;
+    --m3-on-sec-cont: #FDE3C0;
+    --m3-error: #FC8181;
+    --m3-err-cont: #4A1E24;
+    --m3-on-err-cont: #FED7D7;
+    --m3-green: #68D391;
+    --m3-green-cont: #1D4031;
+    --m3-on-green-cont: #C6F6D5;
+    --m3-warn: #F6AD55;
+    --m3-warn-cont: #473219;
+    --m3-on-warn-cont: #FEEBC8;
+  }
+  .phone-frame[data-theme="light"] {
+    --m3-bg: #F4F6F9;
+    --m3-surface: #FFFFFF;
+    --m3-surface-var: #E5E9F0;
+    --m3-outline: #B0B7C3;
+    --m3-text: #1A202C;
+    --m3-text-var: #4A5568;
+    --m3-primary: #2B6CB0;
+    --m3-on-primary: #FFFFFF;
+    --m3-primary-cont: #D8E8FA;
+    --m3-on-primary-cont: #12375E;
+    --m3-secondary: #DD6B20;
+    --m3-sec-cont: #FDE9D8;
+    --m3-on-sec-cont: #5C2908;
+    --m3-error: #E53E3E;
+    --m3-err-cont: #FED7D7;
+    --m3-on-err-cont: #742A2A;
+    --m3-green: #2E7D32;
+    --m3-green-cont: #C6F6D5;
+    --m3-on-green-cont: #1C4532;
+    --m3-warn: #ED6C02;
+    --m3-warn-cont: #FEEBC8;
+    --m3-on-warn-cont: #7B341E;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    height: 100%;
+    background: var(--shell-bg);
+    color: var(--shell-text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans Bengali", Arial, sans-serif;
+    line-height: 1.4;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Top Companion Bar */
+  .studio-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 60;
+    background: #10131a;
+    border-bottom: 1px solid var(--shell-border);
+    padding: 6px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    min-height: 48px;
+  }
+  .studio-brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+  }
+  .studio-brand h1 {
+    font-size: 14px;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .studio-brand .sub {
+    font-size: 11px;
+    color: var(--shell-muted);
+    white-space: nowrap;
+  }
+  .studio-controls {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .ctrl-btn {
+    background: var(--shell-panel);
+    color: var(--shell-text);
+    border: 1px solid var(--shell-border);
+    border-radius: 8px;
+    padding: 0 10px;
+    min-height: 36px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    white-space: nowrap;
+  }
+  .ctrl-btn:hover { border-color: var(--accent); }
+  .ctrl-btn.active {
+    background: var(--blue-badge);
+    border-color: var(--accent);
+    color: #fff;
+  }
+  .ctrl-btn.warn-btn {
+    border-color: #7c4d1a;
+    color: var(--amber);
+  }
+  .ctrl-btn.warn-btn.active {
+    background: #473219;
+    border-color: var(--amber);
+  }
+
+  /* Main Responsive Grid */
+  .workspace {
+    display: grid;
+    grid-template-columns: 290px minmax(360px, 1fr) 330px;
+    gap: 16px;
+    padding: 14px 16px 24px;
+    max-width: 1480px;
+    margin: 0 auto;
+    align-items: start;
+  }
+
+  .panel {
+    background: var(--shell-panel);
+    border: 1px solid var(--shell-border);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+  .panel-header {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--shell-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .panel-header h2 {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--accent);
+  }
+  .panel-body {
+    padding: 10px 12px;
+    max-height: calc(100vh - 120px);
+    overflow-y: auto;
+  }
+
+  /* Module Index Items */
+  .group-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--shell-muted);
+    letter-spacing: 0.06em;
+    margin: 10px 4px 6px;
+    text-transform: uppercase;
+  }
+  .mod-btn {
+    width: 100%;
+    text-align: left;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    padding: 8px 10px;
+    margin-bottom: 4px;
+    color: var(--shell-text);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    min-height: 44px;
+  }
+  .mod-btn:hover { background: rgba(99,179,237,0.08); }
+  .mod-btn.active {
+    background: rgba(99,179,237,0.16);
+    border-color: var(--accent);
+  }
+  .mod-btn .mod-title { font-size: 12.5px; font-weight: 600; display: block; }
+  .mod-btn .mod-route { font-size: 10.5px; color: var(--shell-muted); font-family: ui-monospace, monospace; }
+
+  /* Status Pills inside Companion Audit UI */
+  .badge {
+    font-size: 9.5px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    white-space: nowrap;
+    letter-spacing: 0.03em;
+  }
+  .b-impl { background: #1d4031; color: #68d391; border: 1px solid #2f855a; }
+  .b-partial { background: #2a4365; color: #90cdf4; border: 1px solid #4299e1; }
+  .b-generic { background: #3b2f16; color: #f6ad55; border: 1px solid #b7791f; }
+  .b-gap { background: #4a1e24; color: #fc8181; border: 1px solid #c53030; }
+  .b-unverified { background: #2d2640; color: #d6bcfa; border: 1px solid #805ad5; }
+
+  /* Phone Center Stage */
+  .phone-stage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  .width-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11.5px;
+    color: var(--shell-muted);
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .phone-frame {
+    width: var(--phone-w);
+    max-width: 100%;
+    height: 760px;
+    background: var(--m3-bg);
+    color: var(--m3-text);
+    border-radius: 28px;
+    border: 6px solid #252b38;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.6);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+    font-size: var(--app-font-size, 14px);
+    transition: width 0.2s ease;
+  }
+  .phone-frame.legible { --app-font-size: 16.5px; }
+
+  /* Simulated Android Status Bar */
+  .sys-bar {
+    height: 24px;
+    background: var(--m3-surface);
+    padding: 0 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--m3-text-var);
+    border-bottom: 1px solid rgba(128,128,128,0.12);
+    flex-shrink: 0;
+  }
+
+  /* M3 TopAppBar */
+  .m3-topbar {
+    min-height: 54px;
+    background: var(--m3-surface);
+    padding: 4px 6px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    border-bottom: 1px solid var(--m3-outline);
+    flex-shrink: 0;
+  }
+  .m3-icon-btn {
+    width: 46px;
+    height: 46px;
+    border-radius: 23px;
+    border: none;
+    background: transparent;
+    color: var(--m3-text);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .m3-icon-btn:hover { background: rgba(128,128,128,0.16); }
+  .m3-icon-btn.primary { color: var(--m3-primary); }
+  .m3-topbar-title {
+    flex: 1;
+    min-width: 0;
+  }
+  .m3-topbar-title .t-main {
+    font-size: 1.15em;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .m3-topbar-title .t-sub {
+    font-size: 0.72em;
+    color: var(--m3-text-var);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Main Scrollable Phone Viewport */
+  .m3-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px 14px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  /* Bottom Navigation Bar (4 items, shown on 4 primary routes) */
+  .m3-bottombar {
+    height: 64px;
+    background: var(--m3-surface);
+    border-top: 1px solid var(--m3-outline);
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    flex-shrink: 0;
+  }
+  .m3-nav-item {
+    border: none;
+    background: transparent;
+    color: var(--m3-text-var);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 2px;
+    position: relative;
+  }
+  .m3-nav-item .pill-ind {
+    padding: 3px 14px;
+    border-radius: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .m3-nav-item.active { color: var(--m3-primary); }
+  .m3-nav-item.active .pill-ind {
+    background: var(--m3-primary-cont);
+    color: var(--m3-primary);
+  }
+  .m3-nav-item .bug-tag {
+    position: absolute;
+    top: 2px;
+    right: 4px;
+    font-size: 8px;
+    background: #c53030;
+    color: #fff;
+    padding: 0 3px;
+    border-radius: 3px;
+  }
+
+  /* Modal Navigation Drawer inside Phone */
+  .drawer-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.58);
+    z-index: 40;
+    display: none;
+  }
+  .drawer-backdrop.open { display: flex; }
+  .m3-drawer {
+    width: 286px;
+    max-width: 84%;
+    height: 100%;
+    background: var(--m3-surface);
+    color: var(--m3-text);
+    overflow-y: auto;
+    box-shadow: 4px 0 24px rgba(0,0,0,0.45);
+    display: flex;
+    flex-direction: column;
+  }
+  .drawer-hero {
+    background: var(--m3-primary-cont);
+    color: var(--m3-on-primary-cont);
+    padding: 18px 16px;
+  }
+  .drawer-hero h3 { font-size: 1.1em; font-weight: 700; }
+  .drawer-hero p { font-size: 0.78em; opacity: 0.85; margin-top: 2px; }
+  .drawer-hero .stats { font-size: 0.72em; color: var(--m3-primary); font-weight: 700; margin-top: 6px; }
+  .drawer-sec {
+    font-size: 0.68em;
+    font-weight: 700;
+    color: var(--m3-text-var);
+    padding: 10px 16px 4px;
+    letter-spacing: 0.05em;
+  }
+  .drawer-item {
+    border: none;
+    background: transparent;
+    color: var(--m3-text);
+    text-align: left;
+    padding: 8px 14px;
+    margin: 1px 8px;
+    border-radius: 24px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    width: calc(100% - 16px);
+  }
+  .drawer-item:hover { background: var(--m3-surface-var); }
+  .drawer-item.active {
+    background: var(--m3-primary-cont);
+    color: var(--m3-on-primary-cont);
+  }
+  .drawer-item .di-en { font-size: 0.88em; font-weight: 600; display: block; }
+  .drawer-item .di-bn { font-size: 0.7em; color: var(--m3-text-var); display: block; }
+  .drawer-div { height: 1px; background: var(--m3-outline); opacity: 0.45; margin: 6px 16px; }
+
+  /* M3 Reusable Cards & Widgets */
+  .m3-card {
+    background: var(--m3-surface);
+    border: 1px solid rgba(128,128,128,0.2);
+    border-radius: 12px;
+    padding: 13px;
+  }
+  .m3-card.variant { background: var(--m3-surface-var); }
+  .m3-card.primary-box {
+    background: var(--m3-primary-cont);
+    border: 1.5px solid var(--m3-primary);
+    color: var(--m3-on-primary-cont);
+  }
+  .m3-card.clickable { cursor: pointer; }
+  .m3-card.clickable:hover { border-color: var(--m3-primary); }
+
+  .safety-card {
+    border-radius: 12px;
+    padding: 12px 13px;
+    background: var(--m3-warn-cont);
+    border: 1px solid var(--m3-warn);
+    color: var(--m3-on-warn-cont);
+  }
+  .safety-card.statutory {
+    background: var(--m3-err-cont);
+    border-color: var(--m3-error);
+    color: var(--m3-on-err-cont);
+  }
+  .safety-card .sc-title {
+    font-size: 0.85em;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 4px;
+  }
+  .safety-card .sc-msg { font-size: 0.8em; line-height: 1.38; }
+
+  .formula-card {
+    background: var(--m3-surface-var);
+    border-radius: 10px;
+    padding: 11px 12px;
+    border: 1px solid var(--m3-outline);
+  }
+  .formula-card .fc-title { font-size: 0.82em; font-weight: 700; color: var(--m3-primary); margin-bottom: 4px; }
+  .formula-card .fc-eq {
+    font-family: ui-monospace, "Cascadia Mono", monospace;
+    font-size: 0.8em;
+    background: rgba(0,0,0,0.2);
+    padding: 6px 8px;
+    border-radius: 6px;
+    word-break: break-word;
+    margin-bottom: 6px;
+  }
+  .formula-card .fc-ref { font-size: 0.72em; color: var(--m3-text-var); }
+
+  .m3-btn {
+    min-height: 46px;
+    border-radius: 10px;
+    padding: 8px 14px;
+    font-size: 0.86em;
+    font-weight: 700;
+    border: 1px solid transparent;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    text-align: center;
+  }
+  .m3-btn.filled { background: var(--m3-primary); color: var(--m3-on-primary); }
+  .m3-btn.filled:disabled { opacity: 0.45; cursor: not-allowed; }
+  .m3-btn.outlined { background: transparent; border-color: var(--m3-outline); color: var(--m3-text); }
+  .m3-btn.tonal { background: var(--m3-primary-cont); color: var(--m3-on-primary-cont); }
+  .m3-btn.danger { background: var(--m3-err-cont); border-color: var(--m3-error); color: var(--m3-on-err-cont); }
+  .m3-btn.full { width: 100%; }
+
+  .chip-row {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    scrollbar-width: thin;
+  }
+  .m3-chip {
+    min-height: 36px;
+    padding: 4px 11px;
+    border-radius: 8px;
+    border: 1px solid var(--m3-outline);
+    background: var(--m3-surface);
+    color: var(--m3-text);
+    font-size: 0.76em;
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .m3-chip.selected {
+    background: var(--m3-primary-cont);
+    border-color: var(--m3-primary);
+    color: var(--m3-on-primary-cont);
+  }
+
+  .m3-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--m3-outline);
+    background: var(--m3-surface);
+    overflow-x: auto;
+    flex-shrink: 0;
+  }
+  .m3-tab {
+    flex: 1 0 auto;
+    min-height: 44px;
+    padding: 6px 12px;
+    background: transparent;
+    border: none;
+    border-bottom: 2.5px solid transparent;
+    color: var(--m3-text-var);
+    font-size: 0.78em;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .m3-tab.active {
+    color: var(--m3-primary);
+    border-bottom-color: var(--m3-primary);
+  }
+
+  .m3-input {
+    width: 100%;
+    min-height: 44px;
+    padding: 8px 11px;
+    border-radius: 8px;
+    border: 1px solid var(--m3-outline);
+    background: var(--m3-surface);
+    color: var(--m3-text);
+    font-size: 0.88em;
+    font-family: inherit;
+  }
+  .m3-input:focus { outline: 2px solid var(--m3-primary); border-color: var(--m3-primary); }
+  select.m3-input { cursor: pointer; }
+
+  .depth-pill {
+    font-size: 0.68em;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 4px;
+    display: inline-block;
+  }
+  .dp-full { background: var(--m3-green-cont); color: var(--m3-on-green-cont); }
+  .dp-partial { background: var(--m3-primary-cont); color: var(--m3-on-primary-cont); }
+  .dp-pending { background: var(--m3-warn-cont); color: var(--m3-on-warn-cont); }
+  .dp-inv { background: var(--m3-surface-var); color: var(--m3-text-var); border: 1px solid var(--m3-outline); }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+  .stat-tile {
+    background: var(--m3-surface-var);
+    border-radius: 8px;
+    padding: 8px 4px;
+    text-align: center;
+  }
+  .stat-tile .sv { font-size: 1.15em; font-weight: 800; }
+  .stat-tile .sl { font-size: 0.68em; color: var(--m3-text-var); }
+
+  /* Audit Annotations inside Inspector & Phone */
+  .audit-callout {
+    border: 1px dashed var(--amber);
+    background: rgba(246,173,85,0.1);
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 0.74em;
+    color: var(--m3-text);
+  }
+  .audit-callout strong { color: var(--amber); }
+
+  .inspector-box {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    font-size: 12.5px;
+  }
+  .insp-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--shell-border);
+    border-radius: 10px;
+    padding: 10px 12px;
+  }
+  .insp-card h4 {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--shell-muted);
+    margin-bottom: 6px;
+  }
+  .insp-list { padding-left: 16px; display: flex; flex-direction: column; gap: 5px; }
+  .insp-list li { font-size: 12px; }
+  .code-ref { font-family: ui-monospace, monospace; font-size: 11px; color: var(--accent); word-break: break-all; }
+
+  .check-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    min-height: 46px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    background: var(--m3-surface);
+    border: 1px solid rgba(128,128,128,0.18);
+    cursor: pointer;
+  }
+  .check-row input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    margin-top: 2px;
+    accent-color: var(--m3-primary);
+    flex-shrink: 0;
+  }
+
+  .svg-box {
+    background: #0d1117;
+    border: 1px solid var(--m3-outline);
+    border-radius: 10px;
+    padding: 8px;
+    text-align: center;
+  }
+  .svg-box svg { width: 100%; height: auto; max-height: 190px; display: block; margin: 0 auto; }
+
+  /* Modal dialog overlay inside phone frame */
+  .m3-dialog-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.65);
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+  }
+  .m3-dialog {
+    width: 100%;
+    max-height: 82%;
+    overflow-y: auto;
+    background: var(--m3-surface);
+    color: var(--m3-text);
+    border-radius: 16px;
+    padding: 16px;
+    border: 1px solid var(--m3-outline);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  /* Responsive Drawer/Tabs for Narrow Mobile Viewports (360px-959px) */
+  .mobile-only { display: none; }
+  @media (max-width: 980px) {
+    .workspace {
+      grid-template-columns: 1fr;
+      padding: 8px 8px 28px;
+      gap: 10px;
+    }
+    .panel-left, .panel-right { display: none; }
+    .panel-left.mob-open, .panel-right.mob-open { display: block; }
+    .mobile-only { display: inline-flex; }
+    .studio-brand .sub { display: none; }
+    .phone-frame {
+      height: min(740px, calc(100vh - 110px));
+      border-radius: 20px;
+      border-width: 3px;
+    }
+  }
+  @media (max-width: 430px) {
+    .workspace { padding: 4px 4px 20px; }
+    .phone-frame {
+      width: 100% !important;
+      border-radius: 14px;
+      border-width: 2px;
+      height: calc(100vh - 102px);
+    }
+  }
+</style>
+</head>
+<body>
+
+<header class="studio-topbar">
+  <div class="studio-brand">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#63B3ED" stroke-width="2" aria-hidden="true">
+      <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.26.6.77 1 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+    </svg>
+    <div>
+      <h1>Mechanical Pro Notes — Preview Gallery</h1>
+      <div class="sub">Phase-A/B Source-Verified Audit Artifact (Not Android APK Replacement)</div>
+    </div>
+  </div>
+  <div class="studio-controls">
+    <button class="ctrl-btn mobile-only" id="btnMobModules" onclick="toggleMobPanel('left')">Modules (23)</button>
+    <button class="ctrl-btn mobile-only" id="btnMobInspector" onclick="toggleMobPanel('right')">Inspector</button>
+    <button class="ctrl-btn" id="btnToggleTheme" onclick="toggleAppTheme()">Theme: Dark</button>
+    <button class="ctrl-btn" id="btnToggleLegible" onclick="toggleLegible()">Font: 1.0x</button>
+    <button class="ctrl-btn warn-btn" id="btnAuditMode" onclick="navigate('audit')">Audit Matrix (13 Gaps)</button>
+  </div>
+</header>
+
+<main class="workspace">
+  <!-- LEFT SIDEBAR: ALL 17 MODULES + UTILITY ROUTES -->
+  <aside class="panel panel-left" id="panelLeft">
+    <div class="panel-header">
+      <h2>All 23 Screen Routes</h2>
+      <span class="badge b-unverified">APK Untested</span>
+    </div>
+    <div class="panel-body" id="moduleIndexList"></div>
+  </aside>
+
+  <!-- CENTER: INTERACTIVE ANDROID PHONE FRAME -->
+  <section class="phone-stage" aria-label="Interactive Android Phone Preview">
+    <div class="width-toolbar">
+      <span>Phone Width:</span>
+      <button class="ctrl-btn" onclick="setPhoneWidth(360, this)">360dp</button>
+      <button class="ctrl-btn active" onclick="setPhoneWidth(380, this)">380dp</button>
+      <button class="ctrl-btn" onclick="setPhoneWidth(412, this)">412dp</button>
+      <label style="display:inline-flex;align-items:center;gap:4px;cursor:pointer;">
+        <input type="checkbox" id="chkShowCallouts" checked onchange="renderAll()">
+        <span>Highlight Missing UI</span>
+      </label>
+    </div>
+
+    <div class="phone-frame" id="phoneFrame" data-theme="dark">
+      <div class="sys-bar">
+        <span>100% Offline • No Internet</span>
+        <span>Android 15 Preview</span>
+      </div>
+
+      <!-- Modal Navigation Drawer Overlay -->
+      <div class="drawer-backdrop" id="drawerBackdrop" onclick="if(event.target===this) closeDrawer()">
+        <nav class="m3-drawer" id="phoneDrawer" aria-label="App Navigation Drawer"></nav>
+      </div>
+
+      <!-- Simulated M3 TopAppBar -->
+      <div class="m3-topbar" id="phoneTopBar"></div>
+
+      <!-- Dynamic Screen Tabs if Applicable -->
+      <div class="m3-tabs" id="phoneTabs" style="display:none;"></div>
+
+      <!-- Main Scrollable Screen Body -->
+      <div class="m3-content" id="phoneContent"></div>
+
+      <!-- Dynamic Modal Dialog inside Phone -->
+      <div class="m3-dialog-overlay" id="phoneDialog" style="display:none;" onclick="if(event.target===this) closeDialog()">
+        <div class="m3-dialog" id="phoneDialogBody"></div>
+      </div>
+
+      <!-- 4-Item Bottom Navigation Bar -->
+      <nav class="m3-bottombar" id="phoneBottomBar" aria-label="Bottom Navigation"></nav>
+    </div>
+  </section>
+
+  <!-- RIGHT SIDEBAR: INSPECTOR & MISSING FEATURES PER ROUTE -->
+  <aside class="panel panel-right" id="panelRight">
+    <div class="panel-header">
+      <h2>Screen UI Audit</h2>
+      <span id="inspBadge"></span>
+    </div>
+    <div class="panel-body inspector-box" id="inspectorPanel"></div>
+  </aside>
+</main>
+
+<script>
+// =========================================================================
+// AUTHORITATIVE SOURCE-VERIFIED DATA (Kotlin Screen.kt, AppNavigation.kt,
+// EngineeringCatalogs.kt, UnitConverterEngine.kt, mechanical_pro_notes.db)
+// =========================================================================
+
+const STATUS_META = {
+  IMPLEMENTED: { cls: "b-impl", text: "IMPLEMENTED" },
+  PARTIAL:     { cls: "b-partial", text: "PARTIAL" },
+  GENERIC:     { cls: "b-generic", text: "GENERIC OVERVIEW" },
+  GAP:         { cls: "b-gap", text: "CONTENT GAP / MISSING" }
+};
+
+const FAMILIES = [
+  { id: "FAM-A", name: "Production & Washing Machinery", bn: "উৎপাদন ও ওয়াশিং যন্ত্রপাতি", counts: { total: 5, full: 1, partial: 1, pending: 1, inv: 2 } },
+  { id: "FAM-B", name: "Extraction & Drying Systems", bn: "এক্সট্রাকশন ও ড্রায়িং সিস্টেম", counts: { total: 5, full: 1, partial: 2, pending: 2, inv: 0 } },
+  { id: "FAM-C", name: "Garment Finishing & Special Process", bn: "গার্মেন্টস ফিনিশিং ও স্পেশাল প্রসেস", counts: { total: 5, full: 0, partial: 0, pending: 2, inv: 3 } },
+  { id: "FAM-D", name: "Pumps & Fluid Handling", bn: "পাম্প ও ফ্লুইড হ্যান্ডলিং যন্ত্রপাতি", counts: { total: 6, full: 0, partial: 1, pending: 0, inv: 5 } },
+  { id: "FAM-E", name: "Power Transmission & Tribology", bn: "পাওয়ার ট্রান্সমিশন ও বিয়ারিং সিস্টেম", counts: { total: 6, full: 0, partial: 0, pending: 0, inv: 6 } },
+  { id: "FAM-F", name: "Steam & Thermal Distribution", bn: "স্টিম ও থার্মাল ডিস্ট্রিবিউশন সিস্টেম", counts: { total: 6, full: 0, partial: 1, pending: 0, inv: 5 } },
+  { id: "FAM-G", name: "Industrial Boiler Systems (Gas & Jhut)", bn: "ইন্ডাস্ট্রিয়াল বয়লার সিস্টেম (গ্যাস ও ঝুট)", counts: { total: 4, full: 0, partial: 2, pending: 0, inv: 2 } },
+  { id: "FAM-H", name: "Water Treatment & Distribution", bn: "ওয়াটার ট্রিটমেন্ট ও প্রসেস লাইন", counts: { total: 4, full: 0, partial: 0, pending: 1, inv: 3 } },
+  { id: "FAM-I", name: "Chemical Storage, Mixing & Dosing", bn: "কেমিক্যাল মিক্সিং ও ডোজিং সিস্টেম", counts: { total: 3, full: 0, partial: 0, pending: 0, inv: 3 } },
+  { id: "FAM-J", name: "Compressed Air Generation & Line", bn: "কম্প্রেসড এয়ার জেনারেশন ও লাইন", counts: { total: 4, full: 0, partial: 1, pending: 0, inv: 3 } },
+  { id: "FAM-K", name: "Cooling & Industrial Refrigeration", bn: "কুলিং টাওয়ার ও ইন্ডাস্ট্রিয়াল চিলার", counts: { total: 2, full: 0, partial: 0, pending: 1, inv: 1 } },
+  { id: "FAM-L", name: "Effluent Treatment Plant (ETP)", bn: "ইটিপি (ETP) বর্জ্য শোধনাগার যন্ত্রপাতি", counts: { total: 5, full: 0, partial: 1, pending: 0, inv: 4 } },
+  { id: "FAM-M", name: "Material Handling & Overhead Hoist", bn: "ম্যাটেরিয়াল হ্যান্ডলিং ও ওভারহেড হোয়েস্ট", counts: { total: 3, full: 0, partial: 0, pending: 0, inv: 3 } },
+  { id: "FAM-N", name: "Maintenance Workshop & Fabrication", bn: "মেইনটেন্যান্স ওয়ার্কশপ ও মেশিন শপ", counts: { total: 3, full: 0, partial: 0, pending: 0, inv: 3 } },
+  { id: "FAM-O", name: "Plant Safety & Fire Protection", bn: "প্ল্যান্ট সেফটি ও ফায়ার প্রোটেকশন", counts: { total: 2, full: 0, partial: 0, pending: 0, inv: 2 } },
+  { id: "FAM-P", name: "Plant Ventilation & Lint Extraction", bn: "ভেন্টিলেশন, এগজস্ট ও লিন্ট এক্সট্রাকশন", counts: { total: 1, full: 0, partial: 0, pending: 0, inv: 1 } }
+];
+
+const EQUIPMENT_SAMPLES = [
+  { id: "EQ-A01", fam: "FAM-A", name: "Horizontal Front-Loading Belly Washer (Open Pocket)", bn: "হরিজন্টাল ফ্রন্ট-লোডিং বেলি ওয়াশার", depth: "FULL_CONTENT_BLUEPRINT", tier: "PRIMARY_PRODUCTION", cap: "150 - 350 kg dry garment/batch", temp: "30°C - 95°C", drive: "VFD Three-Phase Motor + Twin SPB V-Belts", lube: "NLGI EP2 Lithium Complex (22222K)", law: "ISO 10472 Safety Door Interlock", svg: "washer", specs: [["Basket Diameter", "1100 - 1550 mm (SS 316L)"], ["Wash Speed / Extract", "28 - 38 RPM / up to 650 RPM"], ["Steam Injection", "25 - 40 mm Pneumatic Angle-Seat"]], ops: "Verify air pressure 6 bar, test safety door interlock, verify bath level float before injecting steam.", fmea: [["Trunnion Shaft Fatigue", "HIGH", "Heavy eccentric imbalance shocks; crack at shoulder radius"], ["Pneumatic Drain Leak", "MEDIUM", "Button/rivet trapped in EPDM flap seal"]], pm: "Weekly belt deflection 8-10 mm; bi-weekly main shaft bearing re-grease 35g NLGI EP2; monthly steam trap test." },
+  { id: "EQ-A02", fam: "FAM-A", name: "Side-Loading Divided-Pocket Belly Washer", bn: "সাইড-লোডিং ডিভাইডেড বেলি ওয়াশার", depth: "INVENTORY_ONLY", tier: "PRIMARY_PRODUCTION", cap: "100 - 250 kg", temp: "30°C - 90°C", drive: "Geared Induction Motor + Chain/Belt", lube: "NLGI EP2 + ISO VG 220", law: "ISO 10472", svg: null },
+  { id: "EQ-A04", fam: "FAM-A", name: "High-Speed Garment Washer-Extractor", bn: "হাই-স্পিড ওয়াশার-এক্সট্রাক্টর", depth: "PARTIAL_CONTENT_BLUEPRINT", tier: "PRIMARY_PRODUCTION", cap: "120 - 220 kg", temp: "40°C - 90°C", drive: "Direct VFD / Poly-V High Extraction", lube: "Sealed Bearing + Shock Isolators", law: "ISO 10472 Unbalance Trip", svg: "washer" },
+  { id: "EQ-A05", fam: "FAM-A", name: "Garment Laser Whiskering & Ageing System", bn: "গার্মেন্টস লেজার হুইস্কারিং সিস্টেম", depth: "RESEARCH_PENDING", tier: "PRIMARY_PRODUCTION", cap: "Plant-Specific", temp: "Ambient", drive: "Galvo Optics + Chiller", lube: "Closed Linear Rail", law: "Class 4 Laser Enclosure", svg: null },
+  { id: "EQ-B01", fam: "FAM-B", name: "Vertical Basket Centrifugal Hydro Extractor (Suspended 3-Point)", bn: "সাসপেন্ডেড সেন্ট্রিফিউগাল হাইড্রো এক্সট্রাক্টর", depth: "FULL_CONTENT_BLUEPRINT", tier: "SAFETY_CRITICAL", cap: "80 - 150 kg wet garments", temp: "Ambient - 60°C", drive: "15-22 kW High-Slip Motor + Centrifugal Clutch", lube: "NLGI 2 Lithium Complex Spindle", law: "Bangladesh Labour Rules 2015 Schedule IV", svg: "hydro", specs: [["Basket Diameter", "1000 - 1200 mm (SS 304/316)"], ["Rated Speed", "900 - 1050 RPM (~450-650 G)"], ["Brake Stop Time", "< 20 sec pneumatic shoe brake"]], ops: "Distribute wet denim evenly around basket wall; NEVER override lid interlock; listen for pendulum knock on ramp-up.", fmea: [["Pendulum Link Snap", "CRITICAL", "Severe imbalance causes basket strike & fatal projectile risk"], ["Mechanical Brake Fade", "HIGH", "Wet oil/soap glazed brake shoes fail to halt in <20s"]], pm: "Daily lid zero-speed interlock check; weekly pendulum spring/rod inspection; monthly brake lining thickness check (>=4 mm)." },
+  { id: "EQ-B03", fam: "FAM-B", name: "Industrial Steam-Heated Tumble Dryer", bn: "স্টিম-হিটেড টাম্বল ড্রায়ার", depth: "PARTIAL_CONTENT_BLUEPRINT", tier: "PRIMARY_PRODUCTION", cap: "100 - 200 kg", temp: "65°C - 85°C exhaust", drive: "Chain/Gear Drum + Centrifugal Blower", lube: "High-Temp NLGI EP2", law: "ISO 10472", svg: null },
+  { id: "EQ-B04", fam: "FAM-B", name: "Gas-Fired Direct Industrial Tumble Dryer", bn: "গ্যাস-ফায়ার্ড টাম্বল ড্রায়ার", depth: "RESEARCH_PENDING", tier: "SAFETY_CRITICAL", cap: "100 - 180 kg", temp: "80°C - 110°C", drive: "Direct Flame Burner + Drum Drive", lube: "High-Temp Bearing Grease", law: "Gas Train Safety Shutoff", svg: null },
+  { id: "EQ-C01", fam: "FAM-C", name: "Curing / Baking Box Oven", bn: "কিউরিং / বেকিং বক্স ওভেন", depth: "INVENTORY_ONLY", tier: "PRIMARY_PRODUCTION", cap: "Batch Rack", temp: "140°C - 170°C", drive: "Recirculation Blower", lube: "Synthetic High-Temp", law: "Thermal Cutoff Interlock", svg: null },
+  { id: "EQ-C04", fam: "FAM-C", name: "Pneumatic Garment Pressing & Crinkling Station", bn: "নিউমেটিক প্রেসিং ও ক্রিংকলিং", depth: "RESEARCH_PENDING", tier: "PRIMARY_PRODUCTION", cap: "Plant-Specific", temp: "120°C - 160°C", drive: "Pneumatic Cylinders", lube: "ISO VG 32 Airline Oil", law: "Two-Hand Safety Control", svg: null },
+  { id: "EQ-D01", fam: "FAM-D", name: "Single-Stage End-Suction Centrifugal Water Pump", bn: "এন্ড-সাকশন সেন্ট্রিফিউগাল পাম্প", depth: "INVENTORY_ONLY", tier: "PRIMARY_PRODUCTION", cap: "20 - 120 m3/h", temp: "20°C - 60°C", drive: "Direct Coupling 2900/1450 RPM", lube: "2RS Sealed / ISO VG 46", law: "ISO 5199 Guarding", svg: null },
+  { id: "EQ-D02", fam: "FAM-D", name: "High-Pressure Multistage Centrifugal Boiler Feed Pump", bn: "মাল্টিস্টেজ বয়লার ফিড পাম্প", depth: "PARTIAL_CONTENT_BLUEPRINT", tier: "SAFETY_CRITICAL", cap: "5 - 25 m3/h @ 14-18 bar", temp: "85°C - 105°C", drive: "Vertical Multistage Direct (CR/CRN)", lube: "SiC/SiC Mechanical Seal + Thrust Bearing", law: "Boilers Act 2022 Feedwater Capacity >=2x", svg: null },
+  { id: "EQ-E01", fam: "FAM-E", name: "Three-Phase Squirrel Cage Induction Motor", bn: "থ্রি-ফেজ ইন্ডাকশন মোটর", depth: "INVENTORY_ONLY", tier: "PRIMARY_PRODUCTION", cap: "1.5 - 75 kW", temp: "Class F (155°C)", drive: "DOL / Star-Delta / VFD", lube: "Polyurea / Lithium EP2", law: "BNBC / Electrical Guarding", svg: null },
+  { id: "EQ-F02", fam: "FAM-F", name: "Industrial Steam Traps (Thermodynamic & Ball Float)", bn: "স্টিম ট্র্যাপ (থার্মোডাইনামিক ও বল ফ্লোট)", depth: "PARTIAL_CONTENT_BLUEPRINT", tier: "PRIMARY_PRODUCTION", cap: "DN15 - DN40", temp: "150°C - 190°C", drive: "Self-Acting Differential", lube: "None (Clean Y-Strainer)", law: "Spirax Sarco Loop Standard", svg: "steam" },
+  { id: "EQ-G01", fam: "FAM-G", name: "3-Pass Wet-Back Gas-Fired Industrial Steam Boiler", bn: "৩-পাস ওয়েট-ব্যাক গ্যাস বয়লার", depth: "PARTIAL_CONTENT_BLUEPRINT", tier: "SAFETY_CRITICAL", cap: "2,000 - 10,000 kg/h (10.54 bar)", temp: "184°C saturated", drive: "Modulating Gas Burner + FD Fan", lube: "Burner Fan Sealed Bearings", law: "The Boilers Act, 2022 + Rules 2025", svg: "gas_boiler" },
+  { id: "EQ-G02", fam: "FAM-G", name: "Jhut / Textile Waste-Fuel Steam Boiler", bn: "ঝুট / সলিড-ফুয়েল স্টিম বয়লার", depth: "PARTIAL_CONTENT_BLUEPRINT", tier: "SAFETY_CRITICAL", cap: "2,000 - 8,000 kg/h", temp: "180°C - 184°C", drive: "FD + ID Fan + Multi-Cyclone + Rotary Lock", lube: "ID Fan Water-Cooled Plummer Block", law: "The Boilers Act, 2022 + DoE Stack Emissions", svg: "jhut_boiler" },
+  { id: "EQ-G04", fam: "FAM-G", name: "Mobrey Low-Water Level Controller & Cutout (LWCO)", bn: "মোব্রে লো-ওয়াটার লেভেল কন্ট্রোলার", depth: "INVENTORY_ONLY", tier: "SAFETY_CRITICAL", cap: "Dual Float / Conductivity", temp: "184°C", drive: "Magnetic Float Switch", lube: "None (Daily Blowdown Chamber)", law: "Boilers Act 2022 Mandatory", svg: "gas_boiler" },
+  { id: "EQ-H01", fam: "FAM-H", name: "Industrial Sodium Cation Exchange Water Softener", bn: "ওয়াটার সফটনার প্ল্যান্ট", depth: "INVENTORY_ONLY", tier: "PRIMARY_PRODUCTION", cap: "10 - 50 m3/h", temp: "Ambient", drive: "Multiport / Pneumatic Diaphragm Valves", lube: "Silicone Valve Stem O-rings", law: "Feedwater Hardness < 5 ppm", svg: null },
+  { id: "EQ-H03", fam: "FAM-H", name: "Reverse Osmosis (RO) Water Treatment Plant", bn: "রিভার্স অসমোসিস (RO) প্ল্যান্ট", depth: "RESEARCH_PENDING", tier: "PRIMARY_PRODUCTION", cap: "Plant-Specific", temp: "Ambient", drive: "SS316 High-Pressure Pump", lube: "VFD + Seal Flush", law: "Membrane dP Monitoring", svg: null },
+  { id: "EQ-I01", fam: "FAM-I", name: "Stainless Steel Chemical Mixing Tank", bn: "কেমিক্যাল মিক্সিং ট্যাংক", depth: "INVENTORY_ONLY", tier: "SECONDARY_AUXILIARY", cap: "500 - 2,000 L", temp: "Ambient - 60°C", drive: "Top-Entry Agitator Gearbox", lube: "Food-Grade / ISO VG 220", law: "Bunded Containment + MSDS", svg: null },
+  { id: "EQ-J01", fam: "FAM-J", name: "Rotary Screw Air Compressor (Oil-Injected)", bn: "রোটারি স্ক্রু এয়ার কম্প্রেসার", depth: "PARTIAL_CONTENT_BLUEPRINT", tier: "PRIMARY_PRODUCTION", cap: "10 - 45 m3/min @ 7.5 bar", temp: "85°C oil", drive: "Direct / VSD 37-75 kW", lube: "ISO VG 46 Synthetic Screw Oil", law: "ASME Sec VIII Receiver Relief", svg: null },
+  { id: "EQ-K01", fam: "FAM-K", name: "Induced Draft Counter-Flow Cooling Tower", bn: "কুলিং টাওয়ার", depth: "INVENTORY_ONLY", tier: "SECONDARY_AUXILIARY", cap: "50 - 300 TR", temp: "32°C -> 28°C", drive: "Right-Angle Fan Gearbox", lube: "EP 220 Gear Oil", law: "Biocide Legionella Control", svg: null },
+  { id: "EQ-K02", fam: "FAM-K", name: "Industrial Water Chiller (Air/Water-Cooled)", bn: "ইন্ডাস্ট্রিয়াল ওয়াটার চিলার", depth: "RESEARCH_PENDING", tier: "SECONDARY_AUXILIARY", cap: "Plant-Specific", temp: "7°C - 12°C", drive: "Semi-Hermetic Screw Compressor", lube: "POE Refrigeration Oil", law: "ASHRAE 15 Relief", svg: null },
+  { id: "EQ-L01", fam: "FAM-L", name: "Dissolved Air Flotation (DAF) Unit", bn: "ডিএএফ (DAF) ফ্লোটেশন ইউনিট", depth: "PARTIAL_CONTENT_BLUEPRINT", tier: "PRIMARY_PRODUCTION", cap: "20 - 80 m3/h", temp: "30°C - 45°C", drive: "Recirculation DAF Pump + Skimmer", lube: "Gearmotor ISO VG 220", law: "DoE ECR 2023 Compliance", svg: null },
+  { id: "EQ-M01", fam: "FAM-M", name: "Electric Chain Hoist & Monorail Trolley", bn: "ইলেকট্রিক চেইন হোয়েস্ট", depth: "INVENTORY_ONLY", tier: "SAFETY_CRITICAL", cap: "1.0 - 5.0 Tonne", temp: "Ambient", drive: "Dual-Brake Hoist Motor", lube: "Gearbox + Load Chain Oil", law: "Annual SWL Load Test", svg: null },
+  { id: "EQ-N01", fam: "FAM-N", name: "Heavy-Duty Engine Lathe (Gap Bed)", bn: "হেভি-ডিউটি ইঞ্জিন লেদ মেশিন", depth: "INVENTORY_ONLY", tier: "SECONDARY_AUXILIARY", cap: "2000 mm Bed", temp: "Ambient", drive: "Geared Headstock", lube: "ISO VG 68 Way Oil", law: "Chuck Interlock & Guard", svg: null },
+  { id: "EQ-O01", fam: "FAM-O", name: "Diesel Engine Driven Emergency Fire Pump", bn: "ডিজেল ইমার্জেন্সি ফায়ার পাম্প", depth: "INVENTORY_ONLY", tier: "SAFETY_CRITICAL", cap: "100 - 250 m3/h @ 8 bar", temp: "Ambient", drive: "6-Cyl Diesel Engine", lube: "15W-40 CF-4 Engine Oil", law: "NFPA 20 Weekly 30-Min Test", svg: null },
+  { id: "EQ-P01", fam: "FAM-P", name: "Heavy-Duty Centrifugal Lint & Moisture Exhaust Blower", bn: "সেন্ট্রিফিউগাল লিন্ট এগজস্ট ব্লোয়ার", depth: "INVENTORY_ONLY", tier: "PRIMARY_PRODUCTION", cap: "15,000 - 40,000 m3/h", temp: "50°C - 80°C", drive: "V-Belt Backward Curved Impeller", lube: "Plummer Block NLGI EP2", law: "Combustible Lint Cleanout", svg: null }
+];
+
+const CALCULATIONS = [
+  { id:"CALC-01", title:"Boiler Thermal Efficiency (Direct Method)", bn:"বয়লার থার্মাল এফিসিয়েন্সি (ডাইরেক্ট মেথড)", cat:"Boiler Thermal", status:"IMPLEMENTED", formula:"eta = m_s * (h_s - h_w) / (m_f * NCV) * 100", ref:"ASME PTC 4", assumptions:"Steady-state steam pressure & continuous feedwater temp.", limitations:"Does not break down dry flue gas or unburnt jhut carbon losses.", inputs:[{k:"ms",l:"Steam Flow Rate m_s (kg/h)",v:4000},{k:"hs",l:"Steam Enthalpy h_s (kJ/kg)",v:2781.3},{k:"hw",l:"Feedwater Enthalpy h_w (kJ/kg)",v:376.9},{k:"mf",l:"Fuel Firing Rate m_f (unit/h)",v:310},{k:"ncv",l:"Fuel NCV (kJ/unit)",v:35500}], run:(v)=>({primary:`${((v.ms*(v.hs-v.hw))/(v.mf*v.ncv)*100).toFixed(2)} %`, sub:`Heat Output: ${((v.ms*(v.hs-v.hw))/3600).toFixed(1)} kW | Heat Input: ${((v.mf*v.ncv)/3600).toFixed(1)} kW`}) },
+  { id:"CALC-02", title:"Boiler Efficiency (Heat Loss / Indirect Method)", bn:"বয়লার ইনডাইরেক্ট এফিসিয়েন্সি (হিট লস পদ্ধতি)", cat:"Boiler Thermal", status:"RESEARCH_PENDING", formula:"eta = 100 - (L_dry + L_H2 + L_moist + L_air + L_unburnt + L_rad)", ref:"ASME PTC 4 / BS 845 (Locked Pending Field Ash & Gas Balance)", assumptions:"Requires ultimate fuel H2%, CO2%, fuel density for Nm3/kg parity.", limitations:"EXECUTION LOCKED: Engineering research verification pending for mixed Jhut fuels.", inputs:[{k:"tf",l:"Flue Gas Temp (°C)",v:210},{k:"ta",l:"Ambient Temp (°C)",v:32},{k:"o2",l:"Flue O2 (%)",v:4.5},{k:"ncv",l:"Fuel NCV (kJ/kg or kJ/Nm3)",v:35500}] },
+  { id:"CALC-03", title:"Boiler Fuel Firing Rate Requirement", bn:"বয়লার ফুয়েল ফায়ারিং রেট হিসাব", cat:"Boiler Thermal", status:"IMPLEMENTED", formula:"m_f = [m_s * (h_s - h_w)] / [(eta/100) * NCV]", ref:"ASME PTC 4", assumptions:"Steady thermal load at assumed boiler efficiency.", limitations:"Must use matching numerator/denominator mass or Nm3 units.", inputs:[{k:"ms",l:"Steam Demand m_s (kg/h)",v:5000},{k:"hs",l:"Steam Enthalpy h_s (kJ/kg)",v:2778},{k:"hw",l:"Feedwater Enthalpy h_w (kJ/kg)",v:377},{k:"eta",l:"Efficiency (%)",v:84},{k:"ncv",l:"Fuel NCV (kJ/unit)",v:35500}], run:(v)=>({primary:`${((v.ms*(v.hs-v.hw))/((v.eta/100)*v.ncv)).toFixed(2)} unit/h`, sub:`Fuel Heat Input: ${(((v.ms*(v.hs-v.hw))/(v.eta/100))/3600).toFixed(1)} kW`}) },
+  { id:"CALC-04", title:"Steam-to-Fuel Evaporation Ratio", bn:"স্টিম-টু-ফুয়েল ইভাপোরেশন রেশিও", cat:"Boiler Thermal", status:"IMPLEMENTED", formula:"ER = m_s / m_f", ref:"Plant Benchmark Log", assumptions:"Consistent mass flow or volumetric metering.", limitations:"Gas boilers (~12-14 kg/Nm3) differ strongly from Jhut (~2.5-3.5 kg/kg).", inputs:[{k:"ms",l:"Steam Generated m_s (kg/h)",v:4000},{k:"mf",l:"Fuel Consumed m_f (unit/h)",v:310}], run:(v)=>({primary:`${(v.ms/v.mf).toFixed(2)} kg steam / unit fuel`, sub:"Verify fuel unit (Nm3 gas vs kg Jhut)"}) },
+  { id:"CALC-05", title:"Boiler Continuous Blowdown Rate", bn:"বয়লার ব্লো-ডাউন রেট ক্যালকুলেশন", cat:"Boiler Water", status:"IMPLEMENTED", formula:"BD% = [TDS_feed / (TDS_boiler - TDS_feed)] * 100", ref:"BS 2486 / Spirax Sarco", assumptions:"Dissolved solids stay soluble; TDS_boiler > TDS_feed.", limitations:"Excludes suspended mud removed via intermittent bottom blowdown.", inputs:[{k:"tf",l:"Feedwater TDS (ppm)",v:180},{k:"tb",l:"Max Allowable Drum TDS (ppm)",v:3000},{k:"ms",l:"Steam Output (kg/h)",v:4000}], run:(v)=>({primary:`${((v.tf/(v.tb-v.tf))*100).toFixed(2)} %`, sub:`Blowdown Flow: ${(v.ms*(v.tf/(v.tb-v.tf))).toFixed(1)} kg/h`}) },
+  { id:"CALC-06", title:"Blowdown Flash Steam & Heat Recovery", bn:"ব্লো-ডাউন হিট রিকভারি ও ফ্ল্যাশ স্টিম সাশ্রয়", cat:"Boiler Thermal", status:"IMPLEMENTED", formula:"Flash% = (h_f,boiler - h_f,flash) / h_fg,flash * 100", ref:"Spirax Sarco Flash Guide", assumptions:"P_boiler > P_flash strictly enforced; HX outlet >= T_cold + 5°C.", limitations:"Bottom intermittent blowdown cannot feed plate HX.", inputs:[{k:"mbd",l:"Blowdown Mass Flow (kg/h)",v:300},{k:"pb",l:"Boiler Pressure bar(g)",v:10},{k:"pf",l:"Flash Vessel Pressure bar(g)",v:1.5}], run:(v)=>{ if(v.pb<=v.pf) return {error:"Validation Blocked: Boiler pressure P_boiler must strictly exceed P_flash!"}; const pct=((781.6-536.2)/2181.8)*100; return {primary:`${(v.mbd*pct/100).toFixed(1)} kg/h flash steam`, sub:`Flash Fraction: ${pct.toFixed(1)}% recovered to deaerator`}; } },
+  { id:"CALC-07", title:"Boiler Feed Pump Hydraulic & Motor Power", bn:"বয়লার ফিড পাম্প হাইড্রোলিক ও মোটর পাওয়ার", cat:"Utility & Pumping", status:"IMPLEMENTED", formula:"P_hyd = (rho * g * Q * H) / 3.6e6", ref:"ISO 5199 / HI Standards", assumptions:"Centrifugal multistage pump; NPSHa verified >= NPSHr + 1.0m.", limitations:"Verify hot feedwater vapor pressure (85-95°C).", inputs:[{k:"q",l:"Flow Q (m3/h)",v:10},{k:"h",l:"Total Dynamic Head H (m)",v:140},{k:"rho",l:"Water Density (kg/m3)",v:965},{k:"ep",l:"Pump Efficiency (%)",v:68}], run:(v)=>{ const ph=(v.rho*9.80665*v.q*v.h)/3.6e6; const ps=ph/(v.ep/100); return {primary:`${ps.toFixed(2)} kW shaft (${(ps*1.15).toFixed(2)} kW rec. motor)`, sub:`Hydraulic Power: ${ph.toFixed(2)} kW`}; } },
+  { id:"CALC-08", title:"Deaerator Steam Balance & Feedwater Heating", bn:"ডিয়ারেশন স্টিম ব্যালেন্স ও ফিডওয়াটার হিটিং", cat:"Boiler Thermal", status:"IMPLEMENTED", formula:"m_steam = m_feed * (h_feed - h_makeup) / (h_steam - h_makeup)", ref:"ASME Deaerator Guide", assumptions:"0.2 bar(g) dome (~105°C), <0.005 mg/L O2.", limitations:"Assumes negligible vent steam plume waste." },
+  { id:"CALC-09", title:"Safety Valve Relieving Capacity Verification", bn:"সেফটি ভালভ রিলিভিং ক্যাপাসিটি ভেরিফিকেশন", cat:"Boiler Safety", status:"IMPLEMENTED", formula:"W = 0.51 * K_d * A * (1.03 * P_set,abs)", ref:"ASME BPVC Sec I / Boiler Rules 2025", assumptions:"Napier saturated steam check (0.51 vs 0.52515 conservative -2.89%).", limitations:"PRELIMINARY ESTIMATE ONLY: Cannot replace OCIB statutory witness test.", inputs:[{k:"kd",l:"Discharge Coeff K_d (0.40-0.975)",v:0.87},{k:"dia",l:"Valve Throat Diameter (mm)",v:32},{k:"ps",l:"Set Pressure bar(g)",v:10.5},{k:"mcr",l:"Boiler MCR (kg/h)",v:4000}], run:(v)=>{ const area=Math.PI*Math.pow(v.dia/2,2); const pabs=(v.ps+1.01325)*1.03*10; const w=0.51*v.kd*area*(pabs/9.80665); return {primary:`${w.toFixed(0)} kg/h capacity`, sub:`Area: ${area.toFixed(1)} mm2 | vs Boiler MCR ${v.mcr} kg/h -> ${w>=v.mcr?"ADEQUATE":"UNDERSIZED ALERT"}`}; } },
+  { id:"CALC-10", title:"Economizer Flue Gas Heat Recovery", bn:"ইকোনোমাইজার ফ্লু গ্যাস হিট রিকভারি", cat:"Boiler Thermal", status:"IMPLEMENTED", formula:"Q_eco = m_gas * C_p,gas * (T_in - T_out)", ref:"Finned-Tube Economizer Std", assumptions:"Gas exit >= 120°C (gas) or >= 140°C (Jhut/heavy oil).", limitations:"Below acid dew point risks rapid tube corrosion." },
+  { id:"CALC-11", title:"Forced Draft (FD) Fan & Combustion Air Sizing", bn:"এফডি ফ্যান ও কম্বাশন এয়ার ফ্লো নির্ধারণ", cat:"Combustion & Draught", status:"IMPLEMENTED", formula:"V_air = V_fuel * A_0 * (1 + EA%/100)", ref:"Combustion Fan Manual", assumptions:"Separates Nm3/min normal air from ambient FAD m3/min.", limitations:"Default A0=9.8 applies strictly to Natural Gas." },
+  { id:"CALC-12", title:"Induced Draft (ID) Fan Sizing & Static Head", bn:"আইডি ফ্যান ড্রাফট ও মোটর রেটিং নির্ধারণ", cat:"Combustion & Draught", status:"IMPLEMENTED", formula:"P_ID = (Q_flue * dP_total) / (3600 * 1000 * eta_fan)", ref:"Boiler Draught Standard", assumptions:"-2 to -5 mm WC furnace draft for Jhut/coal boilers.", limitations:"Hot flue temperature dramatically reduces density." },
+  { id:"CALC-13", title:"Chimney Natural Stack Draught", bn:"চিমনি ন্যাচারাল স্ট্যাক ড্রাফট হিসাব", cat:"Combustion & Draught", status:"IMPLEMENTED", formula:"dP = 353 * H * (1/T_amb - 1/T_flue)", ref:"Stack Barometric Draft", assumptions:"Smooth vertical stack neglecting wall friction.", limitations:"Does not model wind downdraught or cyclone losses." },
+  { id:"CALC-14", title:"Steam Header & Distribution Pipe Sizing", bn:"স্টিম পাইপ ডায়ামিটার ও ভেলোসিটি হিসাব", cat:"Steam Distribution", status:"IMPLEMENTED", formula:"d = sqrt(4 * m_s * v_g / (pi * v * 3600)) * 1000", ref:"Spirax Sarco / ASME B31.1", assumptions:"Dry saturated steam at 25-35 m/s velocity.", limitations:"Long runs require pressure-drop check across valves." },
+  { id:"CALC-15", title:"V-Belt Sizing, Speed Ratio & Tensioning", bn:"ভি-বেল্ট ড্রাইভ সাইজিং ও স্পিড রেশিও", cat:"Wash Plant Machinery", status:"IMPLEMENTED", formula:"L = 2C + (pi/2)*(D+d) + (D-d)^2/(4C)", ref:"ISO 4184 / RMA", assumptions:"Matched industrial SPZ/SPA/SPB/SPC belt sets.", limitations:"Verify wrap angle >= 120° on small sheave.", inputs:[{k:"D",l:"Driven Pulley D (mm)",v:450},{k:"d",l:"Driver Pulley d (mm)",v:150},{k:"C",l:"Center Distance C (mm)",v:600}], run:(v)=>({primary:`L_pitch = ${(2*v.C+(Math.PI/2)*(v.D+v.d)+Math.pow(v.D-v.d,2)/(4*v.C)).toFixed(1)} mm`, sub:`Speed Ratio: ${(v.D/v.d).toFixed(2)}:1 | Target Deflection: ~${(v.C/100).toFixed(1)} mm`}) },
+  { id:"CALC-16", title:"Hydro Extractor Centrifugal G-Force & Rim Velocity", bn:"হাইড্রো এক্সট্রাক্টর সেন্ট্রিফিউগাল জি-ফোর্স", cat:"Wash Plant Machinery", status:"IMPLEMENTED", formula:"G = 0.00001118 * r_cm * N^2", ref:"ISO 10472 / Centrifuge Safety", assumptions:"Balanced rigid vertical cylindrical basket.", limitations:"CRITICAL: Never exceed nameplate max RPM.", inputs:[{k:"dia",l:"Basket Inner Dia (mm)",v:1100},{k:"rpm",l:"Spin Speed (RPM)",v:960}], run:(v)=>{ const rcm=(v.dia/2)/10; const g=0.00001118*rcm*v.rpm*v.rpm; const rim=Math.PI*(v.dia/1000)*v.rpm/60; return {primary:`${g.toFixed(0)} G-force`, sub:`Rim Speed: ${rim.toFixed(1)} m/s ${rim>65?"(HIGH RIM SPEED ALERT!)":"(Normal Range)"}`}; } },
+  { id:"CALC-17", title:"Washing Batch Steam Consumption & Thermal Balance", bn:"ওয়াশ ব্যাচ স্টিম কনজাম্পশন", cat:"Wash Plant Utility", status:"IMPLEMENTED", formula:"Q = (m_w*Cp_w + m_g*Cp_g)*dT * 1.10", ref:"Textile Wet Processing Thermal Guide", assumptions:"10% drum radiation allowance included.", limitations:"Direct sparging mixes condensate into wash bath." },
+  { id:"CALC-18", title:"Tumble Dryer Moisture Evaporation & Airflow", bn:"টাম্বল ড্রায়ার ময়েশ্চার ইভাপোরেশন", cat:"Wash Plant Machinery", status:"IMPLEMENTED", formula:"m_evap = m_wet - m_wet*(1-MC_in)/(1-MC_out)", ref:"Garment Drying Thermal Balance", assumptions:"Exhaust 65-80°C with clean lint screen.", limitations:"Fabric weave density alters falling-rate drying." },
+  { id:"CALC-19", title:"Water Softener Resin Capacity & Salt Sizing", bn:"ওয়াটার সফটনার রেজিন ও লবণ হিসাব", cat:"Water Treatment", status:"IMPLEMENTED", formula:"V_run = (V_resin * Cap * 50) / Hardness_ppm", ref:"WQA / BS 2486 Ion Exchange", assumptions:"Conditional daily salt only with daily_m3 or regen_per_day.", limitations:"High raw iron/chlorine degrades cation resin." },
+  { id:"CALC-20", title:"Compressed Air Velocity & Line Pressure Drop", bn:"কম্প্রেসড এয়ার ভেলোসিটি ও প্রেশার ড্রপ", cat:"Pneumatics & Air", status:"IMPLEMENTED", formula:"dP = (0.00075 * L * Q^1.85) / (d_cm^5 * P_abs)", ref:"CAGI / ISO 8573 Empirical Formula", assumptions:"Must stay <=0.1 bar/100m, velocity <=10 m/s.", limitations:"Empirical formula disclosed vs Darcy-Weisbach; excludes FRL drops.", inputs:[{k:"L",l:"Pipe Length L (m)",v:100},{k:"Q",l:"Free Air Flow Q (m3/min FAD)",v:15},{k:"d",l:"Inner Pipe Dia (mm)",v:50},{k:"p",l:"System Pressure bar(g)",v:7}], run:(v)=>{ const dcm=v.d/10; const pabs=v.p+1.01325; const dp=(0.00075*v.L*Math.pow(v.Q,1.85))/(Math.pow(dcm,5)*pabs); const area=Math.PI*Math.pow(v.d/2000,2); const vel=(v.Q/60/pabs)/area; return {primary:`dP = ${dp.toFixed(4)} bar (${(dp/v.L*100).toFixed(4)} bar/100m)`, sub:`Line Velocity: ${vel.toFixed(1)} m/s ${vel>10?"[OVERSPEED >10 m/s!]":"[OK <=10 m/s]"}`}; } }
+];
+
+const CHECKLISTS = [
+  { id:"CHK-BLR-DAILY", title:"Daily Boiler Pre-Start & Blowdown", std:"Bangladesh Boiler Rules 2025, Rule 44", items:[
+    {id:1,t:"Check feedwater tank level and deaerator temp (min 85°C)",c:"Pre-Start",k:true},
+    {id:2,t:"Inspect water gauge glass and verify dual gauge cock functionality",c:"Pre-Start",k:true},
+    {id:3,t:"Verify gas line train pressure and gas detector status",c:"Fuel Line",k:true},
+    {id:4,t:"Check water softener hardness (< 5 ppm CaCO3) and TDS",c:"Water Quality",k:false},
+    {id:5,t:"Perform surface continuous blowdown sampling test",c:"Blowdown",k:false},
+    {id:6,t:"Execute bottom intermittent blowdown under reduced load",c:"Blowdown",k:true},
+    {id:7,t:"Inspect chimney flue gas temp and draft fan dampers",c:"Combustion",k:false},
+    {id:8,t:"Verify Mobrey water level controller high/low alarms & trip",c:"Safety",k:true}
+  ]},
+  { id:"CHK-BLR-WEEKLY", title:"Weekly Boiler Safety & Interlock Test", std:"Boilers Act 2022 / ASME Section I", items:[
+    {id:11,t:"Manually ease spring safety valve levers at >75% working pressure",c:"Safety",k:true},
+    {id:12,t:"Conduct evaporation test to verify low water fuel cutoff trip",c:"Safety",k:true},
+    {id:13,t:"Blow down gauge glass cocks to clear sediment",c:"Instruments",k:false},
+    {id:14,t:"Inspect chemical dosing pump stroke & tank level",c:"Water Treatment",k:false},
+    {id:15,t:"Check FD/ID fan V-belt tension and bearing temp",c:"Drives",k:false},
+    {id:16,t:"Inspect burner flame scanner UV cell lens for soot",c:"Burner",k:false}
+  ]},
+  { id:"CHK-WASH-PREV", title:"Washing Machine Mechanical PM", std:"Wash Plant Maintenance SOP", items:[
+    {id:21,t:"Check door pneumatic safety interlock (prevents spin when open)",c:"Safety",k:true},
+    {id:22,t:"Inspect main drive V-belts for cracking, glazing, or slack",c:"Drives",k:false},
+    {id:23,t:"Check main shaft spherical roller bearing temp (< 65°C)",c:"Bearings",k:true},
+    {id:24,t:"Inspect steam injection pneumatic valve & check valve",c:"Steam",k:false},
+    {id:25,t:"Verify water drain dump valve seals & lint trap clearance",c:"Drain",k:false},
+    {id:26,t:"Check inverter drive cooling fans & terminal tightness",c:"Electrical",k:false}
+  ]},
+  { id:"CHK-HYDRO-SAFE", title:"Hydro Extractor Safety & Brake Audit", std:"Bangladesh Labour Rules 2015, Schedule IV", items:[
+    {id:31,t:"Test lid electromechanical interlock (drum halts before unlatch)",c:"Safety",k:true},
+    {id:32,t:"Verify pneumatic brake lining wear & stop time (< 20s)",c:"Braking",k:true},
+    {id:33,t:"Inspect three-point pendulum suspension springs & dampers",c:"Suspension",k:true},
+    {id:34,t:"Check dynamic balance & vibration during ramp-up",c:"Vibration",k:false},
+    {id:35,t:"Replenish spindle bearing grease (NLGI 2 lithium complex)",c:"Lubrication",k:false}
+  ]}
+];
+
+const REFERENCES = [
+  { id:"REF-01", title:"The Boilers Act, 2022 (Act No. 06 of 2022)", bn:"বয়লার আইন, ২০২২", cat:"Bangladesh Statutory", auth:"Parliament / OCIB", req:"Mandatory registration for closed steam vessels > 25 L (Sec 2). Annual OCIB popping test under Sec 19; hydraulic test 1.25x-1.5x MAWP initial or post-Sec 24 weld repair." },
+  { id:"REF-02", title:"Bangladesh Boiler Rules, 2025 (S.R.O. 279-Law/2025)", bn:"বাংলাদেশ বয়লার বিধিমালা, ২০২৫", cat:"Bangladesh Statutory", auth:"Ministry of Industries / OCIB", req:"30-yr firetube / 60-yr watertube lifespan cap; dual spring safety valves; certified Grade-1/2/3 attendants." },
+  { id:"REF-03", title:"Bangladesh Labour Act 2006 & Rules 2015", bn:"বাংলাদেশ শ্রম আইন ও বিধিমালা ২০১৫", cat:"Bangladesh Statutory", auth:"Ministry of Labour / DIFE", req:"Full steel fencing of belts/pulleys; mandatory zero-speed hydro extractor lid interlocks." },
+  { id:"REF-04", title:"ASME BPVC Section I — Power Boilers", bn:"এএসএমই কোড - সেকশন ১", cat:"International Standard", auth:"ASME", req:"SA-516 Gr 70 shell design equations, stay bolts, ASME 'S' stamp compliance." },
+  { id:"REF-05", title:"Spirax Sarco — Steam & Condensate Loop", bn:"স্পাইরাক্স সারকো স্টিম গাইড", cat:"Thermal Engineering", auth:"Spirax-Sarco", req:"Pitch headers 1:100 with drip pockets & traps every 30-50m to eliminate water hammer." },
+  { id:"REF-06", title:"ISO 20816-3:2026 Vibration Severity", bn:"আইএসও ২০৮১৬-৩ ভাইব্রেশন", cat:"Maintenance & Reliability", auth:"ISO", req:"Rigid Foundation: Zone A <=1.4 | Zone B <=2.8 | Zone C <=4.5 (Alarm) | Zone D >4.5 mm/s (Trip)." },
+  { id:"REF-07", title:"ASME BPVC Sec VIII Div 1 — Pressure Vessels", bn:"এএসএমই সেকশন ৮ প্রেসার ভেসেল", cat:"International Standard", auth:"ASME", req:"Air receivers, deaerators & flash vessels require MAWP relief valves & bottom condensate drains." },
+  { id:"REF-08", title:"BS 2486 — Boiler Water & Feedwater Limits", bn:"বিএস ২৪৮৬ ওয়াটার ট্রিটমেন্ট", cat:"Thermal Engineering", auth:"BSI", req:"Feed hardness <5 ppm CaCO3, feed O2 <0.02 mg/L, drum pH 10.5-11.8, drum TDS <=3,500 ppm." },
+  { id:"REF-09", title:"ISO 10472 — Industrial Laundry Machinery Safety", bn:"আইএসও ১০৪৭২ লন্ড্রি সেফটি", cat:"Maintenance & Reliability", auth:"ISO", req:"Dual-channel door interlock, dynamic unbalance cutoff, mushroom E-stop isolating steam & power." },
+  { id:"REF-10", title:"NFPA 20 — Stationary Fire Pumps", bn:"এনএফপিএ ২০ ফায়ার পাম্প", cat:"International Standard", auth:"NFPA", req:"Weekly no-flow churn test (10 min electric / 30 min diesel) with automated drop pressure start." },
+  { id:"REF-11", title:"ISO 8573-1 — Compressed Air Purity Classes", bn:"আইএসও ৮৫৭৩-১ এয়ার ফিল্ট্রেশন", cat:"Maintenance & Reliability", auth:"ISO", req:"Maintain Class 2.4.2 or better (+3°C PDP dryer, 1-um coalescer) to protect washer solenoid valves." },
+  { id:"REF-12", title:"Bangladesh DoE ECR 2023 — ETP Discharge Limits", bn:"পরিবেশ সংরক্ষণ বিধিমালা ২০২৩", cat:"Bangladesh Statutory", auth:"DoE Bangladesh", req:"pH 6.0-9.0, BOD5 <=30 mg/L, COD <=200 mg/L, TSS <=100 mg/L, O&G <=10 mg/L, Temp <=40°C." }
+];
+
+const FUNDAMENTALS = [
+  { id:"FUND-01", title:"Applied Thermodynamics", group:"Thermal & Energy", status:"VERIFIED", eq:["EQ-G01","EQ-G02","EQ-B03"], calc:["CALC-01","CALC-06"], f:"Q = m*(h2-h1) | eta_direct" },
+  { id:"FUND-02", title:"Fluid Mechanics & Hydraulic Machinery", group:"Fluid & Pumping", status:"VERIFIED", eq:["EQ-D01","EQ-D02"], calc:["CALC-07","CALC-14"], f:"NPSHa >= NPSHr + 1.0 m" },
+  { id:"FUND-03", title:"Heat Transfer (Conduction, Convection, Radiation)", group:"Thermal & Energy", status:"VERIFIED", eq:["EQ-F05","EQ-G01"], calc:["CALC-10"], f:"Q = U * A * LMTD" },
+  { id:"FUND-04", title:"Strength of Materials & Pressure Vessels", group:"Mechanics & Design", status:"VERIFIED", eq:["EQ-A01","EQ-B01","EQ-G01"], calc:["CALC-16"], f:"sigma_hoop = p*d / 2t" },
+  { id:"FUND-05", title:"Theory of Machines & ISO 20816-3 Vibration", group:"Mechanics & Design", status:"VERIFIED", eq:["EQ-B01","EQ-P01"], calc:["CALC-16"], f:"Zone C >2.8 | Zone D >4.5 mm/s" },
+  { id:"FUND-06", title:"Machine Design & Transmission Elements", group:"Mechanics & Design", status:"VERIFIED", eq:["EQ-E01","EQ-E03"], calc:["CALC-15"], f:"L10h = (10^6/60N)*(C/P)^p" },
+  { id:"FUND-07", title:"Material Science, Metallurgy & Corrosion", group:"Materials & Fabrication", status:"VERIFIED", eq:["EQ-A01","EQ-G01","EQ-I01"], calc:[], f:"PREN = %Cr + 3.3%Mo + 16%N" },
+  { id:"FUND-08", title:"Manufacturing Technology & Workshop Practice", group:"Materials & Fabrication", status:"VERIFIED", eq:["EQ-N01","EQ-N03"], calc:[], f:"N = 1000*Vc / (pi*D)" },
+  { id:"FUND-09", title:"Maintenance & Reliability Engineering", group:"Reliability & Safety", status:"VERIFIED", eq:["EQ-A01","EQ-F02"], calc:["CALC-04","CALC-16"], f:"A = MTBF / (MTBF + MTTR)" },
+  { id:"FUND-10", title:"Industrial Refrigeration & Psychrometrics", group:"Thermal & Energy", status:"VERIFIED", eq:["EQ-J02","EQ-K01","EQ-K02"], calc:[], f:"COP = q_e / w_c" },
+  { id:"FUND-11", title:"Engineering Mathematics & Applied Mechanics", group:"Mechanics & Design", status:"GAP", eq:[], calc:["CALC-02","CALC-11"], f:"Linear P Interpolation" },
+  { id:"FUND-12", title:"Engineering Mechanics (Statics & Dynamics)", group:"Mechanics & Design", status:"GAP", eq:["EQ-B01","EQ-M01"], calc:["CALC-16"], f:"Sum(F)=0 | T = I*alpha" },
+  { id:"FUND-13", title:"Industrial Engineering & Plant Operations", group:"Reliability & Safety", status:"GAP", eq:["EQ-A01","EQ-G01"], calc:["CALC-04","CALC-17"], f:"ER = m_steam / m_fuel" },
+  { id:"FUND-14", title:"Power Plant Engineering", group:"Thermal & Energy", status:"GAP", eq:["EQ-D02","EQ-G01","EQ-G02"], calc:["CALC-08","CALC-10","CALC-13"], f:"dP = H*g*(rho_a - rho_g)" },
+  { id:"FUND-15", title:"Instrumentation & Control Fundamentals", group:"Reliability & Safety", status:"GAP", eq:["EQ-G04","EQ-O02"], calc:[], f:"I = 4 + 16*(PV-LRV)/(URV-LRV)" }
+];
+
+const SECONDARY_SPECS = {
+  pumps: { title:"Pumps & Fluid Systems", bn:"পাম্প ও ফ্লুইড সিস্টেম", fam:"FAM-D", loto:"Close suction & discharge block valves, vent casing slowly (>90°C feedwater scald risk), lock MCC breaker.", scope:"Multistage boiler feedwater pumps, SS316 wash water pumps, self-priming ETP sludge pumps, metering pumps.", std:"API 610 / ISO 5199 | HI NPSH", calcId:"CALC-07", calcTitle:"CALC-07: Pump Hydraulic & Motor Power", eq:"P_hyd = (rho * g * Q * H) / 3.6e6", pts:["NPSHa >= NPSHr + 1.0 m margin","Zero steady drip on boiler feed seals","Shutoff head > 1.15x drum safety set pressure","Soft-foot shims < 0.05 mm"] },
+  transmission: { title:"Motors & Transmission", bn:"মোটর ও ট্রান্সমিশন", fam:"FAM-E", loto:"Entanglement hazard (Labour Rules 2015): Never operate drives unguarded; lock disconnect before deflection check.", scope:"SPZ/SPA/SPB/SPC V-belts, helical/worm washer gearboxes, 222xx/223xx spherical bearings, flexible couplings.", std:"ISO 4184 | ISO 281 | SKF Handbook", calcId:"CALC-15", calcTitle:"CALC-15: V-Belt Pitch Length & Ratio", eq:"L = 2C + (pi/2)*(D+d) + (D-d)^2/(4C)", pts:["Deflection ~1 mm per 100 mm span","Check pulley groove slip wear","Bearing housing <= 80°C, grease NLGI EP2","Re-tension new belts after 24h run-in"] },
+  steam: { title:"Steam & Condensate Systems", bn:"স্টিম ও কনডেনসেট", fam:"FAM-F", loto:"Double-block-and-bleed isolation before opening steam traps or PRV diaphragms; warm bypass slowly.", std:"Spirax Sarco | ASME B31.1", statutory:true, scope:"Main saturated steam headers, PRV stations, float/thermodynamic steam traps, Y-strainers, condensate return.", calcId:"CALC-14", calcTitle:"CALC-14: Steam Main Header DN Sizing", eq:"d = sqrt(4*m_s*v_g / (pi*v*3600))*1000", steamBtn:true, pts:["Target saturated velocity 25-35 m/s","Drip legs & traps every 30-50 m (1:100 pitch)","Weekly ultrasonic/IR trap checks","Recover >=75% condensate (+6°C = ~1% fuel save)"] },
+  water: { title:"Water & Chemical Systems", bn:"ওয়াটার ও কেমিক্যাল ট্রিটমেন্ট", fam:"FAM-H", loto:"Depressurize FRP softeners before opening brine valves; wear face shield & gloves for boiler chemicals.", scope:"Cation water softeners, RO permeate units, thermal spray-tray deaerators, sulfite/phosphate dosing.", std:"BS 2486:1997 | ABMA Boiler Water Limits", calcId:"CALC-19", calcTitle:"CALC-19: Water Softener Resin & Salt Run", eq:"Run(m3) = (V_resin * Eq * 50) / Hardness_ppm", pts:["Outlet hardness <5 ppm (<1 ppm >=10 bar)","Deaerator dome ~105°C at 0.2 bar(g) (<0.005 mg/L O2)","Drum pH 10.5-11.8, TDS <=3,500 ppm","Check brine & slow-rinse valve tight shutoff"] },
+  pneumatics: { title:"Compressed Air & Pneumatics", bn:"কম্প্রেসড এয়ার ও নিউমেটিক্স", fam:"FAM-J", loto:"Bleed receiver to 0.0 bar(g) AND disconnect power before servicing intake valves or cylinders.", scope:"Oil-injected rotary screw compressors, +3°C refrigerated dryers, coalescing filters, ASME receivers.", std:"ISO 8573-1 | ASME Sec VIII | CAGI", calcId:"CALC-20", calcTitle:"CALC-20: Compressed Air dP & Velocity", eq:"dP = (0.00075 * L * Q^1.85) / (d_cm^5 * P_abs)", pts:["Header drop <=0.1 bar/100m, velocity <=10 m/s","Drain receiver & FRL bowls every shift","Replace oil separator if dP > 0.8 bar","Test relief valve & 6.5-7.5 bar switch weekly"] },
+  cooling_heating: { title:"Cooling & Heating Systems", bn:"কুলিং ও হিটিং সিস্টেম", fam:"FAM-K", loto:"Isolate hot steam side FIRST on plate HX; vent cold side before releasing tie-bolts evenly.", scope:"Plate & shell-and-tube HX, FRP counter-flow cooling towers, condenser pumps, boiler economizer coils.", std:"TEMA | CTI ATC-105 | ASHRAE", calcId:"CALC-10", calcTitle:"CALC-10: Economizer Flue Heat Recovery", eq:"Q = (m_gas * Cp_gas * (T_in - T_out)) / 3600", pts:["PHE approach dT rise (>8°C) = fouling","Cooling tower biocide controls Legionella","Economizer exit >=120°C gas / >=140°C Jhut","Clean tumbler lint cyclones every shift"] },
+  etp: { title:"ETP & Wastewater Systems", bn:"ইটিপি ও বর্জ্যপানি ট্রিটমেন্ট", fam:"FAM-L", loto:"CONFINED SPACE HAZARD: Equalization & sludge sumps accumulate toxic H2S; gas test, ventilation & permit mandatory.", statutory:true, scope:"Rotary screens, equalization mixers & diffusers, DAF flotation, clarifier bridges, filter press dewatering.", std:"Bangladesh DoE ECR 2023 | AWWA", calcId:"CALC-07", calcTitle:"CALC-07: Sludge & Transfer Pump Power", eq:"P_hyd = (rho * g * Q * H) / 3.6e6", pts:["Roots blower air maintains DO >=2.0 mg/L","Check filter press hydraulic clamp & cloth","Test clarifier torque overload trip","DoE ECR: pH 6-9, BOD<=30, COD<=200, TSS<=100"] },
+  maintenance: { title:"Maintenance Management", bn:"মেইনটেন্যান্স ম্যানেজমেন্ট", fam:null, loto:"Zero shortcuts on multi-energy 6-step LOTO: lock breaker, chain steam/air valves, bleed pressure, verify zero energy.", scope:"6-step LOTO, ultrasonic thickness NDT, ISO 20816-3 vibration trending, MCC IR thermography, spare criticality.", std:"ISO 20816-3 | ISO 55000 | Labour Rules 2015", calcId:"CALC-16", calcTitle:"CALC-16: Hydro Basket Safety RPM Check", eq:"G = 0.00001118 * r_cm * N^2", pts:["Run daily checklists before startups","Log breakdown RCA inside Field Notes","Stock Tier-1 spares (safety springs, LWCO, seals)","Export SHA-256 JSON backup regularly"] }
+};
+
+// Steam IAPWS-IF97 grid subset matching IapwsIf97SteamEngine.kt anchors (bar(a), Tsat C, hf, hfg, hg, vg)
+const STEAM_GRID = [
+  [0.5,81.32,340.54,2304.7,2645.2,3.2403],
+  [1.0,99.61,417.50,2257.5,2674.9,1.6939],
+  [1.01325,99.97,419.06,2256.5,2675.6,1.6734],
+  [2.0,120.21,504.70,2201.6,2706.2,0.88578],
+  [3.0,133.52,561.43,2163.5,2724.9,0.60582],
+  [4.0,143.61,604.66,2133.4,2738.1,0.46242],
+  [5.0,151.83,640.09,2108.0,2748.1,0.37483],
+  [6.0,158.83,670.42,2085.8,2756.2,0.31560],
+  [7.0,164.95,697.06,2065.8,2762.9,0.27278],
+  [8.0,170.41,720.94,2047.5,2768.4,0.24035],
+  [9.0,175.35,742.64,2030.5,2773.2,0.21489],
+  [10.0,179.88,762.52,2014.6,2777.1,0.19436],
+  [11.0,184.06,780.92,1999.7,2780.6,0.17745],
+  [12.0,187.96,798.03,1985.5,2783.5,0.16326],
+  [14.0,195.04,829.88,1958.9,2788.7,0.14078],
+  [16.0,201.37,858.46,1934.0,2792.4,0.12374],
+  [18.0,207.11,884.58,1910.7,2795.3,0.11037],
+  [20.0,212.38,908.50,1888.8,2797.3,0.099587]
+];
+
+const UNIT_DEFS = {
+  LENGTH:{name:"Length",units:[["m","m",1],["mm","mm",1e-3],["cm","cm",1e-2],["in","in",0.0254],["ft","ft",0.3048]]},
+  AREA:{name:"Area",min:0,units:[["m2","m²",1],["cm2","cm²",1e-4],["mm2","mm²",1e-6],["in2","in²",0.00064516],["ft2","ft²",0.09290304]]},
+  VOLUME:{name:"Volume",min:0,units:[["m3","m³",1],["L","L",1e-3],["gal_us","gal(US)",0.00378541],["ft3","ft³",0.0283168]]},
+  MASS:{name:"Mass",min:0,units:[["kg","kg",1],["g","g",1e-3],["t","t",1000],["lb","lb",0.45359237]]},
+  FORCE:{name:"Force",units:[["N","N",1],["kN","kN",1000],["kgf","kgf",9.80665],["lbf","lbf",4.44822]]},
+  PRESSURE:{name:"Pressure",units:[["bar_g","bar(g)",100000,"G"],["bar_a","bar(a)",100000,"A"],["psi_g","psi(g)",6894.757,"G"],["kgcm2_g","kg/cm²(g)",98066.5,"G"],["kPa_a","kPa(a)",1000,"A"],["mmH2O","mmH₂O",9.80665,"G"]]},
+  TEMPERATURE:{name:"Temperature",units:[["C","°C",1,"T"],["F","°F",1,"T"],["K","K",1,"T"],["R","°R",1,"T"]]},
+  POWER:{name:"Power",units:[["kW","kW",1000],["W","W",1],["hp","hp",745.7],["TR","TR",3516.85],["kcal_h","kcal/h",4186.8/3600]]},
+  ENERGY:{name:"Energy",units:[["kJ","kJ",1000],["MJ","MJ",1e6],["kWh","kWh",3.6e6],["kcal","kcal",4186.8],["BTU","BTU",1055.06]]},
+  FLOW_RATE:{name:"Flow Rate",min:0,units:[["m3_h","m³/h",1/3600],["m3_s","m³/s",1],["L_min","L/min",1e-3/60],["GPM_US","GPM(US)",0.00378541/60],["CFM","CFM",0.0283168/60]]},
+  DENSITY:{name:"Density",min:0,units:[["kg_m3","kg/m³",1],["g_cm3","g/cm³",1000],["lb_ft3","lb/ft³",16.0185]]},
+  SPEED:{name:"Speed",units:[["m_s","m/s",1,"LIN"],["m_min","m/min",1/60,"LIN"],["ft_min","ft/min",0.3048/60,"LIN"],["RPM","RPM",1,"ROT"],["Hz","Hz (rps)",60,"ROT"]]},
+  VISCOSITY:{name:"Viscosity",min:0,units:[["cP","cP (dyn)",1e-3,"DYN"],["Pa_s","Pa·s (dyn)",1,"DYN"],["cSt","cSt (kin)",1e-6,"KIN"],["m2_s","m²/s (kin)",1,"KIN"]]}
+};
+
+const MODULES_CATALOG = [
+  // 17 Core Modules + 6 Utility/Detail/Personal Routes
+  { id:"home", mod:"MOD-01", title:"Home Dashboard", bn:"হোম ড্যাশবোর্ড", route:"home", drawer:true, bottom:true, status:"PARTIAL", file:"presentation/home/HomeScreen.kt", notes:["4 quick tiles + DB depth 2/9/7/46 + Featured 5 assets works.","HomeUiState.bookmarks loaded in HomeViewModel:50 but NEVER rendered in UI.","Missing quick tiles for Checklists, Notes, Bookmarks, Steam Table."] },
+  { id:"fundamentals", mod:"MOD-02", title:"Mechanical Fundamentals", bn:"মেকানিক্যাল বেসিকস", route:"fundamentals", drawer:true, status:"PARTIAL", file:"presentation/fundamentals/FundamentalsScreen.kt", notes:["15 topics (FUND-01..15) with Verified vs CONTENT_GAP badges & cross-links.","FUND-11..15 chapters pending authoring per DOC-MPN-001 §4.1.","No bookmark action button on fundamental topic cards."] },
+  { id:"wash_plant", mod:"MOD-03", title:"Wash Plant Equipment", bn:"ওয়াশ প্ল্যান্ট ইকুইপমেন্ট", route:"wash_plant", drawer:true, bottom:true, status:"IMPLEMENTED", file:"presentation/equipment/EquipmentListScreen.kt", notes:["All (64) + 16 FAM-A..P tabs + multi-select Depth filter chips + Reset.","2 FULL (EQ-A01, EQ-B01), 9 PARTIAL, 7 PENDING, 46 INVENTORY_ONLY."] },
+  { id:"boiler_module", mod:"MOD-04", title:"Dedicated Boiler Module", bn:"ইন্ডাস্ট্রিয়াল বয়লার", route:"boiler_module", drawer:true, bottom:true, status:"PARTIAL", file:"presentation/boiler/BoilerDashboardScreen.kt", notes:["4 tabs + Gas & Jhut SVG schematics + 3 formula cards.","BottomBar split(' ').first() prints 'Dedicated' instead of 'Boiler' (AppNavigation.kt:243).","Overview lists only 3 of 14 boiler calcs; lacks Steam Table shortcut & Act Grade-1/2/3 slab table."] },
+  { id:"pumps", mod:"MOD-05", title:"Pumps & Fluid Systems", bn:"পাম্প ও ফ্লুইড সিস্টেম", route:"pumps", drawer:true, status:"GENERIC", file:"AppNavigation.kt (SecondaryModuleOverviewScreen)", notes:["Generic 5-card overview linking CALC-07 & FAM-D assets.","No interactive NPSHa cavitation curve or pump affinity calculator page."] },
+  { id:"transmission", mod:"MOD-06", title:"Motors & Transmission", bn:"মোটর ও ট্রান্সমিশন", route:"transmission", drawer:true, status:"GENERIC", file:"AppNavigation.kt (SecondaryModuleOverviewScreen)", notes:["Generic 5-card overview linking CALC-15 & FAM-E assets.","No bearing grease interval / shaft alignment chart UI."] },
+  { id:"steam", mod:"MOD-07", title:"Steam & Condensate Systems", bn:"স্টিম ও কনডেনসেট", route:"steam", drawer:true, status:"GENERIC", file:"AppNavigation.kt (SecondaryModuleOverviewScreen)", notes:["Generic overview linking CALC-14, SteamTableScreen & FAM-F.","No interactive steam trap diagnostic matrix."] },
+  { id:"water", mod:"MOD-08", title:"Water & Chemical Systems", bn:"ওয়াটার ও কেমিক্যাল ট্রিটমেন্ট", route:"water", drawer:true, status:"GENERIC", file:"AppNavigation.kt (SecondaryModuleOverviewScreen)", notes:["Generic overview linking CALC-19 & FAM-H.","No boiler water TDS/pH chemistry log or dosing chart."] },
+  { id:"pneumatics", mod:"MOD-09", title:"Compressed Air & Pneumatics", bn:"কম্প্রেসড এয়ার ও নিউমেটিক্স", route:"pneumatics", drawer:true, status:"GENERIC", file:"AppNavigation.kt (SecondaryModuleOverviewScreen)", notes:["Generic overview linking CALC-20 & FAM-J."] },
+  { id:"cooling_heating", mod:"MOD-10", title:"Cooling & Heating Systems", bn:"কুলিং ও হিটিং সিস্টেম", route:"cooling_heating", drawer:true, status:"GENERIC", file:"AppNavigation.kt (SecondaryModuleOverviewScreen)", notes:["Maps to FAM-K but links Boiler Economizer CALC-10 instead of a Chiller/CT tool."] },
+  { id:"etp", mod:"MOD-11", title:"ETP & Wastewater Systems", bn:"ইটিপি ও বর্জ্যপানি ট্রিটমেন্ট", route:"etp", drawer:true, status:"GENERIC", file:"AppNavigation.kt (SecondaryModuleOverviewScreen)", notes:["Shows confined-space H2S warning; links CALC-07 (no dedicated ETP dosing/BOD calc)."] },
+  { id:"maintenance", mod:"MOD-12", title:"Maintenance Management", bn:"মেইনটেন্যান্স ম্যানেজমেন্ট", route:"maintenance", drawer:true, status:"GENERIC", file:"AppNavigation.kt (SecondaryModuleOverviewScreen)", notes:["Generic overview linking Checklists & CALC-16.","No interactive LOTO step tracker, ISO 20816 chart, or lube cross-ref matrix."] },
+  { id:"checklists", mod:"MOD-13", title:"Inspection & Checklists", bn:"ইন্সপেকশন চেকলিস্ট", route:"checklists", drawer:true, status:"PARTIAL", file:"presentation/checklists/ChecklistScreen.kt", notes:["4 static checklists / 25 checks persisted in Room ChecklistDao.","DB stores remarks & completion_timestamp, but UI lacks remarks box & timestamps.","Cannot bookmark checklist or link items to Equipment IDs."] },
+  { id:"calculations", mod:"MOD-14", title:"Engineering Calculations", bn:"ইঞ্জিনিয়ারিং ক্যালকুলেশনস", route:"calculations", drawer:true, bottom:true, status:"PARTIAL", file:"presentation/calculations/CalculationListScreen.kt", notes:["BottomBar prints 'Engineering' instead of 'Calcs'.","3 ORPHANED CATEGORIES omitted from chips: 'Utility & Pumping' (CALC-07), 'Boiler Safety' (CALC-09), 'Wash Plant Utility' (CALC-17).","Missing Calculation History Viewer screen & formula search input."] },
+  { id:"library", mod:"MOD-15", title:"Technical Reference Library", bn:"টেকনিক্যাল রেফারেন্স লাইব্রেরি", route:"library", drawer:true, status:"IMPLEMENTED", file:"presentation/library/ReferenceLibraryScreen.kt", notes:["12 verified references (REF-01..12) + 5 category chips + ID jump support.","Missing Bookmark button on cards despite BookmarkEntityType.TECHNICAL_STANDARD."] },
+  { id:"search", mod:"MOD-16", title:"Search & Bookmarks", bn:"সার্চ ও বুকমার্কস", route:"search", drawer:true, status:"PARTIAL", file:"presentation/search/SearchScreen.kt", notes:["Searches Equipment + Checklists + References + Fundamentals.","Title says 'Search & Bookmarks' yet has NO Bookmarks link/tab inside.","Does NOT index Calculations (CALC-01..20), User Notes, or Calculation History."] },
+  { id:"settings", mod:"MOD-17", title:"Settings & Local Data", bn:"সেটিংস ও ডাটা ম্যানেজমেন্ট", route:"settings", drawer:true, status:"PARTIAL", file:"presentation/settings/SettingsScreen.kt", notes:["Working Theme, 1.18x High Legibility, SAF JSON Export/Import (SHA-256).","Missing Phase 03 planned SI/Metric/Imperial unit system preference & Clear Data."] },
+  { id:"unit_converter", mod:"UTIL-01", title:"Engineering Unit Converter", bn:"ইউনিট কনভার্টার (13 Categories)", route:"unit_converter", drawer:true, status:"IMPLEMENTED", file:"presentation/units/UnitConverterScreen.kt", notes:["Full 13-category offline converter with vacuum/zero-K & Speed/Viscosity guards."] },
+  { id:"steam_table", mod:"UTIL-02", title:"IAPWS-IF97 Steam Table", bn:"স্টিম টেবিল", route:"steam_table", status:"IMPLEMENTED", file:"presentation/calculations/SteamTableScreen.kt", notes:["Linear-P interpolation over 56 monotonic grid points (0.5-20 bar). External REFPROP check pending."] },
+  { id:"equipment_detail", mod:"DETAIL-01", title:"Equipment Detail Reader", bn:"ইকুইপমেন্ট বিবরণ", route:"equipment_detail/{id}", status:"PARTIAL", file:"presentation/equipment/EquipmentDetailScreen.kt", notes:["5 tabs + Bookmark toggle + Field Note button + Zoomable SVG on 5 diagrams.","46/64 assets are baseline INVENTORY_ONLY depth; 49+ lack dedicated schematic vector."] },
+  { id:"calc_runner", mod:"DETAIL-02", title:"Calculation Runner", bn:"ক্যালকুলেটর রানার", route:"calculation_runner/{id}", status:"PARTIAL", file:"presentation/calculations/CalculationRunnerScreen.kt", notes:["Live math, assumptions, limitations, Save to History.","CALC-02 locked RESEARCH_PENDING; no Bookmark icon or History list viewer."] },
+  { id:"notes", mod:"PERS-01", title:"Personal Notes", bn:"ব্যক্তিগত নোটস", route:"notes", drawerPersonal:true, status:"PARTIAL", file:"presentation/notes/NotesScreen.kt", notes:["Room UserNote CRUD + jump to equipment.","UserNoteEntity has tags_csv field NEVER exposed in editor UI; no search/picker."] },
+  { id:"bookmarks", mod:"PERS-02", title:"Saved Bookmarks", bn:"সংরক্ষিত বুকমার্ক", route:"bookmarks", drawerPersonal:true, status:"PARTIAL", file:"presentation/notes/BookmarksScreen.kt", notes:["Supports 5 entity types on read/route, yet ONLY EquipmentDetailScreen can create them!"] },
+  { id:"audit", mod:"AUDIT", title:"Audit & Missing Options Matrix", bn:"প্রকল্প সম্পূর্ণতা অডিট", route:"__audit__", status:"GAP", file:"docs/UI_COMPLETENESS_AUDIT_REPORT.md", notes:["Consolidates all verified counts & 13 confirmed UI/feature gaps."] }
+];
+
+// =========================================================================
+// MUTABLE PREVIEW APPLICATION STATE
+// =========================================================================
+const appState = {
+  screen: "home",
+  theme: "dark",
+  legible: false,
+  eqId: "EQ-A01",
+  eqTab: 0,
+  eqFamFilter: "ALL",
+  eqDepthFilters: new Set(),
+  eqSearch: "",
+  boilerTab: 0,
+  calcId: "CALC-01",
+  calcCat: "All",
+  calcOutputs: {},
+  fundGroup: "All",
+  fundVerifiedOnly: false,
+  refCat: "All",
+  chkId: "CHK-BLR-DAILY",
+  chkChecked: new Set([1,2,8,31]),
+  steamBar: 10.0,
+  steamGauge: true,
+  unitCat: "PRESSURE",
+  unitFrom: "bar_g",
+  unitTo: "psi_g",
+  unitVal: "10",
+  searchQ: "",
+  searchScope: "ALL",
+  notes: [
+    { id:1, eq:"EQ-A01", title:"Washer #3 Main Seal Inspection", body:"Checked drive side plummer block grease; slight weep on pneumatic drain flap, schedule cleanout Sunday.", time:"Today 09:40" },
+    { id:2, eq:"EQ-G01", title:"Burner O2 Trim Check", body:"Flue O2 steady at 4.1%, stack exit 192°C at 8.5 bar(g).", time:"Yesterday" }
+  ],
+  bookmarks: new Set(["EQ-A01","EQ-G01"]),
+  calcHistoryCount: 2,
+  settingsOverwrite: false
+};
+
+// SVG Schematics replicating the 5 offline Android Vector Drawables
+function renderSchematicSvg(kind) {
+  if (kind === "gas_boiler") {
+    return `<div class="svg-box"><svg viewBox="0 0 320 155" aria-label="3-Pass Wet-Back Gas Boiler Schematic">
+      <rect x="28" y="32" width="236" height="96" rx="14" fill="#1b2638" stroke="#63B3ED" stroke-width="2.5"/>
+      <rect x="38" y="84" width="175" height="28" rx="6" fill="#4a1e24" stroke="#F6AD55" stroke-width="2"/>
+      <path d="M52 98 L200 98 L200 68 L45 68 L45 48 L272 48" fill="none" stroke="#F6AD55" stroke-width="2.2" stroke-dasharray="5,3"/>
+      <polygon points="270,43 282,48 270,53" fill="#F6AD55"/>
+      <rect x="272" y="14" width="20" height="44" fill="#2d3748" stroke="#A0AEC0"/>
+      <rect x="10" y="88" width="26" height="20" rx="3" fill="#2b6cb0"/>
+      <text x="14" y="101" fill="#fff" font-size="7.5" font-weight="bold">GAS</text>
+      <rect x="115" y="12" width="26" height="20" fill="#68D391" rx="2"/>
+      <text x="90" y="10" fill="#68D391" font-size="8" font-weight="bold">Steam Header &amp; Dual Safety</text>
+      <text x="58" y="101" fill="#FDE3C0" font-size="8" font-weight="bold">Pass 1 Wet-Back Furnace</text>
+      <text x="72" y="63" fill="#90CDF4" font-size="8">Pass 2 &amp; 3 Smoke Tubes</text>
+      <text x="155" y="143" fill="#A0AEC0" font-size="8" text-anchor="middle">LWCO Probes + Water Line ~184°C @ 10 bar(g)</text>
+    </svg></div>`;
+  }
+  if (kind === "jhut_boiler") {
+    return `<div class="svg-box"><svg viewBox="0 0 320 155" aria-label="Jhut Solid-Fuel Boiler Draft Schematic">
+      <rect x="16" y="34" width="128" height="92" rx="6" fill="#1b2638" stroke="#63B3ED" stroke-width="2"/>
+      <rect x="24" y="92" width="112" height="24" fill="#473219" stroke="#F6AD55"/>
+      <text x="80" y="107" fill="#FEEBC8" font-size="8" text-anchor="middle">Jhut Grate (-3 mmWC)</text>
+      <text x="80" y="54" fill="#90CDF4" font-size="8.5" text-anchor="middle">Boiler Shell Drum</text>
+      <path d="M144 62 L182 62" stroke="#F6AD55" stroke-width="3"/>
+      <polygon points="182,42 222,42 212,102 192,102" fill="#242832" stroke="#63B3ED" stroke-width="2"/>
+      <text x="202" y="68" fill="#EAECEF" font-size="7.5" text-anchor="middle">Multi-Cyclone</text>
+      <path d="M222 50 L256 50" stroke="#F6AD55" stroke-width="2.5"/>
+      <circle cx="268" cy="56" r="14" fill="#2a4365" stroke="#63B3ED" stroke-width="2"/>
+      <text x="268" y="59" fill="#fff" font-size="8" text-anchor="middle" font-weight="bold">ID</text>
+      <rect x="286" y="14" width="18" height="65" fill="#2d3748" stroke="#A0AEC0"/>
+      <text x="16" y="144" fill="#A0AEC0" font-size="8">FD Blower -> Furnace -> Cyclone Ash Lock -> ID Fan -> Stack</text>
+    </svg></div>`;
+  }
+  if (kind === "washer") {
+    return `<div class="svg-box"><svg viewBox="0 0 320 140" aria-label="Belly Washer Drum Schematic">
+      <circle cx="95" cy="70" r="48" fill="#1a2433" stroke="#63B3ED" stroke-width="3"/>
+      <circle cx="95" cy="70" r="34" fill="none" stroke="#90CDF4" stroke-dasharray="4,3" stroke-width="2"/>
+      <circle cx="95" cy="70" r="10" fill="#F6AD55"/>
+      <line x1="95" y1="36" x2="95" y2="54" stroke="#68D391" stroke-width="3"/>
+      <line x1="65" y1="88" x2="80" y2="78" stroke="#68D391" stroke-width="3"/>
+      <line x1="125" y1="88" x2="110" y2="78" stroke="#68D391" stroke-width="3"/>
+      <rect x="172" y="34" width="128" height="72" rx="6" fill="#242832" stroke="#3E4452"/>
+      <text x="182" y="52" fill="#63B3ED" font-size="8.5" font-weight="bold">SS316L Inner Drum</text>
+      <text x="182" y="68" fill="#EAECEF" font-size="8">• Pneumatic Door Interlock</text>
+      <text x="182" y="82" fill="#EAECEF" font-size="8">• 222xx Trunnion Bearings</text>
+      <text x="182" y="96" fill="#EAECEF" font-size="8">• SPB Twin V-Belt + VFD</text>
+    </svg></div>`;
+  }
+  if (kind === "hydro") {
+    return `<div class="svg-box"><svg viewBox="0 0 320 145" aria-label="3-Point Hydro Extractor Schematic">
+      <rect x="70" y="26" width="110" height="76" rx="10" fill="#1b2638" stroke="#63B3ED" stroke-width="2.5"/>
+      <rect x="85" y="36" width="80" height="54" rx="4" fill="#242832" stroke="#68D391" stroke-dasharray="4,2"/>
+      <line x1="125" y1="90" x2="125" y2="122" stroke="#F6AD55" stroke-width="5"/>
+      <line x1="70" y1="98" x2="48" y2="124" stroke="#FC8181" stroke-width="3"/>
+      <line x1="180" y1="98" x2="202" y2="124" stroke="#FC8181" stroke-width="3"/>
+      <text x="125" y="18" fill="#68D391" font-size="8.5" text-anchor="middle" font-weight="bold">LID ZERO-SPEED INTERLOCK</text>
+      <text x="208" y="52" fill="#EAECEF" font-size="8">• ~960 RPM (~500 G)</text>
+      <text x="208" y="68" fill="#EAECEF" font-size="8">• Pneumatic Shoe Brake</text>
+      <text x="208" y="84" fill="#FC8181" font-size="8">• 3-Point Pendulum</text>
+    </svg></div>`;
+  }
+  if (kind === "steam") {
+    return `<div class="svg-box"><svg viewBox="0 0 320 130" aria-label="Steam Header and Trap Station">
+      <line x1="20" y1="44" x2="300" y2="49" stroke="#F6AD55" stroke-width="5"/>
+      <rect x="135" y="47" width="16" height="36" fill="#2a4365" stroke="#63B3ED"/>
+      <line x1="143" y1="68" x2="220" y2="68" stroke="#63B3ED" stroke-width="3"/>
+      <circle cx="182" cy="68" r="10" fill="#1d4031" stroke="#68D391" stroke-width="2"/>
+      <text x="182" y="71" fill="#fff" font-size="7" text-anchor="middle">TRAP</text>
+      <text x="22" y="34" fill="#F6AD55" font-size="8.5" font-weight="bold">Main Steam Header (1:100 Pitch -> 25-35 m/s)</text>
+      <text x="22" y="106" fill="#90CDF4" font-size="8">Drip Pocket + Y-Strainer + Steam Trap + Condensate Return</text>
+    </svg></div>`;
+  }
+  return "";
+}
+
+// =========================================================================
+// NAVIGATION & RENDER ENGINE
+// =========================================================================
+function navigate(screenId, opts={}) {
+  if (opts.eqId) appState.eqId = opts.eqId;
+  if (opts.calcId) appState.calcId = opts.calcId;
+  if (opts.chkId) appState.chkId = opts.chkId;
+  if (opts.famFilter !== undefined) appState.eqFamFilter = opts.famFilter;
+  appState.screen = screenId;
+  closeDrawer();
+  closeDialog();
+  renderAll();
+  // Close mobile companion overlays if open
+  document.getElementById("panelLeft").classList.remove("mob-open");
+  document.getElementById("panelRight").classList.remove("mob-open");
+}
+
+function toggleMobPanel(side) {
+  const id = side === "left" ? "panelLeft" : "panelRight";
+  const other = side === "left" ? "panelRight" : "panelLeft";
+  document.getElementById(other).classList.remove("mob-open");
+  document.getElementById(id).classList.toggle("mob-open");
+}
+
+function setPhoneWidth(w, btn) {
+  document.getElementById("phoneFrame").style.setProperty("--phone-w", w + "px");
+  document.querySelectorAll(".width-toolbar .ctrl-btn").forEach(b => b.classList.remove("active"));
+  if (btn) btn.classList.add("active");
+}
+
+function toggleAppTheme() {
+  appState.theme = appState.theme === "dark" ? "light" : "dark";
+  renderAll();
+}
+
+function toggleLegible() {
+  appState.legible = !appState.legible;
+  renderAll();
+}
+
+function openDrawer() { document.getElementById("drawerBackdrop").classList.add("open"); }
+function closeDrawer() { document.getElementById("drawerBackdrop").classList.remove("open"); }
+function openDialog(html) {
+  document.getElementById("phoneDialogBody").innerHTML = html;
+  document.getElementById("phoneDialog").style.display = "flex";
+}
+function closeDialog() { document.getElementById("phoneDialog").style.display = "none"; }
+
+function showCallouts() { return document.getElementById("chkShowCallouts").checked; }
+function callout(text) {
+  if (!showCallouts()) return "";
+  return `<div class="audit-callout"><strong>UI Audit Note:</strong> ${text}</div>`;
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+
+function depthBadge(depth) {
+  if (depth === "FULL_CONTENT_BLUEPRINT") return `<span class="depth-pill dp-full">FULL BLUEPRINT</span>`;
+  if (depth === "PARTIAL_CONTENT_BLUEPRINT") return `<span class="depth-pill dp-partial">PARTIAL</span>`;
+  if (depth === "RESEARCH_PENDING") return `<span class="depth-pill dp-pending">RESEARCH PENDING</span>`;
+  return `<span class="depth-pill dp-inv">INVENTORY ONLY</span>`;
+}
+
+function getModMeta(id) {
+  return MODULES_CATALOG.find(m => m.id === id) || MODULES_CATALOG[0];
+}
+
+// =========================================================================
+// RENDER SHELL PANELS, DRAWER, BOTTOM BAR & SCREENS
+// =========================================================================
+function renderModuleIndex() {
+  const el = document.getElementById("moduleIndexList");
+  const groups = [
+    { label: "Core 17 Modules (MOD-01 .. MOD-17)", list: MODULES_CATALOG.filter(m => m.mod.startsWith("MOD-")) },
+    { label: "Detail, Utility & Personal Routes", list: MODULES_CATALOG.filter(m => !m.mod.startsWith("MOD-") && m.id !== "audit") },
+    { label: "Completeness Audit Summary", list: MODULES_CATALOG.filter(m => m.id === "audit") }
+  ];
+  el.innerHTML = groups.map(g => `
+    <div class="group-label">${g.label}</div>
+    ${g.list.map(m => {
+      const sm = STATUS_META[m.status];
+      return `<button class="mod-btn ${appState.screen===m.id?'active':''}" onclick="navigate('${m.id}')">
+        <span>
+          <span class="mod-title">${m.mod}: ${escapeHtml(m.title)}</span>
+          <span class="mod-route">${escapeHtml(m.route)}</span>
+        </span>
+        <span class="badge ${sm.cls}">${sm.text}</span>
+      </button>`;
+    }).join("")}
+  `).join("");
+}
+
+function renderInspector() {
+  const meta = getModMeta(appState.screen);
+  const sm = STATUS_META[meta.status];
+  document.getElementById("inspBadge").innerHTML = `<span class="badge ${sm.cls}">${sm.text}</span>`;
+  document.getElementById("inspectorPanel").innerHTML = `
+    <div class="insp-card">
+      <h4>Source File &amp; Route</h4>
+      <div><strong>${meta.mod}:</strong> ${escapeHtml(meta.title)}</div>
+      <div class="code-ref" style="margin-top:4px;">Route: ${escapeHtml(meta.route)}</div>
+      <div class="code-ref">${escapeHtml(meta.file)}</div>
+    </div>
+    <div class="insp-card">
+      <h4>Verified Findings &amp; Missing Options</h4>
+      <ul class="insp-list">
+        ${meta.notes.map(n => `<li>${escapeHtml(n)}</li>`).join("")}
+      </ul>
+    </div>
+    <div class="insp-card">
+      <h4>Environment Verification Status</h4>
+      <ul class="insp-list">
+        <li>Python Source/DB Suites: <strong>8/8 PASS</strong></li>
+        <li>JDK 17 / Kotlin APK Build: <strong style="color:var(--red);">BLOCKED in Container</strong></li>
+        <li>Android Emulator / Device Run: <strong style="color:var(--amber);">PENDING Hardware Host</strong></li>
+      </ul>
+    </div>
+  `;
+}
+
+function renderDrawer() {
+  const drawerItems = MODULES_CATALOG.filter(m => m.drawer);
+  const personalItems = MODULES_CATALOG.filter(m => m.drawerPersonal);
+  document.getElementById("phoneDrawer").innerHTML = `
+    <div class="drawer-hero">
+      <h3>Mechanical Pro Notes</h3>
+      <p>Personal Plant Reference (v1.0.0)</p>
+      <div class="stats">100% Offline • 64 Assets • 20 Formulas</div>
+    </div>
+    <div class="drawer-sec">PLANT MODULES (18)</div>
+    ${drawerItems.map(m => `
+      <button class="drawer-item ${appState.screen===m.id?'active':''}" onclick="navigate('${m.id}')">
+        <span style="font-size:1.1em;">&#9670;</span>
+        <span>
+          <span class="di-en">${escapeHtml(m.title)}</span>
+          <span class="di-bn">${escapeHtml(m.bn)}</span>
+        </span>
+      </button>
+      ${(m.id==='etp'||m.id==='calculations')?'<div class="drawer-div"></div>':''}
+    `).join("")}
+    <div class="drawer-div"></div>
+    <div class="drawer-sec">PERSONAL LOGS (2)</div>
+    ${personalItems.map(m => `
+      <button class="drawer-item ${appState.screen===m.id?'active':''}" onclick="navigate('${m.id}')">
+        <span style="font-size:1.1em;">&#9733;</span>
+        <span>
+          <span class="di-en">${escapeHtml(m.title)}</span>
+          <span class="di-bn">${escapeHtml(m.bn)}</span>
+        </span>
+      </button>
+    `).join("")}
+    <div style="height:16px;"></div>
+  `;
+}
+
+function renderTopAndBottomBars() {
+  const top = document.getElementById("phoneTopBar");
+  const bot = document.getElementById("phoneBottomBar");
+  const tabs = document.getElementById("phoneTabs");
+  const s = appState.screen;
+  const meta = getModMeta(s);
+
+  const isDetail = ["equipment_detail","calc_runner","steam_table","search","audit"].includes(s);
+  const leftBtn = isDetail
+    ? `<button class="m3-icon-btn" aria-label="Back" onclick="navigate('${s==='equipment_detail'?'wash_plant':s==='calc_runner'?'calculations':s==='steam_table'?'calculations':'home'}')">&#8592;</button>`
+    : `<button class="m3-icon-btn" aria-label="Open Navigation Drawer" onclick="openDrawer()">&#9776;</button>`;
+
+  let actions = "";
+  if (s === "home" || s === "wash_plant") {
+    actions = `<button class="m3-icon-btn" title="Search" onclick="navigate('search')">&#128269;</button>`;
+  } else if (s === "calculations") {
+    actions = `
+      <button class="m3-icon-btn primary" title="Unit Converter" onclick="navigate('unit_converter')">&#8644;</button>
+      <button class="m3-icon-btn primary" title="Steam Table" onclick="navigate('steam_table')">&#9879;</button>
+    `;
+  } else if (s === "equipment_detail") {
+    const bmk = appState.bookmarks.has(appState.eqId);
+    actions = `<button class="m3-icon-btn primary" title="Bookmark" onclick="toggleBookmark('${appState.eqId}')">${bmk?"&#9733;":"&#9734;"}</button>`;
+  }
+
+  top.innerHTML = `
+    ${leftBtn}
+    <div class="m3-topbar-title">
+      <div class="t-main">${s==='equipment_detail'?appState.eqId:s==='calc_runner'?appState.calcId:escapeHtml(meta.title)}</div>
+      <div class="t-sub">${escapeHtml(meta.bn)}</div>
+    </div>
+    ${actions}
+  `;
+
+  // Secondary tabs on Boiler & EquipmentDetail
+  if (s === "boiler_module") {
+    const bTabs = ["Overview","Gas Boilers","Jhut Boilers","Act 2022 & Rules 2025"];
+    tabs.style.display = "flex";
+    tabs.innerHTML = bTabs.map((t,i)=>`<button class="m3-tab ${appState.boilerTab===i?'active':''}" onclick="appState.boilerTab=${i};renderScreen();">${t}</button>`).join("");
+  } else if (s === "equipment_detail") {
+    const eTabs = ["Overview","Specs","Operation","Safety/FMEA","Maintenance"];
+    tabs.style.display = "flex";
+    tabs.innerHTML = eTabs.map((t,i)=>`<button class="m3-tab ${appState.eqTab===i?'active':''}" onclick="appState.eqTab=${i};renderScreen();">${t}</button>`).join("");
+  } else {
+    tabs.style.display = "none";
+    tabs.innerHTML = "";
+  }
+
+  // Bottom bar strictly shown only on 4 primary routes (AppNavigation.kt:229-234)
+  const showBot = ["home","wash_plant","boiler_module","calculations"].includes(s);
+  bot.style.display = showBot ? "grid" : "none";
+  if (showBot) {
+    // Reproduces AppNavigation.kt:243 `screen.title.split(" ").first()` verbatim!
+    const items = [
+      { id:"home", lbl:"Home", ico:"&#8962;", bug:false },
+      { id:"wash_plant", lbl:"Wash", ico:"&#9881;", bug:false },
+      { id:"boiler_module", lbl:"Dedicated", ico:"&#9832;", bug:true },
+      { id:"calculations", lbl:"Engineering", ico:"&#8721;", bug:true }
+    ];
+    bot.innerHTML = items.map(it => `
+      <button class="m3-nav-item ${s===it.id?'active':''}" onclick="navigate('${it.id}')">
+        ${(it.bug && showCallouts())?'<span class="bug-tag">LABEL BUG</span>':''}
+        <span class="pill-ind">${it.ico}</span>
+        <span>${it.lbl}</span>
+      </button>
+    `).join("");
+  }
+}
+
+// =========================================================================
+// SCREEN RENDERERS (ALL 17 MODULES + DETAIL + PERSONAL + UTILITY)
+// =========================================================================
+function renderScreen() {
+  const c = document.getElementById("phoneContent");
+  const s = appState.screen;
+
+  // Render Top/Tabs dynamically when tabs switch
+  renderTopAndBottomBars();
+
+  if (s === "home") {
+    const featured = EQUIPMENT_SAMPLES.filter(e => ["EQ-A01","EQ-B01","EQ-G01","EQ-G02","EQ-D02"].includes(e.id));
+    c.innerHTML = `
+      <div class="m3-card variant clickable" onclick="navigate('search')">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
+          <div>
+            <div style="font-weight:700;">Plant Offline Knowledge Search</div>
+            <div style="font-size:0.78em;color:var(--m3-text-var);">Search 64 machines, checklists, fundamentals, boiler laws (EN &amp; বাংলা)...</div>
+          </div>
+          <span style="font-size:0.75em;font-weight:800;color:var(--m3-primary);">SEARCH</span>
+        </div>
+      </div>
+
+      <div class="m3-card primary-box clickable" onclick="navigate('boiler_module')">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-size:0.72em;font-weight:800;color:var(--m3-primary);">DEDICATED BOILER MODULE</span>
+          <span class="depth-pill" style="background:var(--m3-primary);color:var(--m3-on-primary);">TOP PRIORITY</span>
+        </div>
+        <div style="font-size:1.12em;font-weight:800;margin-top:4px;">Industrial Steam Boilers &amp; Heat Recovery</div>
+        <div style="font-size:0.8em;opacity:0.88;margin-top:2px;">Gas-Fired 3-Pass • Jhut/Solid-Fuel • Boilers Act 2022 &amp; Rules 2025 • Efficiency &amp; Blowdown</div>
+      </div>
+
+      <div class="grid-2">
+        <button class="m3-btn outlined" onclick="navigate('wash_plant')">Equipment (64)</button>
+        <button class="m3-btn outlined" onclick="navigate('calculations')">Calculations (20)</button>
+        <button class="m3-btn outlined" onclick="navigate('unit_converter')">Unit Converter (13)</button>
+        <button class="m3-btn outlined" onclick="navigate('fundamentals')">Fundamentals (15)</button>
+      </div>
+
+      <div class="m3-card">
+        <div style="font-weight:700;font-size:0.86em;margin-bottom:8px;">Knowledge Base Depth (64 Seeded Assets)</div>
+        <div class="grid-4">
+          <div class="stat-tile"><div class="sv" style="color:var(--m3-green);">2</div><div class="sl">Full</div></div>
+          <div class="stat-tile"><div class="sv" style="color:var(--m3-primary);">9</div><div class="sl">Partial</div></div>
+          <div class="stat-tile"><div class="sv" style="color:var(--m3-warn);">7</div><div class="sl">Pending</div></div>
+          <div class="stat-tile"><div class="sv" style="color:var(--m3-text-var);">46</div><div class="sl">Inventory</div></div>
+        </div>
+      </div>
+
+      ${callout("HomeUiState loads user bookmarks in HomeViewModel:50 but NEVER renders them here. No quick shortcuts for Checklists, Notes, or Steam Table.")}
+
+      <div style="font-weight:700;font-size:0.88em;color:var(--m3-text-var);">Featured Wash Plant &amp; Utility Assets</div>
+      ${featured.map(eq => eqCardHtml(eq)).join("")}
+    `;
+    return;
+  }
+
+  if (s === "fundamentals") {
+    const groups = ["All","Thermal & Energy","Fluid & Pumping","Mechanics & Design","Materials & Fabrication","Reliability & Safety"];
+    const list = FUNDAMENTALS.filter(f => (appState.fundGroup==="All"||f.group===appState.fundGroup) && (!appState.fundVerifiedOnly||f.status==="VERIFIED"));
+    c.innerHTML = `
+      <div class="safety-card">
+        <div class="sc-title">&#9888; Content Transparency (10 Verified / 5 Content Gap)</div>
+        <div class="sc-msg">FUND-01..10 have verified baselines (DOC-MPN-009). FUND-11..15 are tagged CONTENT_GAP pending dedicated chapters.</div>
+      </div>
+      <div class="chip-row">${groups.map(g=>`<button class="m3-chip ${appState.fundGroup===g?'selected':''}" onclick="appState.fundGroup='${g}';renderScreen();">${g}</button>`).join("")}</div>
+      <label class="check-row"><input type="checkbox" ${appState.fundVerifiedOnly?'checked':''} onchange="appState.fundVerifiedOnly=this.checked;renderScreen();"><span>Verified Baseline Only (${FUNDAMENTALS.filter(x=>x.status==='VERIFIED').length}/15)</span></label>
+      ${list.map(t=>`
+        <div class="m3-card">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:6px;">
+            <span style="font-family:monospace;font-weight:700;color:var(--m3-primary);">${t.id} • ${t.group}</span>
+            <span class="depth-pill ${t.status==='VERIFIED'?'dp-full':'dp-pending'}">${t.status==='VERIFIED'?'VERIFIED':'CONTENT GAP'}</span>
+          </div>
+          <div style="font-weight:700;margin-top:4px;">${escapeHtml(t.title)}</div>
+          <div style="font-family:monospace;font-size:0.78em;color:var(--m3-primary);margin:6px 0;">${escapeHtml(t.f)}</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;">
+            ${t.eq.map(e=>`<button class="m3-chip" onclick="navigate('equipment_detail',{eqId:'${e}'})">${e}</button>`).join("")}
+            ${t.calc.map(cl=>`<button class="m3-chip" onclick="navigate('calc_runner',{calcId:'${cl}'})">${cl}</button>`).join("")}
+          </div>
+        </div>
+      `).join("")}
+    `;
+    return;
+  }
+
+  if (s === "wash_plant") {
+    const list = EQUIPMENT_SAMPLES.filter(eq => {
+      if (appState.eqFamFilter !== "ALL" && eq.fam !== appState.eqFamFilter) return false;
+      if (appState.eqDepthFilters.size > 0 && !appState.eqDepthFilters.has(eq.depth)) return false;
+      if (appState.eqSearch.trim()) {
+        const q = appState.eqSearch.toLowerCase();
+        if (!`${eq.id} ${eq.name} ${eq.bn}`.toLowerCase().includes(q)) return false;
+      }
+      return true;
+    });
+    const depths = [
+      ["FULL_CONTENT_BLUEPRINT","Full (2)"],
+      ["PARTIAL_CONTENT_BLUEPRINT","Partial (9)"],
+      ["INVENTORY_ONLY","Inventory (46)"],
+      ["RESEARCH_PENDING","Pending (7)"]
+    ];
+    c.innerHTML = `
+      <input class="m3-input" type="search" placeholder="Filter 64 assets (sample 26 shown)..." value="${escapeHtml(appState.eqSearch)}" oninput="appState.eqSearch=this.value;renderScreen();">
+      <div class="chip-row">
+        <button class="m3-chip ${appState.eqFamFilter==='ALL'?'selected':''}" onclick="appState.eqFamFilter='ALL';renderScreen();">All (64)</button>
+        ${FAMILIES.map(f=>`<button class="m3-chip ${appState.eqFamFilter===f.id?'selected':''}" onclick="appState.eqFamFilter='${f.id}';renderScreen();">${f.id} (${f.counts.total})</button>`).join("")}
+      </div>
+      <div class="chip-row">
+        ${depths.map(([k,lbl])=>`<button class="m3-chip ${appState.eqDepthFilters.has(k)?'selected':''}" onclick="toggleDepthFilter('${k}')">${lbl}</button>`).join("")}
+        ${(appState.eqFamFilter!=='ALL'||appState.eqDepthFilters.size>0)?`<button class="m3-chip" onclick="appState.eqFamFilter='ALL';appState.eqDepthFilters.clear();renderScreen();">Reset</button>`:''}
+      </div>
+      <div style="font-size:0.78em;color:var(--m3-text-var);">Showing ${list.length} representative assets (${appState.eqFamFilter==='ALL'?'all 16 families':appState.eqFamFilter})</div>
+      ${list.length===0 ? `<div class="m3-card variant">No matching assets in current filter. Tap Reset.</div>` : list.map(eq=>eqCardHtml(eq)).join("")}
+    `;
+    return;
+  }
+
+  if (s === "equipment_detail") {
+    const eq = EQUIPMENT_SAMPLES.find(x => x.id === appState.eqId) || EQUIPMENT_SAMPLES[0];
+    const t = appState.eqTab;
+    const isInvOrPend = eq.depth === "INVENTORY_ONLY" || eq.depth === "RESEARCH_PENDING";
+    let body = "";
+    if (t === 0) {
+      body = `
+        <div class="m3-card">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:6px;">
+            <span style="font-family:monospace;font-weight:700;color:var(--m3-primary);">${eq.id} • ${eq.fam}</span>
+            ${depthBadge(eq.depth)}
+          </div>
+          <div style="font-size:1.08em;font-weight:800;margin-top:4px;">${escapeHtml(eq.name)}</div>
+          <div style="font-size:0.85em;color:var(--m3-text-var);margin-bottom:8px;">${escapeHtml(eq.bn)}</div>
+          <div><strong>Criticality:</strong> ${eq.tier}</div>
+          <div><strong>Capacity:</strong> ${eq.cap}</div>
+          <div><strong>Operating Temp:</strong> ${eq.temp}</div>
+          <div><strong>Drive Type:</strong> ${eq.drive}</div>
+          <div><strong>Statutory Standard:</strong> ${eq.law}</div>
+        </div>
+        ${isInvOrPend ? `<div class="safety-card"><div class="sc-title">&#9888; ${eq.depth} Transparency Banner</div><div class="sc-msg">Asset includes baseline 9-section safety &amp; engineering guidance; exact OEM dimensions require plant nameplate confirmation.</div></div>` : ''}
+        ${eq.svg ? renderSchematicSvg(eq.svg) : `<div class="m3-card variant" style="font-size:0.8em;color:var(--m3-text-var);">No offline vector schematic is currently available for ${eq.id} (only 5 schematics exist across 64 assets).</div>`}
+        <button class="m3-btn tonal full" onclick="navigate('notes')">Add Personal Field Note for ${eq.id}</button>
+      `;
+    } else if (t === 1) {
+      body = `<div class="m3-card"><div style="font-weight:700;margin-bottom:6px;">Technical Parameters</div>
+        ${(eq.specs||[["Nominal Rating",eq.cap],["Operating Temp",eq.temp],["Drive System",eq.drive]]).map(([k,v])=>`<div style="display:flex;justify-content:space-between;border-bottom:1px solid rgba(128,128,128,0.15);padding:6px 0;font-size:0.84em;"><span>${k}</span><strong>${v}</strong></div>`).join("")}
+      </div>`;
+    } else if (t === 2) {
+      body = `<div class="m3-card"><div style="font-weight:700;margin-bottom:6px;">Standard Operating Checks</div><div style="font-size:0.86em;">${eq.ops||"Inspect safety guards, verify utility supply isolation before startup, log gauge readings at 2-hour shift intervals."}</div></div>`;
+    } else if (t === 3) {
+      body = `<div class="safety-card statutory"><div class="sc-title">&#9888; FMEA Failure Modes &amp; Hazards</div><div class="sc-msg">Verify LOTO 6-step isolation before mechanical entry.</div></div>
+      ${(eq.fmea||[["Bearing/Seal Degradation","HIGH","Lubrication washout or misalignment vibration"],[eq.law+" Non-Compliance","CRITICAL","Interlock bypass or overdue statutory test"]]).map(([m,sev,d])=>`<div class="m3-card"><div style="display:flex;justify-content:space-between;"><strong>${m}</strong><span class="depth-pill dp-pending">${sev}</span></div><div style="font-size:0.82em;margin-top:4px;">${d}</div></div>`).join("")}`;
+    } else {
+      body = `<div class="m3-card"><div style="font-weight:700;margin-bottom:6px;">Maintenance &amp; Lubrication</div><div><strong>Regime:</strong> ${eq.lube}</div><div style="font-size:0.85em;margin-top:6px;">${eq.pm||"Execute weekly vibration check (ISO 20816-3), thermal scan electrical MCC panel, verify safety relief / interlock trip."}</div></div>`;
+    }
+    c.innerHTML = body;
+    return;
+  }
+
+  if (s === "boiler_module") {
+    const bt = appState.boilerTab;
+    if (bt === 0) {
+      c.innerHTML = `
+        <div class="safety-card statutory"><div class="sc-title">&#9888; High Pressure Steam Utility Safety</div><div class="sc-msg">Industrial boilers operate at 8.0-10.54 bar (~184°C). Compliance with The Boilers Act, 2022 and annual OCIB popping test is mandatory.</div></div>
+        <div style="font-weight:700;">Boiler Engineering Calculations (Quick Links)</div>
+        ${["CALC-01","CALC-05","CALC-09"].map(cid=>{const cl=CALCULATIONS.find(x=>x.id===cid);return `<div class="formula-card"><div class="fc-title">${cl.id}: ${cl.title}</div><div class="fc-eq">${cl.formula}</div><button class="m3-btn tonal full" onclick="navigate('calc_runner',{calcId:'${cl.id}'})">Open Calculator</button></div>`;}).join("")}
+        ${callout("Overview only links 3 of 14 boiler calculations and lacks a direct Steam Table button.")}
+        ${EQUIPMENT_SAMPLES.filter(x=>x.fam==="FAM-G").map(eq=>eqCardHtml(eq)).join("")}
+      `;
+    } else if (bt === 1) {
+      c.innerHTML = `${renderSchematicSvg("gas_boiler")}${EQUIPMENT_SAMPLES.filter(x=>x.id==="EQ-G01"||x.id==="EQ-G04").map(eq=>eqCardHtml(eq)).join("")}`;
+    } else if (bt === 2) {
+      c.innerHTML = `${renderSchematicSvg("jhut_boiler")}${EQUIPMENT_SAMPLES.filter(x=>x.id==="EQ-G02").map(eq=>eqCardHtml(eq)).join("")}`;
+    } else {
+      c.innerHTML = `
+        <div class="safety-card statutory"><div class="sc-title">The Boilers Act, 2022 (Act 06 of 2022)</div><div class="sc-msg">Applies to closed steam vessels > 25 Liters (Sec 2). Criminal penalties for uncertified operation (Sec 36-38). Annual Sec 19 OCIB inspection &amp; popping test. Hydraulic 1.25x-1.5x MAWP initial or post-Sec 24 weld repair.</div></div>
+        <div class="m3-card"><div style="font-weight:700;color:var(--m3-primary);">Bangladesh Boiler Rules, 2025 (S.R.O. 279-Law/2025)</div><div style="font-size:0.84em;margin-top:4px;">30-year packaged firetube lifespan; 60-year watertube lifespan; mandatory Grade-1/2/3 certified boiler attendant staffing per capacity slab.</div></div>
+        ${callout("Statutory tab does not yet render Grade-1/2/3 slab table or OCIB renewal expiry date tracker.")}
+      `;
+    }
+    return;
+  }
+
+  if (SECONDARY_SPECS[s]) {
+    const d = SECONDARY_SPECS[s];
+    c.innerHTML = `
+      <div class="safety-card ${d.statutory?'statutory':''}"><div class="sc-title">&#9888; ${d.title} — Field Safety &amp; LOTO</div><div class="sc-msg">${d.loto}</div></div>
+      ${callout("Rendered via shared generic SecondaryModuleOverviewScreen (8 modules reuse this exact 5-card template).")}
+      <div class="m3-card"><div style="font-weight:700;color:var(--m3-primary);margin-bottom:4px;">Engineering Scope &amp; Plant Practice</div><div style="font-size:0.85em;">${d.scope}</div><div style="font-size:0.74em;color:var(--m3-text-var);margin-top:6px;">Standards: ${d.std}</div></div>
+      <div class="formula-card"><div class="fc-title">${d.calcTitle}</div><div class="fc-eq">${d.eq}</div><button class="m3-btn tonal full" onclick="navigate('calc_runner',{calcId:'${d.calcId}'})">Open Calculator</button></div>
+      ${d.steamBtn?`<button class="m3-btn outlined full" onclick="navigate('steam_table')">Open IAPWS-IF97 Saturated Steam Properties</button>`:''}
+      <div class="m3-card variant"><div style="font-weight:700;color:var(--m3-primary);margin-bottom:6px;">Shop-Floor Inspection Thresholds</div>${d.pts.map(p=>`<div style="font-size:0.82em;margin-bottom:4px;">• ${p}</div>`).join("")}</div>
+      <button class="m3-btn filled full" onclick="${d.fam?`navigate('wash_plant',{famFilter:'${d.fam}'})`:`navigate('checklists')`}">${d.fam?`Browse ${d.title} Assets (${d.fam})`:'Open Maintenance Checklists'}</button>
+    `;
+    return;
+  }
+
+  if (s === "checklists") {
+    const chk = CHECKLISTS.find(x=>x.id===appState.chkId) || CHECKLISTS[0];
+    const done = chk.items.filter(i=>appState.chkChecked.has(i.id)).length;
+    c.innerHTML = `
+      <div class="chip-row">${CHECKLISTS.map(ch=>`<button class="m3-chip ${ch.id===chk.id?'selected':''}" onclick="appState.chkId='${ch.id}';renderScreen();">${ch.id.replace('CHK-','')}</button>`).join("")}</div>
+      <div class="m3-card primary-box">
+        <div style="font-weight:800;">${chk.title}</div>
+        <div style="font-size:0.78em;opacity:0.9;">Ref: ${chk.std}</div>
+        <div style="margin-top:8px;font-weight:700;font-size:0.84em;">Progress: ${done} / ${chk.items.length} checked</div>
+        <div style="height:6px;background:rgba(0,0,0,0.25);border-radius:4px;margin-top:4px;overflow:hidden;"><div style="height:100%;width:${Math.round(done/chk.items.length*100)}%;background:var(--m3-green);"></div></div>
+      </div>
+      ${callout("Room DB has 'remarks' & 'completion_timestamp' columns, yet UI has no per-item remarks box, timestamp display, Bookmark icon, or custom item add.")}
+      ${chk.items.map(it=>`
+        <label class="check-row">
+          <input type="checkbox" ${appState.chkChecked.has(it.id)?'checked':''} onchange="toggleChkItem(${it.id})">
+          <div style="flex:1;">
+            <div style="font-size:0.85em;${appState.chkChecked.has(it.id)?'text-decoration:line-through;opacity:0.7;':''}">${escapeHtml(it.t)}</div>
+            <div style="font-size:0.7em;color:var(--m3-text-var);margin-top:2px;">${it.c} ${it.k?'• <strong style="color:var(--m3-error);">CRUCIAL SAFETY</strong>':''}</div>
+          </div>
+        </label>
+      `).join("")}
+      <button class="m3-btn danger full" onclick="confirmResetChk('${chk.id}')">Reset This Checklist</button>
+    `;
+    return;
+  }
+
+  if (s === "calculations") {
+    // Exact 8 filter chips from CalculationListScreen.kt:68-77 (intentionally omits 3 categories!)
+    const chips = ["All","Boiler Thermal","Boiler Water","Combustion & Draught","Steam Distribution","Wash Plant Machinery","Water Treatment","Pneumatics & Air"];
+    const orphanCats = ["Utility & Pumping","Boiler Safety","Wash Plant Utility"];
+    const filtered = appState.calcCat==="All" ? CALCULATIONS : CALCULATIONS.filter(x=>x.cat===appState.calcCat);
+    c.innerHTML = `
+      <div class="m3-card primary-box clickable" onclick="navigate('steam_table')">
+        <div style="font-weight:800;">IAPWS-IF97 Saturated Steam Table</div>
+        <div style="font-size:0.78em;opacity:0.9;">0.5 to 20 bar linear-P pressure-to-enthalpy lookup</div>
+      </div>
+      <div class="m3-card variant clickable" onclick="navigate('unit_converter')">
+        <div style="font-weight:800;">Engineering Unit Converter (13 Categories)</div>
+        <div style="font-size:0.78em;color:var(--m3-text-var);">Pressure (g/a), Temp, Power, Flow, Density, Speed, Viscosity</div>
+      </div>
+      <div class="chip-row">${chips.map(ch=>`<button class="m3-chip ${appState.calcCat===ch?'selected':''}" onclick="appState.calcCat='${ch}';renderScreen();">${ch}</button>`).join("")}</div>
+      ${callout("BUG VERIFIED (CalculationListScreen.kt:68-77): 3 categories ('Utility & Pumping' CALC-07, 'Boiler Safety' CALC-09, 'Wash Plant Utility' CALC-17) are missing from the filter chips above! Also no Calculation History viewer screen exists.")}
+      <div style="font-size:0.8em;font-weight:700;color:var(--m3-text-var);">Engineering Calculations (${filtered.length})</div>
+      ${filtered.map(cl=>{
+        const isOrphan = orphanCats.includes(cl.cat);
+        return `<div class="m3-card clickable" onclick="navigate('calc_runner',{calcId:'${cl.id}'})">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <span style="font-family:monospace;font-weight:700;color:var(--m3-primary);">${cl.id}</span>
+            <span class="depth-pill ${cl.status==='IMPLEMENTED'?'dp-full':'dp-pending'}">${cl.status}</span>
+          </div>
+          <div style="font-weight:700;margin-top:3px;">${escapeHtml(cl.title)}</div>
+          <div style="font-size:0.76em;color:var(--m3-text-var);margin-top:2px;">Category: ${cl.cat} ${isOrphan&&showCallouts()?'<span style="color:var(--m3-error);font-weight:700;">[NO FILTER CHIP!]</span>':''}</div>
+        </div>`;
+      }).join("")}
+    `;
+    return;
+  }
+
+  if (s === "calc_runner") {
+    const cl = CALCULATIONS.find(x=>x.id===appState.calcId) || CALCULATIONS[0];
+    const out = appState.calcOutputs[cl.id];
+    c.innerHTML = `
+      <div class="m3-card">
+        <div style="display:flex;justify-content:space-between;">
+          <span style="font-family:monospace;font-weight:700;color:var(--m3-primary);">${cl.id} • ${cl.cat}</span>
+          <span class="depth-pill ${cl.status==='IMPLEMENTED'?'dp-full':'dp-pending'}">${cl.status}</span>
+        </div>
+        <div style="font-weight:800;font-size:1.05em;margin-top:4px;">${escapeHtml(cl.title)}</div>
+        <div style="font-size:0.78em;color:var(--m3-text-var);">${escapeHtml(cl.bn)}</div>
+        <div class="formula-card" style="margin-top:8px;"><div class="fc-eq">${escapeHtml(cl.formula)}</div><div class="fc-ref">Ref: ${escapeHtml(cl.ref)}</div></div>
+      </div>
+      <div class="safety-card"><div class="sc-title">Assumptions &amp; Limitations</div><div class="sc-msg"><strong>Assumptions:</strong> ${escapeHtml(cl.assumptions)}<br><strong>Limits:</strong> ${escapeHtml(cl.limitations)}</div></div>
+      ${cl.inputs ? cl.inputs.map(inp=>`
+        <div>
+          <label style="font-size:0.78em;font-weight:600;display:block;margin-bottom:3px;">${escapeHtml(inp.l)} *</label>
+          <input class="m3-input" type="number" step="any" id="inp_${cl.id}_${inp.k}" value="${inp.v}">
+        </div>
+      `).join("") : `<div class="m3-card variant" style="font-size:0.82em;">Static formula definition card. Full multi-variable Kotlin implementation runs in CalculationEngine.kt (try CALC-01, CALC-03, CALC-05, CALC-06, CALC-07, CALC-09, CALC-15, CALC-16, CALC-20 for interactive preview math).</div>`}
+      <button class="m3-btn filled full" ${cl.status!=='IMPLEMENTED'?'disabled':''} onclick="runCalc('${cl.id}')">${cl.status==='IMPLEMENTED'?'Calculate &amp; Verify':'RESEARCH PENDING — Execution Locked'}</button>
+      ${out ? (out.error ? `<div class="safety-card statutory"><div class="sc-msg">${escapeHtml(out.error)}</div></div>` : `
+        <div class="m3-card" style="border:1.5px solid var(--m3-green);background:var(--m3-green-cont);color:var(--m3-on-green-cont);">
+          <div style="font-size:0.75em;font-weight:700;">VERIFIED OUTPUT</div>
+          <div style="font-size:1.25em;font-weight:800;margin:2px 0;">${escapeHtml(out.primary)}</div>
+          <div style="font-size:0.82em;">${escapeHtml(out.sub)}</div>
+          <button class="m3-btn filled full" style="margin-top:8px;" onclick="appState.calcHistoryCount++;renderScreen();">Save Run to Personal History (Saved: ${appState.calcHistoryCount})</button>
+        </div>
+      `) : ''}
+      ${callout("Missing: (1) No screen exists anywhere to view saved Calculation History rows; (2) No Bookmark button in TopBar; (3) No per-input unit switcher.")}
+    `;
+    return;
+  }
+
+  if (s === "steam_table") {
+    const pGauge = appState.steamBar;
+    const pAbs = appState.steamGauge ? pGauge + 1.01325 : pGauge;
+    const clampedAbs = Math.max(0.5, Math.min(20.0, pAbs));
+    // Linear-pressure interpolation (approved DEC-017 / DEF-P7-05)
+    let lo = STEAM_GRID[0], hi = STEAM_GRID[STEAM_GRID.length-1];
+    for (let i=0;i<STEAM_GRID.length-1;i++){
+      if (clampedAbs >= STEAM_GRID[i][0] && clampedAbs <= STEAM_GRID[i+1][0]) { lo = STEAM_GRID[i]; hi = STEAM_GRID[i+1]; break; }
+    }
+    const f = hi[0]===lo[0] ? 0 : (clampedAbs - lo[0])/(hi[0] - lo[0]);
+    const lerp = idx => lo[idx] + f*(hi[idx]-lo[idx]);
+    const presets = [0.5, 1.5, 4.0, 6.0, 8.0, 10.0, 12.0, 18.0];
+    c.innerHTML = `
+      <div class="m3-card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <strong>Pressure Input</strong>
+          <div style="display:flex;gap:4px;">
+            <button class="m3-chip ${appState.steamGauge?'selected':''}" onclick="appState.steamGauge=true;renderScreen();">bar(g)</button>
+            <button class="m3-chip ${!appState.steamGauge?'selected':''}" onclick="appState.steamGauge=false;renderScreen();">bar(a)</button>
+          </div>
+        </div>
+        <input class="m3-input" type="number" step="0.1" value="${appState.steamBar}" onchange="appState.steamBar=parseFloat(this.value)||0;renderScreen();">
+        <div class="chip-row" style="margin-top:8px;">${presets.map(p=>`<button class="m3-chip" onclick="appState.steamBar=${p};renderScreen();">${p} bar</button>`).join("")}</div>
+      </div>
+      ${(pAbs<0.5||pAbs>20.0)?`<div class="safety-card statutory"><div class="sc-msg">Out of validated range: 0.5 to 20.0 bar(a) (-0.51 to 18.98 bar(g)).</div></div>`:`
+        <div class="m3-card primary-box">
+          <div style="font-size:0.75em;font-weight:700;">LINEAR-P INTERPOLATION @ ${pAbs.toFixed(3)} bar(a)</div>
+          <div class="grid-2" style="margin-top:8px;">
+            <div><span style="font-size:0.75em;">Sat Temp T_sat</span><div style="font-weight:800;font-size:1.15em;">${lerp(1).toFixed(2)} °C</div></div>
+            <div><span style="font-size:0.75em;">Spec. Vol v_g</span><div style="font-weight:800;font-size:1.15em;">${lerp(5).toFixed(4)} m³/kg</div></div>
+            <div><span style="font-size:0.75em;">Liquid h_f</span><div style="font-weight:800;">${lerp(2).toFixed(1)} kJ/kg</div></div>
+            <div><span style="font-size:0.75em;">Vapor h_g</span><div style="font-weight:800;">${lerp(4).toFixed(1)} kJ/kg</div></div>
+          </div>
+          <div style="margin-top:6px;font-size:0.84em;">Latent Heat h_fg: <strong>${lerp(3).toFixed(1)} kJ/kg</strong></div>
+        </div>
+      `}
+      <div style="font-size:0.75em;color:var(--m3-text-var);">Reference anchors verified against DOC-MPN-016 (21/21 Python PASS; independent NIST REFPROP cross-check pending).</div>
+    `;
+    return;
+  }
+
+  if (s === "unit_converter") {
+    const cat = UNIT_DEFS[appState.unitCat];
+    const fromU = cat.units.find(u=>u[0]===appState.unitFrom) || cat.units[0];
+    const toU = cat.units.find(u=>u[0]===appState.unitTo) || cat.units[1] || cat.units[0];
+    const conv = computeUnitConversion(parseFloat(appState.unitVal), appState.unitCat, fromU, toU);
+    c.innerHTML = `
+      <div class="chip-row">${Object.keys(UNIT_DEFS).map(k=>`<button class="m3-chip ${appState.unitCat===k?'selected':''}" onclick="selectUnitCat('${k}')">${UNIT_DEFS[k].name}</button>`).join("")}</div>
+      <div class="m3-card">
+        <label style="font-size:0.76em;font-weight:700;">Input Value</label>
+        <input class="m3-input" type="number" step="any" value="${escapeHtml(appState.unitVal)}" oninput="appState.unitVal=this.value;renderScreen();">
+        <div class="grid-2" style="margin-top:8px;">
+          <div>
+            <label style="font-size:0.72em;">From</label>
+            <select class="m3-input" onchange="appState.unitFrom=this.value;renderScreen();">${cat.units.map(u=>`<option value="${u[0]}" ${u[0]===fromU[0]?'selected':''}>${u[1]}</option>`).join("")}</select>
+          </div>
+          <div>
+            <label style="font-size:0.72em;">To</label>
+            <select class="m3-input" onchange="appState.unitTo=this.value;renderScreen();">${cat.units.map(u=>`<option value="${u[0]}" ${u[0]===toU[0]?'selected':''}>${u[1]}</option>`).join("")}</select>
+          </div>
+        </div>
+        <button class="m3-btn outlined full" style="margin-top:8px;" onclick="const t=appState.unitFrom;appState.unitFrom=appState.unitTo;appState.unitTo=t;renderScreen();">&#8644; Swap From / To</button>
+      </div>
+      ${conv.err ? `<div class="safety-card statutory"><div class="sc-msg">${escapeHtml(conv.err)}</div></div>` : `
+        <div class="m3-card primary-box">
+          <div style="font-size:0.75em;">${escapeHtml(appState.unitVal||'0')} ${fromU[1]} =</div>
+          <div style="font-size:1.35em;font-weight:800;">${conv.val} ${toU[1]}</div>
+        </div>
+      `}
+    `;
+    return;
+  }
+
+  if (s === "library") {
+    const cats = ["All","Bangladesh Statutory","International Standard","Thermal Engineering","Maintenance & Reliability"];
+    const list = appState.refCat==="All" ? REFERENCES : REFERENCES.filter(r=>r.cat===appState.refCat);
+    c.innerHTML = `
+      <div class="chip-row">${cats.map(ct=>`<button class="m3-chip ${appState.refCat===ct?'selected':''}" onclick="appState.refCat='${ct}';renderScreen();">${ct}</button>`).join("")}</div>
+      ${callout("Reference cards lack a Bookmark button despite BookmarksScreen supporting BookmarkEntityType.TECHNICAL_STANDARD.")}
+      ${list.map(r=>`
+        <div class="m3-card">
+          <div style="display:flex;justify-content:space-between;"><span style="font-family:monospace;font-weight:700;color:var(--m3-primary);">${r.id}</span><span class="depth-pill ${r.cat==='Bangladesh Statutory'?'dp-pending':'dp-partial'}">${r.cat}</span></div>
+          <div style="font-weight:800;margin-top:3px;">${escapeHtml(r.title)}</div>
+          <div style="font-size:0.78em;color:var(--m3-text-var);">${escapeHtml(r.bn)} • ${escapeHtml(r.auth)}</div>
+          <div class="safety-card" style="margin-top:8px;"><div class="sc-msg">${escapeHtml(r.req)}</div></div>
+        </div>
+      `).join("")}
+    `;
+    return;
+  }
+
+  if (s === "search") {
+    const q = appState.searchQ.trim().toLowerCase();
+    const scopes = ["ALL","EQUIPMENT","CHECKLIST","REFERENCE","FUNDAMENTAL"];
+    const eqHits = (appState.searchScope==="ALL"||appState.searchScope==="EQUIPMENT") ? EQUIPMENT_SAMPLES.filter(e=>!q||`${e.id} ${e.name} ${e.bn} ${e.fam}`.toLowerCase().includes(q)).slice(0,8) : [];
+    const chkHits = (appState.searchScope==="ALL"||appState.searchScope==="CHECKLIST") ? CHECKLISTS.filter(x=>q&&`${x.id} ${x.title} ${x.std}`.toLowerCase().includes(q)) : [];
+    const refHits = (appState.searchScope==="ALL"||appState.searchScope==="REFERENCE") ? REFERENCES.filter(x=>q&&`${x.id} ${x.title} ${x.bn} ${x.req}`.toLowerCase().includes(q)) : [];
+    const fundHits = (appState.searchScope==="ALL"||appState.searchScope==="FUNDAMENTAL") ? FUNDAMENTALS.filter(x=>q&&`${x.id} ${x.title} ${x.f}`.toLowerCase().includes(q)) : [];
+    c.innerHTML = `
+      <input class="m3-input" type="search" placeholder="Search boiler, hydro, ISO 20816, বয়লার..." value="${escapeHtml(appState.searchQ)}" oninput="appState.searchQ=this.value;renderScreen();">
+      <div class="chip-row">${scopes.map(sc=>`<button class="m3-chip ${appState.searchScope===sc?'selected':''}" onclick="appState.searchScope='${sc}';renderScreen();">${sc}</button>`).join("")}</div>
+      ${callout("Title says 'Search & Bookmarks' but offers NO Bookmarks link! Also Calculations (CALC-01..20), User Notes, & History are NOT searched.")}
+      ${!q ? `<div class="m3-card variant" style="font-size:0.84em;">Showing top equipment preview. Type any keyword (e.g. 'boiler', 'valve', 'ISO', 'jhut') to search across static catalogs.</div>` : ''}
+      ${eqHits.map(eq=>eqCardHtml(eq)).join("")}
+      ${chkHits.map(ch=>`<div class="m3-card clickable" onclick="navigate('checklists',{chkId:'${ch.id}'})"><strong>CHECKLIST • ${ch.id}</strong><div>${ch.title}</div></div>`).join("")}
+      ${refHits.map(rf=>`<div class="m3-card clickable" onclick="navigate('library')"><strong>REFERENCE • ${rf.id}</strong><div>${rf.title}</div></div>`).join("")}
+      ${fundHits.map(fd=>`<div class="m3-card clickable" onclick="navigate('fundamentals')"><strong>FUNDAMENTAL • ${fd.id}</strong><div>${fd.title}</div></div>`).join("")}
+    `;
+    return;
+  }
+
+  if (s === "settings") {
+    c.innerHTML = `
+      <div class="m3-card variant">
+        <div style="font-weight:800;font-size:1.05em;color:var(--m3-primary);">Mechanical Pro Notes</div>
+        <div style="font-size:0.78em;font-family:monospace;color:var(--m3-text-var);">Version 1.0.0 • Offline Personal Reference</div>
+      </div>
+      <div class="m3-card">
+        <div style="font-weight:700;color:var(--m3-primary);margin-bottom:6px;">Security &amp; Privacy Audits</div>
+        <div style="font-size:0.8em;">&#10003; Zero Network Policy (DEC-016) — No INTERNET permission</div>
+        <div style="font-size:0.8em;">&#10003; Personal Data Isolation (DEC-014)</div>
+        <div style="font-size:0.8em;">&#10003; Free-First Policy (DEC-002)</div>
+      </div>
+      <div class="m3-card">
+        <div style="font-weight:700;color:var(--m3-primary);margin-bottom:8px;">Display &amp; Readability</div>
+        <div style="display:flex;gap:6px;margin-bottom:10px;">
+          <button class="m3-chip ${appState.theme==='light'?'selected':''}" onclick="appState.theme='light';renderAll();">LIGHT</button>
+          <button class="m3-chip ${appState.theme==='dark'?'selected':''}" onclick="appState.theme='dark';renderAll();">DARK</button>
+        </div>
+        <label class="check-row"><input type="checkbox" ${appState.legible?'checked':''} onchange="toggleLegible()"><span>Plant Floor High Legibility (1.18x Font Scale)</span></label>
+      </div>
+      <div class="m3-card">
+        <div style="font-weight:700;color:var(--m3-primary);margin-bottom:8px;">Personal Local Records &amp; Backup</div>
+        <div class="grid-4" style="margin-bottom:10px;">
+          <div class="stat-tile"><div class="sv">${appState.notes.length}</div><div class="sl">Notes</div></div>
+          <div class="stat-tile"><div class="sv">${appState.bookmarks.size}</div><div class="sl">Bookmarks</div></div>
+          <div class="stat-tile"><div class="sv">${appState.chkChecked.size}</div><div class="sl">Checks</div></div>
+          <div class="stat-tile"><div class="sv">${appState.calcHistoryCount}</div><div class="sl">Calcs</div></div>
+        </div>
+        <label class="check-row" style="margin-bottom:8px;"><input type="checkbox" ${appState.settingsOverwrite?'checked':''} onchange="appState.settingsOverwrite=this.checked;"><span>Overwrite existing data on JSON restore</span></label>
+        <div class="grid-2">
+          <button class="m3-btn filled" onclick="showBackupExport()">Export JSON</button>
+          <button class="m3-btn outlined" onclick="openDialog('<h4>Restore SAF JSON</h4><p style=font-size:0.84em>Opens Android SAF OpenDocument picker for backup_version=2 SHA-256 verification.</p><button class=\'m3-btn filled full\' onclick=\'closeDialog()\'>OK</button>')">Restore JSON</button>
+        </div>
+      </div>
+      ${callout("Settings lacks planned default SI/Imperial unit toggle (Phase 03 §2) and 'Clear All Personal Data' action. Also 'Calcs' counter is shown here despite no UI to open calculation_history.")}
+    `;
+    return;
+  }
+
+  if (s === "notes") {
+    c.innerHTML = `
+      <button class="m3-btn filled full" onclick="openNoteEditor()">+ Add Personal Field Note</button>
+      ${callout("UserNoteEntity stores tags_csv in Room, but the Note editor dialog never exposes a Tags field, Search bar, or Equipment ID dropdown.")}
+      ${appState.notes.length===0 ? `<div class="m3-card variant">No field notes saved.</div>` : appState.notes.map(n=>`
+        <div class="m3-card">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <button class="m3-chip" onclick="navigate('equipment_detail',{eqId:'${n.eq}'})">${n.eq}</button>
+            <span style="font-size:0.72em;color:var(--m3-text-var);">${n.time}</span>
+          </div>
+          <div style="font-weight:700;margin-top:6px;">${escapeHtml(n.title)}</div>
+          <div style="font-size:0.84em;margin-top:3px;">${escapeHtml(n.body)}</div>
+          <div style="margin-top:8px;display:flex;gap:8px;">
+            <button class="m3-btn outlined" style="min-height:36px;" onclick="deleteNote(${n.id})">Delete</button>
+          </div>
+        </div>
+      `).join("")}
+    `;
+    return;
+  }
+
+  if (s === "bookmarks") {
+    c.innerHTML = `
+      ${callout("BookmarksScreen routes all 5 BookmarkEntityType values, yet ONLY EquipmentDetailScreen has a bookmark star button. Calculation, Checklist, Reference, and Boiler Section bookmarks cannot be created from UI.")}
+      ${appState.bookmarks.size===0 ? `<div class="m3-card variant">No saved bookmarks yet. Star an equipment item inside Equipment Detail.</div>` : Array.from(appState.bookmarks).map(bid=>{
+        const eq = EQUIPMENT_SAMPLES.find(x=>x.id===bid);
+        return `<div class="m3-card" style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
+          <div class="clickable" style="flex:1;" onclick="navigate('equipment_detail',{eqId:'${bid}'})">
+            <span class="depth-pill dp-partial">EQUIPMENT</span>
+            <div style="font-weight:700;margin-top:2px;">${bid}: ${eq?escapeHtml(eq.name):bid}</div>
+          </div>
+          <button class="m3-icon-btn" onclick="toggleBookmark('${bid}')">&#128465;</button>
+        </div>`;
+      }).join("")}
+    `;
+    return;
+  }
+
+  // AUDIT SUMMARY SCREEN INSIDE PHONE
+  if (s === "audit") {
+    const gaps = [
+      ["HIGH","3 Orphaned Calc Categories","CalculationListScreen omits 'Utility & Pumping' (CALC-07), 'Boiler Safety' (CALC-09), 'Wash Plant Utility' (CALC-17)."],
+      ["HIGH","No Calculation History Viewer","Save works in CalculationRunner, counter shows in Settings, JSON exports it — zero screen to view/reload saved runs."],
+      ["HIGH","Unreachable Bookmark Types","BookmarksScreen routes 5 types, yet only EquipmentDetailScreen has a bookmark icon button."],
+      ["HIGH","Bottom Bar Label Bug","AppNavigation uses split(' ').first(): prints 'Dedicated' instead of 'Boiler' and 'Engineering' instead of 'Calcs'."],
+      ["MED","Checklist Remarks & Timestamps Missing","Room schema defines remarks & completion_timestamp; UI never renders or edits them."],
+      ["MED","Search Excludes Calcs & Notes","SearchScreen ignores CALC-01..20, User Notes & History; lacks Bookmarks link despite title."],
+      ["MED","Secondary Modules Share 1 Template","8 drawer modules (Pumps..Maintenance) render 1 generic 5-card overview page."],
+      ["MED","HomeViewModel.bookmarks Unused","Loaded into HomeUiState:50, never drawn on HomeScreen."],
+      ["MED","UserNote tags_csv Hidden","Editor dialog omits tags_csv, search, and equipment dropdown."],
+      ["MED","Settings Unit Toggle & Wipe Missing","Phase 03 SI/Imperial unit toggle & Clear Personal Data absent."],
+      ["LOW","CALC-02 Execution Locked","Stays RESEARCH_PENDING pending field indirect gas/ash calibration."],
+      ["LOW","FUND-11..15 Content Gap","5 Fundamentals topics carry CONTENT_GAP awaiting chapters."],
+      ["LOW","46/64 Inventory Assets & 5 SVGs","71.9% assets are baseline INVENTORY_ONLY; 59/64 lack vector schematic."]
+    ];
+    c.innerHTML = `
+      <div class="safety-card statutory"><div class="sc-title">Verified Project Totals</div><div class="sc-msg">23 Screen Routes • 17 Core Modules • 64 Assets (2/9/7/46) • 20 Calcs (19/1) • 15 Fundamentals (10/5) • Stage 05 APK/Emulator BLOCKED</div></div>
+      ${gaps.map(([sev,t,d])=>`
+        <div class="m3-card">
+          <div style="display:flex;justify-content:space-between;align-items:center;"><strong>${escapeHtml(t)}</strong><span class="depth-pill ${sev==='HIGH'?'dp-pending':sev==='MED'?'dp-partial':'dp-inv'}">${sev}</span></div>
+          <div style="font-size:0.8em;margin-top:4px;color:var(--m3-text-var);">${escapeHtml(d)}</div>
+        </div>
+      `).join("")}
+    `;
+  }
+}
+
+// Helpers
+function eqCardHtml(eq) {
+  return `<div class="m3-card clickable" onclick="navigate('equipment_detail',{eqId:'${eq.id}'})">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:6px;">
+      <span style="font-family:monospace;font-weight:700;color:var(--m3-primary);">${eq.id} • ${eq.fam}</span>
+      ${depthBadge(eq.depth)}
+    </div>
+    <div style="font-weight:700;margin-top:4px;">${escapeHtml(eq.name)}</div>
+    <div style="font-size:0.78em;color:var(--m3-text-var);">${escapeHtml(eq.bn)}</div>
+  </div>`;
+}
+
+function toggleDepthFilter(k) {
+  if (appState.eqDepthFilters.has(k)) appState.eqDepthFilters.delete(k);
+  else appState.eqDepthFilters.add(k);
+  renderScreen();
+}
+
+function toggleBookmark(id) {
+  if (appState.bookmarks.has(id)) appState.bookmarks.delete(id);
+  else appState.bookmarks.add(id);
+  renderScreen();
+}
+
+function toggleChkItem(id) {
+  if (appState.chkChecked.has(id)) appState.chkChecked.delete(id);
+  else appState.chkChecked.add(id);
+  renderScreen();
+}
+
+function confirmResetChk(chkId) {
+  openDialog(`
+    <h4 style="margin:0;">Reset Checklist Progress?</h4>
+    <p style="font-size:0.86em;">Clear all checked items for ${chkId}?</p>
+    <div class="grid-2">
+      <button class="m3-btn outlined" onclick="closeDialog()">Cancel</button>
+      <button class="m3-btn danger" onclick="CHECKLISTS.find(x=>x.id==='${chkId}').items.forEach(i=>appState.chkChecked.delete(i.id));closeDialog();renderScreen();">Reset</button>
+    </div>
+  `);
+}
+
+function runCalc(cid) {
+  const cl = CALCULATIONS.find(x=>x.id===cid);
+  if (!cl || !cl.run) return;
+  const vals = {};
+  for (const inp of cl.inputs) {
+    const raw = parseFloat(document.getElementById(`inp_${cid}_${inp.k}`).value);
+    if (!Number.isFinite(raw) || raw <= 0) {
+      appState.calcOutputs[cid] = { error: `Invalid or non-positive input for ${inp.l}.` };
+      renderScreen();
+      return;
+    }
+    inp.v = raw;
+    vals[inp.k] = raw;
+  }
+  appState.calcOutputs[cid] = cl.run(vals);
+  renderScreen();
+}
+
+function selectUnitCat(k) {
+  appState.unitCat = k;
+  const units = UNIT_DEFS[k].units;
+  appState.unitFrom = units[0][0];
+  appState.unitTo = (units[1] || units[0])[0];
+  renderScreen();
+}
+
+function computeUnitConversion(val, catKey, fromU, toU) {
+  if (!Number.isFinite(val)) return { err: "Enter a finite number." };
+  const cat = UNIT_DEFS[catKey];
+  if (cat.min !== undefined && val < cat.min) return { err: `${cat.name} cannot be negative (${val} < 0).` };
+  if (catKey === "TEMPERATURE") {
+    let k = fromU[0]==="C"?val+273.15:fromU[0]==="F"?(val-32)*5/9+273.15:fromU[0]==="R"?val*5/9:val;
+    if (k < 0) return { err: "Physical Limit Rejected: Temperature cannot be below absolute zero (0 K / -273.15 °C)." };
+    let res = toU[0]==="C"?k-273.15:toU[0]==="F"?(k-273.15)*9/5+32:toU[0]==="R"?k*9/5:k;
+    return { val: Number(res.toPrecision(6)).toString() };
+  }
+  if (catKey === "PRESSURE") {
+    const P_ATM = 101325;
+    let absPa = val * fromU[2] + (fromU[3]==="G" ? P_ATM : 0);
+    if (absPa < 0) return { err: "Physical Limit Rejected: Absolute pressure cannot fall below hard vacuum (0 bar(a) / -1.01325 bar(g))." };
+    let res = (absPa - (toU[3]==="G" ? P_ATM : 0)) / toU[2];
+    return { val: Number(res.toPrecision(6)).toString() };
+  }
+  if ((catKey === "SPEED" || catKey === "VISCOSITY") && fromU[3] !== toU[3]) {
+    return { err: catKey==="SPEED"
+      ? `Cannot convert linear speed (${fromU[1]}) directly to rotational (${toU[1]}) without pulley radius r.`
+      : `Cannot convert dynamic (${fromU[1]}) and kinematic (${toU[1]}) viscosity without fluid density rho.` };
+  }
+  const base = val * fromU[2];
+  const res = base / toU[2];
+  return { val: Number(res.toPrecision(6)).toString() };
+}
+
+function openNoteEditor() {
+  openDialog(`
+    <h4 style="margin:0;">New Field Note</h4>
+    <input class="m3-input" id="dlgEq" value="EQ-A01" placeholder="Equipment ID (e.g. EQ-A01)">
+    <input class="m3-input" id="dlgTitle" placeholder="Note Title">
+    <textarea class="m3-input" id="dlgBody" rows="3" placeholder="Maintenance observation..."></textarea>
+    <div class="grid-2">
+      <button class="m3-btn outlined" onclick="closeDialog()">Cancel</button>
+      <button class="m3-btn filled" onclick="saveNewNote()">Save</button>
+    </div>
+  `);
+}
+
+function saveNewNote() {
+  const eq = document.getElementById("dlgEq").value.trim() || "EQ-A01";
+  const t = document.getElementById("dlgTitle").value.trim();
+  const b = document.getElementById("dlgBody").value.trim();
+  if (!t || !b) return;
+  appState.notes.unshift({ id: Date.now(), eq, title: t, body: b, time: "Just now" });
+  closeDialog();
+  renderScreen();
+}
+
+function deleteNote(id) {
+  appState.notes = appState.notes.filter(n=>n.id!==id);
+  renderScreen();
+}
+
+function showBackupExport() {
+  const payload = JSON.stringify({
+    backup_version: 2,
+    sha256: "simulated_sha256_integrity_digest",
+    counts: { notes: appState.notes.length, bookmarks: appState.bookmarks.size, checks: appState.chkChecked.size, calc_history: appState.calcHistoryCount },
+    notes: appState.notes,
+    bookmarks: Array.from(appState.bookmarks)
+  }, null, 2);
+  openDialog(`
+    <h4 style="margin:0;">Backup JSON Preview (backup_version: 2)</h4>
+    <pre style="font-size:0.7em;background:rgba(0,0,0,0.25);padding:8px;border-radius:8px;overflow:auto;max-height:220px;">${escapeHtml(payload)}</pre>
+    <div class="grid-2">
+      <button class="m3-btn outlined" onclick="closeDialog()">Close</button>
+      <button class="m3-btn filled" onclick="closeDialog()">Save via SAF</button>
+    </div>
+  `);
+}
+
+function renderAll() {
+  const frame = document.getElementById("phoneFrame");
+  frame.setAttribute("data-theme", appState.theme);
+  frame.classList.toggle("legible", appState.legible);
+  document.getElementById("btnToggleTheme").textContent = "Theme: " + (appState.theme==="dark"?"Dark":"Light");
+  document.getElementById("btnToggleLegible").textContent = "Font: " + (appState.legible?"1.18x":"1.0x");
+  document.getElementById("btnAuditMode").classList.toggle("active", appState.screen==="audit");
+  renderModuleIndex();
+  renderDrawer();
+  renderInspector();
+  renderScreen();
+}
+
+renderAll();
+</script>
+</body>
+</html>

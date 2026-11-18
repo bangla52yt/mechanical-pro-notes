@@ -1,0 +1,971 @@
+MASTER EXECUTION PROMPT — MECHANICAL PRO NOTES
+
+PHASE 06: FIELD CALCULATIONS, BOILER THERMAL ENGINEERING & MAINTENANCE TOOLS
+
+Project: Mechanical Pro Notes
+Phase: 06
+Phase Name: Field Calculations & Maintenance Tools
+Project Owner: Personal-use Android application owner
+Date: 12 November 2026
+Execution Environment: Existing Gemini Workspace
+Architecture: Kotlin + Jetpack Compose + Room/SQLite + Offline-First
+Execution Policy: Free-First, Zero-Cost, Zero-Internet-Permission
+
+---
+
+1. EXECUTION AUTHORIZATION
+
+The project owner has formally accepted Phase 05 as:
+
+PASS WITH CONDITIONS — FORMALLY ACCEPTED
+
+Phase 06 preparation and execution scope have already been documented.
+
+This prompt constitutes authorization to execute Phase 06 only, within the boundaries specified below.
+
+Do not interpret this authorization as permission to execute Phase 07 or any subsequent phase.
+
+The Phase 06 preparation document is the primary scope reference:
+
+"docs/PHASE_06_PREPARATION_AND_EXECUTION_SCOPE.md"
+
+The objective is to implement a technically reliable engineering calculation and maintenance-tool layer that can be used by the owner in an actual textile/garment washing plant maintenance environment.
+
+This is a personal engineering reference application, not a commercial product.
+
+---
+
+2. PROJECT GOVERNANCE — NON-NEGOTIABLE RULES
+
+Preserve the following requirements throughout execution.
+
+2.1 Personal-use policy
+
+- The application is initially intended exclusively for the owner's personal Android phone.
+- Do not introduce public-release requirements.
+- No advertising, tracking, subscriptions, monetization, or multi-user architecture.
+- No unnecessary online services or cloud dependencies.
+- All calculation engines must operate offline.
+
+2.2 Zero-cost policy
+
+- No paid API.
+- No paid AI service.
+- No paid database.
+- No paid hosting.
+- No paid software or third-party subscription.
+- Do not introduce any expenditure without explicit owner approval.
+
+2.3 Network and security policy
+
+Preserve DEC-016:
+
+"android.permission.INTERNET" must remain absent.
+
+Do not introduce network permissions, remote APIs, analytics SDKs, advertising SDKs, or telemetry.
+
+2.4 Data protection
+
+Preserve existing personal user data:
+
+- User notes
+- Bookmarks
+- Calculation history
+- Personal settings
+- Local backups
+
+Never introduce destructive database migrations or cascading deletion that can remove personal records.
+
+2.5 Git and remote restrictions
+
+- No Git commit.
+- No Git push.
+- No GitHub repository creation.
+- No automatic merge.
+- No deployment.
+- No external publication.
+
+All modifications must remain within the existing Gemini Workspace.
+
+2.6 Existing work protection
+
+Phase 05 is accepted.
+
+Do not recreate, replace, or unnecessarily refactor its completed implementation.
+
+Do not modify unrelated modules, screens, themes, navigation, database architecture, or governance documents.
+
+---
+
+3. INITIAL WORKSPACE CONTEXT
+
+The following work has already been completed.
+
+Phase 05 implementation
+
+The existing application includes:
+
+- Material 3 design system.
+- Industrial engineering theme.
+- 17-module navigation architecture.
+- Equipment detail reader.
+- Dedicated Boiler Dashboard.
+- Engineering Calculation Runner.
+- Offline FTS5 search.
+- Personal notes and bookmarks.
+- Maintenance checklists.
+- JSON backup/restore contract.
+- Local settings and privacy controls.
+
+Phase 05 produced 10/10 Python/SQLite integration tests passing.
+
+However, native Android compilation and physical-device runtime verification remain unconfirmed because the previous workspace lacked the required Android SDK and OpenJDK 17 toolchain.
+
+Do not misrepresent these limitations.
+
+Existing calculation implementations
+
+The following four calculation identifiers were already implemented in Phase 05:
+
+- CALC-01: Direct Thermal Efficiency.
+- CALC-04: Steam Evaporation Ratio.
+- CALC-05: Boiler Continuous Blowdown Rate.
+- CALC-07: Feedwater Pump Hydraulic Power.
+
+CALC-02 was previously marked RESEARCH_PENDING.
+
+These existing implementations must be preserved and integrated rather than unnecessarily recreated.
+
+---
+
+4. PHASE 06 PRIMARY OBJECTIVES
+
+Implement and validate the following scope.
+
+CATEGORY A — BOILER THERMAL & UTILITY CALCULATIONS
+
+Total: 14 calculation modules.
+
+CALC-01 — Direct Thermal Efficiency
+
+Existing implementation.
+
+Requirements:
+
+- Preserve the existing calculation.
+- Verify fuel consumption, steam production, calorific value and enthalpy inputs.
+- Verify consistent energy units.
+- Validate the existing formula against independently calculated examples.
+- Identify and correct genuine defects only.
+
+CALC-02 — Indirect Boiler Efficiency / Heat Loss Method
+
+Previously RESEARCH_PENDING.
+
+Develop only after establishing a technically defensible methodology.
+
+Include applicable heat-loss components:
+
+- Dry flue gas loss.
+- Hydrogen combustion loss.
+- Moisture in fuel loss.
+- Moisture from combustion air, where applicable.
+- Unburnt carbon loss.
+- Radiation and convection losses.
+- Other applicable losses supported by the selected method.
+
+Inputs must reflect the selected methodology, including appropriate fuel analysis, flue gas composition, temperatures and combustion conditions.
+
+Requirements:
+
+- Explicitly document the applicable calculation method.
+- Avoid assuming fuel composition.
+- Avoid inventing missing constants.
+- Explain excluded or unavailable losses.
+- Validate against independent engineering examples.
+
+Do not activate the calculation until its technical basis is adequately verified.
+
+CALC-03 — Boiler Fuel Firing Rate
+
+Calculate fuel consumption requirements based on applicable boiler load, steam generation, feedwater condition, steam enthalpy and fuel calorific value.
+
+Include:
+
+- kg/hr and appropriate alternative units.
+- Fuel consumption per hour.
+- Required input validation.
+- Clearly documented assumptions.
+
+CALC-04 — Steam Evaporation Ratio
+
+Existing implementation.
+
+Verify:
+
+- Steam-to-fuel ratio.
+- Fuel and steam mass units.
+- Consistency with operating conditions.
+- Independent calculation examples.
+
+CALC-05 — Boiler Continuous Blowdown Rate
+
+Existing implementation.
+
+Verify:
+
+- Feedwater TDS.
+- Boiler water TDS.
+- Blowdown percentage.
+- Validity of the underlying mass-balance assumptions.
+
+Clearly distinguish percentage-based results from mass-flow results.
+
+CALC-06 — Blowdown Heat Recovery
+
+Calculate recoverable energy from boiler blowdown.
+
+Include:
+
+- Blowdown pressure and temperature.
+- Flash steam generation where applicable.
+- Recoverable heat.
+- Energy recovery rate.
+- Relevant heat-exchanger assumptions.
+
+Do not assume 100% heat recovery.
+
+CALC-07 — Feedwater Pump Hydraulic Power
+
+Existing implementation.
+
+Verify:
+
+- Flow rate.
+- Differential pressure or total dynamic head.
+- Fluid density.
+- Pump efficiency.
+- Motor efficiency where relevant.
+- Hydraulic and shaft/electrical power distinctions.
+
+CALC-08 — Deaerator Steam Balance
+
+Calculate applicable steam requirements for feedwater heating and deaeration.
+
+Include:
+
+- Feedwater flow.
+- Inlet temperature.
+- Target temperature.
+- Steam conditions.
+- Mixing mass and energy balance.
+- Applicable heat-loss assumptions.
+
+CALC-09 — Safety Valve Relieving Capacity
+
+Develop an engineering calculation for applicable boiler safety-valve relieving capacity.
+
+Requirements:
+
+- Use an appropriate, documented engineering methodology.
+- Clearly identify the governing design code or recognized reference.
+- Identify steam properties and operating conditions.
+- Document the applicable discharge coefficient and other required parameters.
+- Validate units and applicable limits.
+
+CRITICAL SAFETY RESTRICTION:
+
+This calculator is an engineering reference and preliminary estimation tool only.
+
+It must never claim to certify a safety valve, authorize installation, replace a code-compliant sizing calculation, or replace approval by a qualified boiler engineer and competent authority.
+
+If the governing methodology cannot be established, retain RESEARCH_PENDING status.
+
+CALC-10 — Economizer Heat Recovery
+
+Calculate economizer heat recovery.
+
+Include:
+
+- Flue gas inlet/outlet temperatures.
+- Feedwater inlet/outlet temperatures.
+- Mass-flow inputs.
+- Specific heat or enthalpy-based calculations.
+- Heat recovery rate.
+- Relevant efficiency considerations.
+
+Do not ignore condensation, corrosion or temperature limitations where relevant.
+
+CALC-11 — FD Fan & Combustion Air
+
+Calculate applicable combustion-air requirements and forced-draft fan demand.
+
+Include:
+
+- Fuel consumption.
+- Theoretical air requirement.
+- Excess air.
+- Air mass flow.
+- Air volume flow.
+- Relevant air density and temperature corrections.
+
+Clearly distinguish theoretical air from actual combustion-air demand.
+
+CALC-12 — ID Fan & Draught
+
+Calculate induced-draft fan requirements.
+
+Include:
+
+- Flue gas flow.
+- Gas temperature.
+- Gas density.
+- Required pressure/draught.
+- Relevant system resistance.
+- Applicable fan efficiency.
+
+Distinguish static pressure, velocity pressure and total pressure where relevant.
+
+CALC-13 — Chimney Natural Draught
+
+Calculate theoretical natural chimney draught.
+
+Include:
+
+- Chimney height.
+- Ambient air temperature.
+- Flue gas temperature.
+- Relevant gas densities.
+- Applicable pressure difference.
+
+Clearly document the assumptions and limitations of the simplified draught model.
+
+CALC-14 — Steam Pipe Sizing
+
+Calculate appropriate preliminary steam pipe sizing.
+
+Include:
+
+- Steam mass flow.
+- Steam pressure.
+- Steam temperature or quality where required.
+- Specific volume.
+- Velocity.
+- Internal diameter.
+- Pressure drop, where supported.
+
+Explain the limitations of velocity-based preliminary sizing.
+
+Do not present preliminary sizing as a complete piping design or pressure-system approval.
+
+---
+
+CATEGORY B — WASH PLANT MAINTENANCE TOOLS
+
+Total: 6 calculation modules.
+
+CALC-15 — V-Belt Sizing & Tensioning
+
+Include:
+
+- Driver and driven pulley diameters.
+- Centre distance.
+- Belt length.
+- Speed ratio.
+- Rotational speeds.
+- Applicable belt section and manufacturer-dependent tensioning information.
+
+Do not invent manufacturer-specific tension values.
+
+CALC-16 — Hydro Extractor G-Force & Critical RPM
+
+Include:
+
+- Basket radius.
+- Rotational speed.
+- Centrifugal acceleration.
+- Relative centrifugal force (RCF/G-force).
+- Relevant critical-speed considerations.
+
+Clearly distinguish operating speed, calculated critical speed and manufacturer-approved maximum speed.
+
+Never suggest that a theoretical calculation authorizes exceeding the manufacturer's rated RPM.
+
+CALC-17 — Wash Batch Steam Consumption
+
+Calculate steam consumption per wash batch.
+
+Include:
+
+- Bath water mass.
+- Initial and target temperatures.
+- Heating energy.
+- Relevant machine and load heat absorption.
+- Steam enthalpy.
+- Applicable heat-loss assumptions.
+
+Provide results in kg/batch and kg/kg of applicable production load where inputs permit.
+
+CALC-18 — Dryer Evaporation & Airflow
+
+Include:
+
+- Initial and final moisture content.
+- Water evaporation rate.
+- Drying time.
+- Required heat energy where supported.
+- Airflow requirements.
+- Relevant inlet/outlet air conditions.
+
+Distinguish moisture on wet basis and dry basis.
+
+CALC-19 — Water Softener Resin Capacity & Salt Regeneration
+
+Include:
+
+- Water hardness.
+- Water consumption.
+- Resin exchange capacity.
+- Operating capacity.
+- Service run volume.
+- Regeneration salt requirement.
+- Regeneration interval estimation.
+
+Clearly distinguish theoretical resin capacity from actual usable operating capacity.
+
+CALC-20 — Compressed Air CFM & Pressure Drop
+
+Include:
+
+- Air consumption.
+- Flow rate conversions.
+- Pipe diameter and length.
+- Operating pressure.
+- Relevant fittings and pressure-loss assumptions.
+- Pressure drop.
+- Compressor capacity estimation where supported.
+
+Clearly distinguish free-air delivery from actual compressed-air volume.
+
+---
+
+5. OFFLINE STEAM PROPERTY ENGINE — IAPWS-IF97
+
+This is a major technical deliverable.
+
+Implement an offline saturated-steam property engine using the IAPWS Industrial Formulation 1997 (IF97).
+
+Required operating range
+
+0.5 bar to 20 bar, inclusive.
+
+Required properties
+
+At minimum:
+
+1. Saturation temperature.
+2. Saturated liquid specific enthalpy (hf).
+3. Latent heat of vaporization (hfg).
+4. Saturated vapor specific volume (vg).
+
+Where technically practical, also provide:
+
+- Saturated liquid specific volume (vf).
+- Saturated vapor enthalpy (hg).
+
+Technical requirements
+
+- Use absolute pressure as the canonical internal pressure basis.
+- Explicitly identify whether user-entered pressure is absolute or gauge.
+- If gauge pressure is supported, convert using an explicitly documented atmospheric pressure input or setting.
+- Never silently mix bar(a) and bar(g).
+- Use consistent SI units internally.
+- Display engineering-friendly units.
+- Clearly label every property and unit.
+- Ensure interpolation is numerically stable if tabulated data are used.
+- Validate boundary values.
+- Reject values outside the supported pressure range.
+- Never silently extrapolate outside the validated domain.
+
+Accuracy verification
+
+Use authoritative IAPWS-IF97 reference equations or independently verified reference data.
+
+Do not claim IF97 compliance merely because a table contains plausible values.
+
+Verify:
+
+- Boundary conditions.
+- Monotonicity where physically expected.
+- Representative intermediate pressure points.
+- Interpolation error.
+- Unit conversions.
+- Independent reference comparisons.
+
+Document the actual accuracy achieved and the applicable tolerance.
+
+If the required accuracy cannot be demonstrated, clearly label the limitation and retain the affected property calculation as pending.
+
+---
+
+6. ENGINEERING FORMULA GOVERNANCE
+
+This is mandatory for all 20 calculation modules.
+
+Every calculator must have a technical specification containing:
+
+1. Calculation ID.
+2. Calculation name.
+3. Engineering purpose.
+4. Applicable formula.
+5. Formula derivation or technical reference.
+6. Definition of every variable.
+7. SI unit of every variable.
+8. Input validation rules.
+9. Assumptions.
+10. Operating limitations.
+11. Worked example.
+12. Independently calculated expected result.
+13. Error tolerance.
+14. Safety classification.
+15. Source references.
+16. Implementation status.
+
+Formula accuracy rules
+
+- Never fabricate formulas.
+- Never invent engineering constants.
+- Never silently substitute units.
+- Never use unexplained default values.
+- Never present assumptions as measured facts.
+- Never present estimates as certified engineering results.
+- Clearly identify simplified formulas.
+- Clearly identify manufacturer-dependent parameters.
+
+Use appropriate authoritative references, including applicable IAPWS publications, recognized engineering standards, equipment manufacturer documentation and applicable Bangladesh regulations.
+
+For every external reference:
+
+- Record the document title.
+- Record the issuing organization.
+- Record the edition or publication date where available.
+- Record the relevant section or equation.
+- Identify any uncertainty or unavailable reference.
+
+Do not fabricate citations or claim to have verified inaccessible documents.
+
+---
+
+7. SAFETY AND OPERATIONAL PROTECTION
+
+Engineering calculations in this application may influence real industrial maintenance decisions.
+
+Implement a clear safety classification system.
+
+Suggested classifications:
+
+- INFORMATIONAL
+- ENGINEERING_ESTIMATE
+- OPERATIONAL_REFERENCE
+- SAFETY_CRITICAL
+- RESEARCH_PENDING
+
+The classification must reflect actual risk, not merely the calculator's category.
+
+Mandatory protections
+
+1. Reject invalid numerical inputs.
+2. Reject negative values where physically invalid.
+3. Reject zero denominators.
+4. Detect division-by-zero conditions.
+5. Detect overflow and non-finite values.
+6. Detect physically impossible input combinations.
+7. Display appropriate warnings.
+8. Explain the cause of invalid results.
+9. Prevent calculations using incomplete mandatory inputs.
+10. Avoid false precision in displayed results.
+
+For safety-critical calculations, display an appropriate warning that the output is not an operating authorization or formal engineering certification.
+
+Never automatically recommend changing boiler pressure, safety-valve settings, hydro extractor RPM, or other safety-critical equipment parameters based only on calculator output.
+
+---
+
+8. SOFTWARE ARCHITECTURE AND IMPLEMENTATION
+
+Follow the existing project architecture.
+
+Before implementing:
+
+- Inspect the existing calculation engine.
+- Inspect calculation models and repository interfaces.
+- Inspect the Room database and migrations relevant to calculations.
+- Inspect CalculationViewModel.
+- Inspect CalculationListScreen.
+- Inspect CalculationRunnerScreen.
+- Inspect the existing calculation history implementation.
+
+Only inspect the integration surfaces necessary for Phase 06.
+
+Do not conduct another broad audit of already accepted Phase 05 work.
+
+Architecture requirements
+
+Keep calculation logic separate from Compose UI.
+
+Prefer:
+
+- Pure Kotlin calculation functions.
+- Explicit input and result models.
+- Type-safe units or clearly documented unit conversion boundaries.
+- Centralized validation.
+- Deterministic calculations.
+- Testable business logic.
+- Existing repository and ViewModel patterns.
+
+Do not introduce unnecessary dependencies.
+
+Avoid placing complex engineering formulas directly inside Composable functions.
+
+User interface requirements
+
+Integrate the new calculators into the existing Engineering Calculations module.
+
+Provide:
+
+- Clear calculator names and descriptions.
+- Engineering input fields with units.
+- Appropriate input hints.
+- Validation messages.
+- Formula explanation.
+- Calculation results.
+- Important warnings.
+- Relevant assumptions.
+- Save-to-history functionality.
+
+Preserve the existing Material 3 theme.
+
+Do not redesign the global application UI.
+
+Calculation history
+
+Successful calculations should integrate with the existing local calculation history.
+
+Preserve:
+
+- Calculation ID.
+- Input values.
+- Output values.
+- Units.
+- Timestamp.
+- Relevant formula/version information where supported.
+
+Invalid calculations must not create misleading successful history records.
+
+---
+
+9. TESTING AND VERIFICATION
+
+Create a comprehensive Phase 06 test suite.
+
+Do not rely exclusively on Python scripts that inspect source files or reproduce calculations outside the actual Kotlin implementation.
+
+A. Unit tests
+
+Test every calculation module independently.
+
+Cover:
+
+- Normal inputs.
+- Minimum supported inputs.
+- Maximum supported inputs.
+- Boundary conditions.
+- Invalid inputs.
+- Zero values.
+- Negative values.
+- Unit conversion.
+- Numerical precision.
+- Overflow and non-finite results.
+
+B. Independent engineering verification
+
+For every calculator:
+
+1. Select representative engineering examples.
+2. Calculate expected results independently.
+3. Compare Kotlin implementation outputs.
+4. Document acceptable error tolerance.
+5. Record PASS or FAIL.
+
+Never use the implementation itself as the only source of its expected result.
+
+C. Steam engine verification
+
+Test:
+
+- 0.5 bar absolute.
+- 1 bar absolute.
+- 5 bar absolute.
+- 10 bar absolute.
+- 15 bar absolute.
+- 20 bar absolute.
+- Intermediate pressure points.
+
+Compare each property with an authoritative independent reference.
+
+D. Integration testing
+
+Verify:
+
+- Calculator registration.
+- Navigation.
+- ViewModel integration.
+- Input validation.
+- Result rendering.
+- Calculation history.
+- Offline operation.
+- Personal data isolation.
+
+E. Regression testing
+
+Preserve the existing Phase 05 functionality.
+
+Run the relevant existing test suites without unnecessarily repeating completed audits.
+
+F. Android build verification
+
+Inspect the available build environment.
+
+Use only commands and tasks supported by the actual project configuration.
+
+If Android SDK, JDK, Gradle or other required tools are unavailable:
+
+- Report the exact limitation.
+- Do not claim successful native compilation.
+- Do not fabricate APK output.
+- Preserve the existing source-level and test evidence.
+- Carry the limitation into the next checkpoint.
+
+---
+
+10. IMPLEMENTATION WORKFLOW
+
+Execute Phase 06 in controlled stages.
+
+STAGE 0 — Scope and Integration Review
+
+Read:
+
+- docs/PHASE_06_PREPARATION_AND_EXECUTION_SCOPE.md
+- docs/PROJECT_DECISION_LOG.md
+- docs/PHASE_PROGRESS_TRACKER.md
+- docs/CURRENT_WORK_CHECKPOINT.md
+- docs/SESSION_HANDOVER.md
+- Relevant Phase 05 calculation and architecture documentation.
+
+Inspect only the necessary existing source-code integration points.
+
+Do not restart previous phase audits.
+
+If the authoritative scope conflicts with an approved project decision, stop and report the conflict.
+
+STAGE 1 — Engineering Specifications
+
+Prepare formula specifications for all 20 calculations and the steam engine.
+
+Verify references, units, assumptions, test vectors and safety classifications.
+
+Preserve RESEARCH_PENDING status for any calculation whose engineering basis cannot be established.
+
+STAGE 2 — Calculation Engine
+
+Implement the verified calculation logic.
+
+Reuse the four existing Phase 05 implementations.
+
+Implement the remaining verified calculations.
+
+Keep unverified safety-critical calculations disabled.
+
+STAGE 3 — Steam Property Engine
+
+Implement and validate the IAPWS-IF97-based offline property engine.
+
+Do not compromise numerical accuracy to claim completion.
+
+STAGE 4 — UI Integration
+
+Integrate verified calculators into the existing Calculation module.
+
+Preserve the current application theme, navigation and other screens.
+
+STAGE 5 — Testing and Verification
+
+Run unit, integration, regression and independent engineering verification.
+
+Fix genuine Phase 06 defects within the authorized scope.
+
+STAGE 6 — Documentation and Checkpoint
+
+Create or update:
+
+- docs/PHASE_06_ENGINEERING_SPECIFICATIONS.md
+- docs/PHASE_06_CALCULATION_IMPLEMENTATION.md
+- docs/PHASE_06_STEAM_TABLE_ENGINE.md
+- docs/PHASE_06_TEST_RESULTS.md
+- docs/PHASE_06_KNOWN_LIMITATIONS.md
+- docs/PHASE_PROGRESS_TRACKER.md
+- docs/CURRENT_WORK_CHECKPOINT.md
+- docs/SESSION_HANDOVER.md
+
+Also update the decision log only where a new decision is genuinely required.
+
+Do not rewrite unrelated governance documentation.
+
+---
+
+11. FILE CHANGE CONTROL
+
+Before editing, establish the precise files needed for Phase 06.
+
+Prefer:
+
+- Existing calculation engine files.
+- Calculation models.
+- Relevant repositories.
+- Calculation ViewModels.
+- Calculation screens.
+- Relevant database migrations only when necessary.
+- Phase 06 documentation.
+
+Do not create unnecessary duplicate files.
+
+Do not modify:
+
+- Global application theme.
+- Unrelated navigation architecture.
+- Unrelated equipment content.
+- Boiler dashboard layout unless directly required for calculation integration.
+- Personal notes architecture.
+- Backup/restore architecture.
+- Unrelated database schemas.
+- Other project phases.
+
+Any necessary expansion beyond this scope must be documented and reported.
+
+---
+
+12. STOP CONDITIONS
+
+Immediately stop the affected task if:
+
+1. A required engineering formula cannot be reliably established.
+2. An authoritative reference is inaccessible and cannot be independently verified.
+3. A safety-critical calculation would require unsupported assumptions.
+4. A proposed database change risks personal data.
+5. A required architectural change exceeds Phase 06 authorization.
+6. A toolchain limitation prevents a claimed verification.
+7. An existing defect cannot be corrected without unrelated modifications.
+8. A calculation produces inconsistent or physically impossible results that cannot be explained.
+9. The scope document conflicts with an approved decision.
+
+Do not conceal incomplete work.
+
+Do not replace missing verification with fabricated PASS results.
+
+Independent calculators that are technically ready may proceed even if another isolated calculator remains RESEARCH_PENDING, provided the dependency and safety boundaries are respected.
+
+Report blockers clearly.
+
+---
+
+13. FINAL ACCEPTANCE CRITERIA
+
+Phase 06 may be marked COMPLETED only when the applicable criteria are satisfied.
+
+Deliverable| Acceptance requirement
+20 calculation modules| Individually implemented or explicitly classified with justified pending status
+Four existing calculations| Preserved and verified
+CALC-02| Verified methodology before activation
+IAPWS-IF97 engine| Reference-validated within documented accuracy
+Input validation| Tested
+Engineering formulas| Documented and independently checked
+Safety controls| Implemented and tested
+Calculation UI| Integrated into existing architecture
+Calculation history| Preserved and functional
+Offline behavior| Verified
+Regression tests| Passing
+Documentation| Updated
+Android compilation| Separately reported as verified or unverified
+
+Do not mark Phase 06 fully completed merely because source files have been created or a Python integration suite passes.
+
+If native Android compilation or physical-device testing remains unavailable, classify the final result honestly as PASS WITH CONDITIONS, where appropriate.
+
+---
+
+14. FINAL REPORT FORMAT
+
+At the end, provide a detailed Bengali technical report containing:
+
+1. Executive summary.
+2. Actual files created and modified.
+3. Calculation-by-calculation status.
+4. Engineering formulas and reference verification status.
+5. Steam engine accuracy results.
+6. Test results.
+7. Existing Phase 05 regression status.
+8. Android toolchain limitations.
+9. Remaining RESEARCH_PENDING items.
+10. Safety limitations.
+11. Documentation deliverables.
+12. Updated project checkpoint.
+13. Final phase verdict.
+
+Use these status labels:
+
+- COMPLETED
+- PASS
+- PASS WITH CONDITIONS
+- RESEARCH_PENDING
+- BLOCKED
+- NOT IMPLEMENTED
+
+Never claim full completion when mandatory verification remains outstanding.
+
+---
+
+15. FINAL STOP DIRECTIVE
+
+After completing Phase 06:
+
+- Preserve all source code and documentation.
+- Update the project checkpoint.
+- Update the progress tracker.
+- Update the session handover.
+- Record remaining limitations.
+- Do not begin Phase 07.
+- Do not start another phase automatically.
+- Do not commit or push.
+- Do not deploy.
+- Do not spend money.
+
+STOP and wait for explicit written authorization from the project owner.
+
+The final report must clearly state that Phase 06 is complete, conditionally complete, or blocked, based on actual evidence.
+
+---
+
+FINAL INSTRUCTION
+
+Build a technically dependable, genuinely useful, offline engineering calculation system for real textile and garment washing plant maintenance work.
+
+Engineering accuracy is more important than the number of completed calculators.
+
+Safety is more important than convenience.
+
+Verified functionality is more important than impressive completion claims.
+
+Preservation of existing project work is mandatory.
+
+Execute only the authorized Phase 06 scope.
