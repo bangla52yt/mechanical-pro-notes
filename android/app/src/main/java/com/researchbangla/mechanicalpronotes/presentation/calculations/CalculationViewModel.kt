@@ -199,7 +199,16 @@ class CalculationViewModel(
         }
     }
 
-    fun loadCalculationRunner(calculationId: String) {
+    fun loadCalculationRunner(calculationId: String, forceReset: Boolean = false) {
+        val targetId = calculationId.trim()
+        val current = _runnerState.value
+        if (!forceReset &&
+            !current.isLoading &&
+            current.errorMessage == null &&
+            current.definition?.id?.trim().equals(targetId, ignoreCase = true)
+        ) {
+            return
+        }
         viewModelScope.launch {
             _runnerState.update {
                 it.copy(
@@ -209,7 +218,7 @@ class CalculationViewModel(
                     isBookmarked = false
                 )
             }
-            val def = calculationRepository.getCalculationById(calculationId)
+            val def = calculationRepository.getCalculationById(targetId)
             if (def != null) {
                 // Initialize default inputs
                 val initialInputs = mutableMapOf<String, String>()

@@ -4,8 +4,14 @@ import com.researchbangla.mechanicalpronotes.data.local.database.entity.Calculat
 import com.researchbangla.mechanicalpronotes.data.local.database.entity.ChecklistProgressEntity
 import com.researchbangla.mechanicalpronotes.data.local.database.entity.UserBookmarkEntity
 import com.researchbangla.mechanicalpronotes.data.local.database.entity.UserNoteEntity
+import com.researchbangla.mechanicalpronotes.domain.catalog.PlantChecklistCatalog
 import com.researchbangla.mechanicalpronotes.domain.model.BackupImportFailureReason
 import com.researchbangla.mechanicalpronotes.domain.model.BackupImportResult
+import com.researchbangla.mechanicalpronotes.domain.model.ChecklistExecutionMetadata
+import com.researchbangla.mechanicalpronotes.domain.model.ChecklistShift
+import com.researchbangla.mechanicalpronotes.domain.model.CustomChecklistItem
+import com.researchbangla.mechanicalpronotes.domain.model.CustomChecklistTemplate
+import com.researchbangla.mechanicalpronotes.domain.model.NoteAssociationHelper
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.*
 import java.security.MessageDigest
@@ -14,7 +20,9 @@ internal data class ValidatedBackupPayload(
     val notes: List<UserNoteEntity>,
     val bookmarks: List<UserBookmarkEntity>,
     val calculationHistory: List<CalculationHistoryEntity>,
-    val checklistProgress: List<ChecklistProgressEntity>
+    val checklistProgress: List<ChecklistProgressEntity>,
+    val customChecklists: List<CustomChecklistTemplate> = emptyList(),
+    val checklistExecutionMetadata: List<ChecklistExecutionMetadata> = emptyList()
 )
 
 internal sealed interface BackupParseOutcome {
@@ -26,7 +34,7 @@ internal sealed interface BackupParseOutcome {
 internal object BackupJsonCodec {
 
     const val APP_NAME = "Mechanical Pro Notes"
-    const val CURRENT_BACKUP_VERSION = 2
+    const val CURRENT_BACKUP_VERSION = 3
 
     private val pretty2Json = Json {
         prettyPrint = true
@@ -44,6 +52,8 @@ internal object BackupJsonCodec {
         bookmarks: List<UserBookmarkEntity>,
         history: List<CalculationHistoryEntity>,
         checklists: List<ChecklistProgressEntity>,
+        customChecklists: List<CustomChecklistTemplate> = emptyList(),
+        executionMetadata: List<ChecklistExecutionMetadata> = emptyList(),
         exportTimestamp: Long = System.currentTimeMillis()
     ): String {
         val baseMetadata = buildJsonObject {
@@ -101,12 +111,52 @@ internal object BackupJsonCodec {
             }
         }
 
+        val customChecklistsArray = buildJsonArray {
+            for (tpl in customChecklists) {
+                add(buildJsonObject {
+                    put("id", tpl.id)
+                    put("title", tpl.title)
+                    put("description", tpl.description)
+                    put("equipment_id", tpl.equipmentId)
+                    put("created_at", tpl.createdAt)
+                    put("updated_at", tpl.updatedAt)
+                    put(
+                        "items",
+                        buildJsonArray {
+                            for (item in tpl.items) {
+                                add(buildJsonObject {
+                                    put("id", item.id)
+                                    put("text", item.text)
+                                    put("category", item.category)
+                                    put("is_crucial", item.isCrucial)
+                                })
+                            }
+                        }
+                    )
+                })
+            }
+        }
+
+        val executionMetadataArray = buildJsonArray {
+            for (meta in executionMetadata) {
+                add(buildJsonObject {
+                    put("checklist_id", meta.checklistId)
+                    put("equipment_id", meta.equipmentId)
+                    put("operator_name", meta.operatorName)
+                    put("shift", meta.shift.name)
+                    put("updated_at", meta.updatedAt)
+                })
+            }
+        }
+
         val rawRoot = buildJsonObject {
             put("metadata", baseMetadata)
             put("user_notes", notesArray)
             put("bookmarks", bookmarksArray)
             put("calculation_history", historyArray)
             put("checklist_progress", checklistArray)
+            put("custom_checklists", customChecklistsArray)
+            put("checklist_execution_metadata", executionMetadataArray)
         }
 
         val checksum = sha256(pretty2Json.encodeToString(JsonObject.serializer(), rawRoot))
@@ -124,6 +174,8 @@ internal object BackupJsonCodec {
             put("bookmarks", bookmarksArray)
             put("calculation_history", historyArray)
             put("checklist_progress", checklistArray)
+            put("custom_checklists", customChecklistsArray)
+            put("checklist_execution_metadata", executionMetadataArray)
         }
 
         return pretty2Json.encodeToString(JsonObject.serializer(), signedRoot)
@@ -320,12 +372,89 @@ internal object BackupJsonCodec {
             }
         }
 
+        val customChecklists = mutableListOf<CustomChecklistTemplate>()
+        if (root.containsKey("custom_checklists") && root["custom_checklists"] !is JsonNull) {
+            val arr = root["custom_checklists"] as? JsonArray
+                ?: return missingField("Malformed custom_checklists array in backup file.")
+            for (el in arr) {
+                val obj = el as? JsonObject ?: return missingField("Malformed entry in custom_checklists array.")
+                val id = obj.requiredNonBlankString("id")?.trim()
+                    ?: return missingField("A custom checklist entry is missing id.")
+                if (PlantChecklistCatalog.isPackagedChecklistId(id)) {
+                    return missingField("A custom checklist entry collides with a packaged checklist ID ($id).")
+                }
+                val title = obj.requiredNonBlankString("title")?.trim()
+                    ?: return missingField("A custom checklist entry is missing title.")
+                val description = obj.optionalString("description")?.trim().orEmpty()
+                val equipmentId = NoteAssociationHelper.normalizeEquipmentIdForStorage(obj.optionalString("equipment_id"))
+                val createdAt = obj.optionalLong("created_at") ?: defaultTimestamp
+                val updatedAt = obj.optionalLong("updated_at") ?: createdAt
+                val itemsArray = obj["items"] as? JsonArray
+                    ?: return missingField("A custom checklist entry is missing its items array.")
+                if (itemsArray.isEmpty()) {
+                    return missingField("A custom checklist entry must include at least one item.")
+                }
+                val parsedItems = mutableListOf<CustomChecklistItem>()
+                for (itemEl in itemsArray) {
+                    val itemObj = itemEl as? JsonObject
+                        ?: return missingField("Malformed item entry in custom checklist $id.")
+                    val itemId = itemObj.requiredInt("id")
+                        ?: return missingField("A custom checklist item is missing integer id.")
+                    val text = itemObj.requiredNonBlankString("text")?.trim()
+                        ?: return missingField("A custom checklist item is missing text.")
+                    val category = itemObj.optionalString("category")?.trim()?.ifEmpty { "Inspection" }
+                        ?: "Inspection"
+                    val isCrucial = itemObj.optionalBoolean("is_crucial") ?: false
+                    parsedItems += CustomChecklistItem(
+                        id = itemId,
+                        text = text,
+                        category = category,
+                        isCrucial = isCrucial
+                    )
+                }
+                customChecklists += CustomChecklistTemplate(
+                    id = id,
+                    title = title,
+                    description = description,
+                    equipmentId = equipmentId,
+                    items = parsedItems,
+                    createdAt = createdAt,
+                    updatedAt = updatedAt
+                )
+            }
+        }
+
+        val executionMetadata = mutableListOf<ChecklistExecutionMetadata>()
+        if (root.containsKey("checklist_execution_metadata") && root["checklist_execution_metadata"] !is JsonNull) {
+            val arr = root["checklist_execution_metadata"] as? JsonArray
+                ?: return missingField("Malformed checklist_execution_metadata array in backup file.")
+            for (el in arr) {
+                val obj = el as? JsonObject
+                    ?: return missingField("Malformed entry in checklist_execution_metadata array.")
+                val checklistId = obj.requiredNonBlankString("checklist_id")?.trim()
+                    ?: return missingField("A checklist execution metadata entry is missing checklist_id.")
+                val equipmentId = NoteAssociationHelper.normalizeEquipmentIdForStorage(obj.optionalString("equipment_id"))
+                val operatorName = obj.optionalString("operator_name")?.trim().orEmpty()
+                val shift = ChecklistShift.fromStored(obj.optionalString("shift"))
+                val updatedAt = obj.optionalLong("updated_at") ?: defaultTimestamp
+                executionMetadata += ChecklistExecutionMetadata(
+                    checklistId = checklistId,
+                    equipmentId = equipmentId,
+                    operatorName = operatorName,
+                    shift = shift,
+                    updatedAt = updatedAt
+                )
+            }
+        }
+
         return BackupParseOutcome.Valid(
             ValidatedBackupPayload(
                 notes = notes,
                 bookmarks = bookmarks,
                 calculationHistory = history,
-                checklistProgress = checklists
+                checklistProgress = checklists,
+                customChecklists = customChecklists,
+                checklistExecutionMetadata = executionMetadata
             )
         )
     }
@@ -385,6 +514,12 @@ internal object BackupJsonCodec {
         val el = this[key] ?: return null
         if (el is JsonNull) return null
         return (el as? JsonPrimitive)?.longOrNull
+    }
+
+    private fun JsonObject.optionalBoolean(key: String): Boolean? {
+        val el = this[key] ?: return null
+        if (el is JsonNull) return null
+        return (el as? JsonPrimitive)?.booleanOrNull
     }
 
     private fun JsonObject.requiredInt(key: String): Int? {

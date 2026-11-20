@@ -28,6 +28,7 @@ import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.luminance
@@ -127,14 +128,22 @@ fun ChecklistScreenContent(
         ?: visibleList.firstOrNull()
     val activeProgressByItem = activeChecklist?.let { state.progressByChecklist[it.id] } ?: emptyMap()
 
-    var showResetConfirm by remember { mutableStateOf(false) }
-    var pendingDeleteCustomChecklist by remember { mutableStateOf<PlantChecklist?>(null) }
-    var editingRemarkItem by remember(activeChecklist?.id) { mutableStateOf<ChecklistItem?>(null) }
-    var remarkDraft by remember(activeChecklist?.id) { mutableStateOf("") }
+    var showResetConfirm by rememberSaveable { mutableStateOf(false) }
+    var pendingDeleteCustomChecklistId by rememberSaveable { mutableStateOf<String?>(null) }
+    var editingRemarkItemId by rememberSaveable(activeChecklist?.id) { mutableStateOf<Int?>(null) }
+    var remarkDraft by rememberSaveable(activeChecklist?.id) { mutableStateOf("") }
 
-    var showExecutionEquipmentPicker by remember { mutableStateOf(false) }
-    var showEditorEquipmentPicker by remember { mutableStateOf(false) }
-    var showOperatorShiftDialog by remember { mutableStateOf(false) }
+    var showExecutionEquipmentPicker by rememberSaveable { mutableStateOf(false) }
+    var showEditorEquipmentPicker by rememberSaveable { mutableStateOf(false) }
+    var showOperatorShiftDialog by rememberSaveable { mutableStateOf(false) }
+
+    val pendingDeleteCustomChecklist = pendingDeleteCustomChecklistId?.let { targetId ->
+        visibleList.firstOrNull { it.id == targetId }
+            ?: state.checklists.firstOrNull { it.id == targetId }
+    }
+    val editingRemarkItem = editingRemarkItemId?.let { itemId ->
+        activeChecklist?.items?.firstOrNull { it.id == itemId }
+    }
 
     if (showResetConfirm && activeChecklist != null) {
         AlertDialog(
@@ -165,7 +174,7 @@ fun ChecklistScreenContent(
 
     pendingDeleteCustomChecklist?.let { deleteTarget ->
         AlertDialog(
-            onDismissRequest = { pendingDeleteCustomChecklist = null },
+            onDismissRequest = { pendingDeleteCustomChecklistId = null },
             title = { Text("Delete Custom Checklist?") },
             text = {
                 Text(
@@ -176,7 +185,7 @@ fun ChecklistScreenContent(
                 Button(
                     onClick = {
                         onDeleteCustom(deleteTarget.id)
-                        pendingDeleteCustomChecklist = null
+                        pendingDeleteCustomChecklistId = null
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
                     modifier = Modifier.defaultMinSize(minHeight = 48.dp)
@@ -184,7 +193,7 @@ fun ChecklistScreenContent(
             },
             dismissButton = {
                 TextButton(
-                    onClick = { pendingDeleteCustomChecklist = null },
+                    onClick = { pendingDeleteCustomChecklistId = null },
                     modifier = Modifier.defaultMinSize(minHeight = 48.dp)
                 ) { Text("Cancel") }
             }
@@ -195,7 +204,7 @@ fun ChecklistScreenContent(
     if (remarkTarget != null) {
         val existingRemark = activeProgressByItem[remarkTarget.id]?.remarks
         AlertDialog(
-            onDismissRequest = { editingRemarkItem = null },
+            onDismissRequest = { editingRemarkItemId = null },
             modifier = Modifier.imePadding(),
             title = {
                 Text(if (existingRemark.isNullOrBlank()) "Add Inspection Remark" else "Edit Inspection Remark")
@@ -224,7 +233,7 @@ fun ChecklistScreenContent(
                 Button(
                     onClick = {
                         onUpdateItemRemark(remarkTarget.id, remarkDraft)
-                        editingRemarkItem = null
+                        editingRemarkItemId = null
                     },
                     modifier = Modifier.defaultMinSize(minHeight = 48.dp)
                 ) {
@@ -236,14 +245,14 @@ fun ChecklistScreenContent(
                     TextButton(
                         onClick = {
                             onUpdateItemRemark(remarkTarget.id, "")
-                            editingRemarkItem = null
+                            editingRemarkItemId = null
                         },
                         modifier = Modifier.defaultMinSize(minHeight = 48.dp)
                     ) {
                         Text("Clear")
                     }
                     TextButton(
-                        onClick = { editingRemarkItem = null },
+                        onClick = { editingRemarkItemId = null },
                         modifier = Modifier.defaultMinSize(minHeight = 48.dp)
                     ) {
                         Text("Cancel")
@@ -741,7 +750,7 @@ fun ChecklistScreenContent(
                                     }
                                     Spacer(modifier = Modifier.width(8.dp))
                                     OutlinedButton(
-                                        onClick = { pendingDeleteCustomChecklist = activeChecklist },
+                                        onClick = { pendingDeleteCustomChecklistId = activeChecklist.id },
                                         colors = ButtonDefaults.outlinedButtonColors(
                                             contentColor = MaterialTheme.colorScheme.error
                                         ),
@@ -972,7 +981,7 @@ fun ChecklistScreenContent(
                                     IconButton(
                                         onClick = {
                                             remarkDraft = savedRemark.orEmpty()
-                                            editingRemarkItem = item
+                                            editingRemarkItemId = item.id
                                         },
                                         modifier = Modifier
                                             .padding(end = 4.dp)
@@ -1006,8 +1015,9 @@ private fun OperatorShiftEditorDialog(
     onDismiss: () -> Unit,
     onSave: (String, ChecklistShift) -> Unit
 ) {
-    var operatorDraft by remember { mutableStateOf(initialOperatorName) }
-    var selectedShift by remember { mutableStateOf(initialShift) }
+    var operatorDraft by rememberSaveable { mutableStateOf(initialOperatorName) }
+    var selectedShiftName by rememberSaveable { mutableStateOf(initialShift.name) }
+    val selectedShift = ChecklistShift.fromStored(selectedShiftName)
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -1063,7 +1073,7 @@ private fun OperatorShiftEditorDialog(
                                 .clickable(
                                     role = Role.RadioButton,
                                     onClickLabel = "Select shift ${shift.label}",
-                                    onClick = { selectedShift = shift }
+                                    onClick = { selectedShiftName = shift.name }
                                 )
                         ) {
                             Row(
@@ -1119,7 +1129,7 @@ private fun ChecklistEquipmentPickerDialog(
     onSelectEquipmentId: (String) -> Unit,
     onDismiss: () -> Unit
 ) {
-    var pickerQuery by remember { mutableStateOf("") }
+    var pickerQuery by rememberSaveable { mutableStateOf("") }
     val normalizedSelected = NoteAssociationHelper.normalizeEquipmentIdForStorage(selectedEquipmentId)
     val isLegacySelection = !NoteAssociationHelper.isUnassociated(normalizedSelected) &&
         availableEquipment.none { it.id.equals(normalizedSelected, ignoreCase = true) }

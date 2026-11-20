@@ -184,8 +184,8 @@ def run_tests():
     else:
         print("  ❌ Calculation mathematical verification failed.")
 
-    # TEST 7: Offline FTS5 Search & Query Resolution
-    print("\n[TEST 7] Testing Offline FTS5 Search Index...")
+    # TEST 7: Offline FTS4 Search & Query Resolution
+    print("\n[TEST 7] Testing Offline FTS4 Search Index...")
     conn = sqlite3.connect(DB_PATH)
     cur = conn.cursor()
     # Test sanitized hyphenated query
@@ -197,11 +197,11 @@ def run_tests():
     conn.close()
 
     if len(fts_results) > 0 and len(bengali_results) > 0:
-        print(f"  ✅ FTS5 search matched 'EQ-B01' -> {fts_results[0][1]}")
-        print(f"  ✅ FTS5 Bengali search matched 'বয়লার' -> {len(bengali_results)} matches found.")
+        print(f"  ✅ FTS4 search matched 'EQ-B01' -> {fts_results[0][1]}")
+        print(f"  ✅ FTS4 Bengali search matched 'বয়লার' -> {len(bengali_results)} matches found.")
         passed += 1
     else:
-        print(f"  ❌ FTS5 search failed: fts_results={fts_results}, bengali_results={bengali_results}")
+        print(f"  ❌ FTS4 search failed: fts_results={fts_results}, bengali_results={bengali_results}")
 
     # TEST 8: Personal User Data Isolation & NO_ACTION Cascade Safety
     print("\n[TEST 8] Testing Personal User Data Isolation & NO_ACTION Safety...")
@@ -241,15 +241,18 @@ def run_tests():
     # TEST 9: Checklist State Management & Statutory References
     print("\n[TEST 9] Testing Checklist Logic & Bangladesh Boiler Rules 2025 Citations...")
     chk_src_path = os.path.join(ANDROID_SRC, "presentation/checklists/ChecklistViewModel.kt")
+    cat_src_path = os.path.join(ANDROID_SRC, "domain/catalog/EngineeringCatalogs.kt")
     with open(chk_src_path, "r", encoding="utf-8") as f:
         chk_src = f.read()
+    with open(cat_src_path, "r", encoding="utf-8") as f:
+        cat_src = f.read()
 
-    has_rules_2025 = "Bangladesh Boiler Rules 2025" in chk_src
-    has_act_2022 = "Boilers Act 2022" in chk_src
-    has_checklists = "CHK-BLR-DAILY" in chk_src and "CHK-WASH-PREV" in chk_src and "CHK-HYDRO-SAFE" in chk_src
+    has_rules_2025 = "Bangladesh Boiler Rules, 2025" in cat_src or "Bangladesh Boiler Rules 2025" in cat_src
+    has_act_2022 = ("Boilers Act, 2022" in cat_src or "Boilers Act 2022" in cat_src) and "PlantChecklistCatalog" in chk_src
+    has_checklists = "CHK-BLR-DAILY" in cat_src and "CHK-WASH-PREV" in cat_src and "CHK-HYDRO-SAFE" in cat_src
 
     if has_rules_2025 and has_act_2022 and has_checklists:
-        print("  ✅ Checklists accurately reference Bangladesh Boiler Rules 2025, Boilers Act 2022, and industrial equipment.")
+        print("  ✅ Checklists accurately reference Boilers Act 2022, Bangladesh Boiler Rules 2025, and industrial equipment.")
         passed += 1
     else:
         print("  ❌ Checklist verification failed.")

@@ -17,6 +17,7 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MenuBook
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.luminance
@@ -51,13 +52,13 @@ fun FundamentalsScreen(
     val disciplineGroups = remember {
         listOf("All") + allTopics.map { it.disciplineGroup }.distinct()
     }
-    var selectedGroup by remember(initialFocusTopicId) {
+    var selectedGroup by rememberSaveable(initialFocusTopicId) {
         val targetGroup = initialFocusTopicId?.let { id ->
             allTopics.firstOrNull { it.id.equals(id, ignoreCase = true) }?.disciplineGroup
         } ?: "All"
         mutableStateOf(targetGroup)
     }
-    var showOnlyVerified by remember(initialFocusTopicId) { mutableStateOf(false) }
+    var showOnlyVerified by rememberSaveable(initialFocusTopicId) { mutableStateOf(false) }
 
     val filteredTopics = remember(selectedGroup, showOnlyVerified) {
         allTopics.filter { topic ->

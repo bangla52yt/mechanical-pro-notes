@@ -199,7 +199,11 @@ fun MathFormulaCard(
             ) {
                 Text(
                     text = formulaLatex,
-                    style = EngineeringFormulaStyle,
+                    style = MaterialTheme.typography.bodyLarge.copy(
+                        fontFamily = EngineeringFormulaStyle.fontFamily,
+                        fontWeight = EngineeringFormulaStyle.fontWeight,
+                        letterSpacing = EngineeringFormulaStyle.letterSpacing
+                    ),
                     color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.padding(12.dp)
                 )

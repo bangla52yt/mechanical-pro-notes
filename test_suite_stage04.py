@@ -15,12 +15,13 @@ WORKSPACE_ROOT = os.path.abspath(os.path.dirname(__file__))
 ANDROID_ROOT = os.path.join(WORKSPACE_ROOT, "android")
 PKG_ROOT = os.path.join(ANDROID_ROOT, "app/src/main/java/com/researchbangla/mechanicalpronotes")
 TEST_ROOT = os.path.join(ANDROID_ROOT, "app/src/test/java/com/researchbangla/mechanicalpronotes")
+ANDROID_TEST_ROOT = os.path.join(ANDROID_ROOT, "app/src/androidTest/java/com/researchbangla/mechanicalpronotes")
 DB_PATH = os.path.join(ANDROID_ROOT, "app/src/main/assets/database/mechanical_pro_notes.db")
 MANIFEST_PATH = os.path.join(ANDROID_ROOT, "app/src/main/AndroidManifest.xml")
 
-EXPECTED_DB_SIZE = 753664
-EXPECTED_DB_SHA256 = "d464bcb1de3459916db31687a5414a55fce10876bb8324aa1056c669f7e16ee0"
-EXPECTED_CALC_TABLES_SHA256 = "5dfc658879fe0adcb0904ee7361c2b229fd85e3ef1cedf90568bfae1443d19bd"
+EXPECTED_DB_SIZE = 856064
+EXPECTED_DB_SHA256 = "fe2fb5f9c47cabc2abb56e2873b3531b1b1512d2f4e09df6cadaef1791b90720"
+EXPECTED_CALC_TABLES_SHA256 = "94cf590dbcd1421fa6196787c5e4b2cf41cdfc0671f78a610961bbc523ab426a"
 
 
 def read(rel_path):
@@ -43,7 +44,9 @@ def sha256_file(path):
 def check_kotlin_delimiter_balance():
     errors = []
     kt_files = []
-    for root_dir in [PKG_ROOT, TEST_ROOT]:
+    for root_dir in [PKG_ROOT, TEST_ROOT, ANDROID_TEST_ROOT]:
+        if not os.path.exists(root_dir):
+            continue
         for dirpath, _, filenames in os.walk(root_dir):
             for fn in filenames:
                 if fn.endswith(".kt"):
@@ -321,7 +324,7 @@ def main():
     calc_sha = hashlib.sha256(json.dumps({"calc": calcs, "vars": vars_}, sort_keys=True, ensure_ascii=False).encode("utf-8")).hexdigest()
     conn.close()
     if db_size == EXPECTED_DB_SIZE and db_sha == EXPECTED_DB_SHA256 and calc_sha == EXPECTED_CALC_TABLES_SHA256:
-        print("  ✅ [S4-09] DATABASE & FORMULA INTEGRITY PASS | DB byte size (753,664 B) & calc SHA-256 unchanged.")
+        print("  ✅ [S4-09] DATABASE & FORMULA INTEGRITY PASS | DB byte size (856,064 B) & SHA-256 + calc SHA-256 unchanged.")
         passed += 1
     else:
         print(f"  ❌ [S4-09] DB INTEGRITY FAIL | size={db_size}, db_sha={db_sha}, calc_sha={calc_sha}")

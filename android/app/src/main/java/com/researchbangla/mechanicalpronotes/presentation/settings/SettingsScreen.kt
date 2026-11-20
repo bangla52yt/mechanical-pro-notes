@@ -11,6 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.luminance
@@ -37,8 +38,8 @@ fun SettingsScreen(
 ) {
     val state by viewModel.uiState.collectAsState()
     val context = LocalContext.current
-    var showExportDialog by remember { mutableStateOf(false) }
-    var overwriteOnImport by remember { mutableStateOf(false) }
+    var showExportDialog by rememberSaveable { mutableStateOf(false) }
+    var overwriteOnImport by rememberSaveable { mutableStateOf(false) }
 
     val createBackupLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.CreateDocument("application/json")
@@ -361,7 +362,7 @@ fun SettingsScreenContent(
                         modifier = Modifier.semantics { heading() }
                     )
                     Text(
-                        text = "Manage your user-created records stored in isolated Room tables. Packaged equipment catalogs, formulas, Steam Table data, and references are managed separately.",
+                        text = "Manage your personal records stored in isolated Room tables and on-device checklist workflows. Packaged equipment catalogs, formulas, Steam Table data, and references are managed separately.",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -456,7 +457,7 @@ fun SettingsScreenContent(
                                 fontWeight = FontWeight.Medium
                             )
                             Text(
-                                text = "Clears notes, bookmarks, calculation history & checklist progress only when restore verification passes.",
+                                text = "Clears notes, bookmarks, calculation history, checklist progress, custom checklists & shift metadata only after backup verification passes.",
                                 style = MaterialTheme.typography.labelSmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -483,7 +484,7 @@ fun SettingsScreenContent(
                     }
 
                     Text(
-                        text = "Backup v2 Note: JSON export/restore covers Room tables (notes, bookmarks, calculation history, checklist item progress & remarks). Local custom checklist templates and execution metadata (equipment/operator/shift) live in on-device Preferences.",
+                        text = "Backup v3 Note: SHA-256 signed JSON export/restore covers Room personal tables (notes, bookmarks, calculation history, checklist item progress & remarks) plus custom checklist templates and execution metadata (equipment/operator/shift), with backward-compatible v1/v2 import and compensating rollback on multi-store write failure.",
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -561,7 +562,7 @@ fun SettingsScreenContent(
                 text = {
                     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         Text(
-                            text = "Includes user notes, bookmarks, calculation history, and checklist progress (${state.exportedJson.length} characters).",
+                            text = "Includes user notes, bookmarks, calculation history, checklist progress, custom checklists, and shift metadata (${state.exportedJson.length} characters).",
                             style = MaterialTheme.typography.bodySmall
                         )
                         OutlinedTextField(

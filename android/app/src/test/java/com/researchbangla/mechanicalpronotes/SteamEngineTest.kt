@@ -103,4 +103,28 @@ class SteamEngineTest {
     fun infiniteGaugePressureThrowsException() {
         IapwsIf97SteamEngine.getPropertiesByGaugePressure(Double.POSITIVE_INFINITY)
     }
+
+    @Test
+    fun customAtmosphericReferenceComputesAccurateAbsolutePressureAndDynamicRangeHint() {
+        val props = IapwsIf97SteamEngine.getPropertiesByGaugePressure(pressureBarG = 5.0, atmosphericBar = 0.95)
+        assertEquals(5.95, props.pressureAbsoluteBar, 0.0001)
+        assertEquals(5.0, props.pressureGaugeBar, 0.0001)
+
+        val customHint = IapwsIf97SteamEngine.formatValidRangeHint(isGaugeMode = true, atmosphericBar = 0.95)
+        assertTrue(customHint.contains("-0.45 to 19.05 bar(g)"))
+        assertTrue(customHint.contains("Patm = 0.950 bar"))
+    }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun customAtmosphericReferenceFormatsDynamicGaugeLimitInErrorMessage() {
+        try {
+            IapwsIf97SteamEngine.getPropertiesByGaugePressure(pressureBarG = -0.46, atmosphericBar = 0.95)
+        } catch (ex: IllegalArgumentException) {
+            val msg = ex.message.orEmpty()
+            assertTrue("Expected dynamic min -0.45 in: $msg", msg.contains("-0.45"))
+            assertTrue("Expected dynamic max 19.05 in: $msg", msg.contains("19.05"))
+            assertFalse("Must not report stale 1.01325 limit -0.51 in: $msg", msg.contains("-0.51"))
+            throw ex
+        }
+    }
 }

@@ -51,6 +51,7 @@ class EquipmentViewModel(
     private val bookmarkedEquipmentIds = MutableStateFlow<Set<String>>(emptySet())
     private val inFlightBookmarkIds = mutableSetOf<String>()
     private var detailJob: Job? = null
+    private var activeDetailRequestId: String? = null
 
     init {
         viewModelScope.launch {
@@ -129,7 +130,17 @@ class EquipmentViewModel(
         _searchQuery.value = ""
     }
 
-    fun loadEquipmentDetail(equipmentId: String) {
+    fun loadEquipmentDetail(equipmentId: String, forceReload: Boolean = false) {
+        val targetKey = equipmentId.trim().uppercase()
+        val current = _detailState.value
+        if (!forceReload &&
+            current.errorMessage == null &&
+            (current.equipment?.id?.trim()?.uppercase() == targetKey ||
+                (current.isLoading && activeDetailRequestId == targetKey && detailJob?.isActive == true))
+        ) {
+            return
+        }
+        activeDetailRequestId = targetKey
         detailJob?.cancel()
         detailJob = viewModelScope.launch {
             _detailState.update {

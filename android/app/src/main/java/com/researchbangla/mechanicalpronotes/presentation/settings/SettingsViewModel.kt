@@ -235,7 +235,9 @@ class SettingsViewModel(
                             it.copy(
                                 importMessage = "Backup verified (SHA-256) and restored: " +
                                     "${result.notesImported} notes, ${result.bookmarksImported} bookmarks, " +
-                                    "${result.historyImported} calculations, ${result.checklistsImported} checklist entries.",
+                                    "${result.historyImported} calculations, ${result.checklistsImported} checklist entries, " +
+                                    "${result.customChecklistsImported} custom checklists, " +
+                                    "${result.executionMetadataImported} shift metadata records.",
                                 isImportError = false
                             )
                         }

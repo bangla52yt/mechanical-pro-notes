@@ -102,14 +102,17 @@ def main():
     else:
         print("  ❌ [S1-04] DEF-AUD-04 FAIL | CalculationResultFormatter or CalculationRunnerScreen check failed.")
 
-    # 5. DEF-AUD-05: Steam Table gauge/absolute hints + interpolation untouched
+    # 5. DEF-AUD-05: Steam Table gauge/absolute hints (dynamic Patm) + Batch 14 Eq. 31 / log-P interpolation
     steam_kt = read("android/app/src/main/java/com/researchbangla/mechanicalpronotes/domain/steam/IapwsIf97SteamEngine.kt")
     steam_ui = read("android/app/src/main/java/com/researchbangla/mechanicalpronotes/presentation/calculations/SteamTableScreen.kt")
-    if ("fun formatValidRangeHint(isGaugeMode: Boolean)" in steam_kt
-            and "-0.51 to 18.98 bar(g)" in steam_kt
+    if ("fun formatValidRangeHint(" in steam_kt
+            and "isGaugeMode: Boolean" in steam_kt
+            and "atmosphericBar: Double = DEFAULT_ATMOSPHERIC_BAR" in steam_kt
+            and "Patm =" in steam_kt
             and "IapwsIf97SteamEngine.formatValidRangeHint(isGaugeMode)" in steam_ui
-            and "Approved linear-pressure interpolation" in steam_kt):
-        print("  ✅ [S1-05] DEF-AUD-05 PASS | Steam gauge range hint [-0.51, 18.98 bar(g)] and linear-P interpolation preserved.")
+            and "tsatIf97Celsius" in steam_kt
+            and "interpolateLog" in steam_kt):
+        print("  ✅ [S1-05] DEF-AUD-05 PASS | Steam gauge range hint (dynamic Patm, default -0.51..18.98 bar(g)) and IAPWS-IF97 Eq.31 / log-P interpolation verified.")
         passed += 1
     else:
         print("  ❌ [S1-05] DEF-AUD-05 FAIL | SteamTableScreen/IapwsIf97SteamEngine check failed.")
@@ -240,9 +243,12 @@ def main():
                 i += 1
         return "".join(out)
 
+    ANDROID_TEST_ROOT = os.path.join(WORKSPACE_ROOT, "android/app/src/androidTest/java/com/researchbangla/mechanicalpronotes")
     kt_files = []
     unbalanced = []
-    for root_dir in (SRC_ROOT, TEST_ROOT):
+    for root_dir in (SRC_ROOT, TEST_ROOT, ANDROID_TEST_ROOT):
+        if not os.path.exists(root_dir):
+            continue
         for r, _, files in os.walk(root_dir):
             for fn in files:
                 if fn.endswith(".kt"):
@@ -252,7 +258,7 @@ def main():
                     if txt.count("{") != txt.count("}") or txt.count("(") != txt.count(")"):
                         unbalanced.append((fn, txt.count("{"), txt.count("}"), txt.count("("), txt.count(")")))
     if not unbalanced:
-        print(f"  ✅ [S1-10] STATIC-KT  PASS | Balanced braces/parens across {len(kt_files)} Kotlin main & test files (kotlinc absent in container).")
+        print(f"  ✅ [S1-10] STATIC-KT  PASS | Balanced braces/parens across {len(kt_files)} Kotlin main, test & androidTest files (kotlinc absent in container).")
         passed += 1
     else:
         print(f"  ❌ [S1-10] STATIC-KT  FAIL | Brace/paren imbalance: {unbalanced}")

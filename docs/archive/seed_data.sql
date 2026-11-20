@@ -1,4 +1,11 @@
 -- ==============================================================================
+-- DEPRECATION NOTICE (AUD-011):
+-- THIS FILE IS AN OBSOLETE PHASE 04 PARTIAL SEED DRAFT (6 REPRESENTATIVE ASSETS).
+-- DO NOT USE IT TO POPULATE THE PRODUCTION DATABASE.
+-- Authoritative 64-asset SQLite asset (`mechanical_pro_notes.db`) is generated
+-- by `/build_database.py`, `/seed_equipment_part1.py`, `/seed_equipment_part2.py`,
+-- and `/seed_phase06_calculations.py`.
+-- ==============================================================================
 -- MECHANICAL PRO NOTES — VERIFIED INITIAL SEED DATASET (PHASE 04)
 -- Classification: Strict 6-Tier Evidence Classification
 -- Scope: Initial verified test dataset covering Washing, Extraction, Pumps, and

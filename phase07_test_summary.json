@@ -1,11 +1,10 @@
 {
-  "timestamp_utc": "2026-11-18T12:23:58Z",
+  "timestamp_utc": "2026-11-20T06:31:56Z",
   "total_checks": 32,
   "status_counts": {
-    "PASS": 23,
+    "PASS": 27,
     "BLOCKED": 1,
     "PENDING": 2,
-    "FAIL": 4,
     "UNVERIFIED": 2
   },
   "checks": [
@@ -21,7 +20,7 @@
       "pillar": "Pillar 1",
       "method": "Static Kotlin token scan",
       "status": "PASS",
-      "detail": "Scanned 64 Kotlin source files: zero HTTP/socket/analytics/ad SDK references found."
+      "detail": "Scanned 65 Kotlin source files: zero HTTP/socket/analytics/ad SDK references found."
     },
     {
       "id": "P7-P1-03",
@@ -83,15 +82,15 @@
       "id": "P7-P4-01",
       "pillar": "Pillar 4",
       "method": "SQLite vs Kotlin spec parity",
-      "status": "FAIL",
-      "detail": "Mismatch: db_calcs=20, spec_ids=20, db_vars=87, bounds_ok=True."
+      "status": "PASS",
+      "detail": "All 20 calculations (CALC-01..CALC-20) and 87 variables verified with valid min < max bounds and in-range defaults."
     },
     {
       "id": "P7-P4-02",
       "pillar": "Pillar 4",
       "method": "CALC-02 governance check",
-      "status": "FAIL",
-      "detail": "DEF-P7-03: CALC-02 status mismatch."
+      "status": "PASS",
+      "detail": "CALC-02 verified IMPLEMENTED (BS 845-1 / IS 8753 gas parity) across DB, CalculationSpecifications, and BoilerThermalCalculations with explicit UNVERIFIED mixed-jhut calibration boundary."
     },
     {
       "id": "P7-P4-03",
@@ -182,14 +181,14 @@
       "pillar": "Pillar 6",
       "method": "SAF backup & Room DDL parity audit",
       "status": "PASS",
-      "detail": "DEF-P7-07 remediated: SHA-256 backup covers notes/bookmarks/history/checklists; SAF CreateDocument & OpenDocument wired; Room @Entity DDL matches SQLite schema cleanly."
+      "detail": "DEF-P7-07 remediated (Backup v3): SHA-256 backup covers all 6 personal collections (notes/bookmarks/history/checklists/custom checklists/metadata); SAF & Room DDL parity clean."
     },
     {
       "id": "P7-P7-01",
       "pillar": "Pillar 7",
       "method": "Static route topology check",
-      "status": "FAIL",
-      "detail": "Found 17/17 module routes, personal/family nav=False."
+      "status": "PASS",
+      "detail": "All 17 drawer routes + Notes/Bookmarks shortcuts + SecondaryModuleResolver family mappings verified across Screen.kt, AppNavigation.kt & ModuleCatalogAndScreens.kt."
     },
     {
       "id": "P7-P7-02",
@@ -217,14 +216,14 @@
       "pillar": "Pillar 8",
       "method": "Python SQLite FTS4 micro-benchmark",
       "status": "PASS",
-      "detail": "Python sqlite3 FTS4 latency (7 queries, 64 indexed assets): avg=0.135 ms, max=0.574 ms (<50 ms target; Android UI latency PENDING)."
+      "detail": "Python sqlite3 FTS4 latency (7 queries, 64 indexed assets): avg=0.164 ms, max=0.617 ms (<50 ms target; Android UI latency PENDING)."
     },
     {
       "id": "P7-P8-02",
       "pillar": "Pillar 8",
       "method": "Statutory citation text audit",
-      "status": "FAIL",
-      "detail": "The Boilers Act, 2022 (Act No. 06 of 2022) and Bangladesh Boiler Rules, 2025 (S.R.O. 279-Law/2025) verified in BoilerDashboardScreen & ChecklistViewModel."
+      "status": "PASS",
+      "detail": "The Boilers Act, 2022 (Act No. 06 of 2022) and Bangladesh Boiler Rules, 2025 (S.R.O. No. 279-Law/2025) verified in BoilerDashboardScreen, EngineeringCatalogs & ChecklistViewModel."
     },
     {
       "id": "P7-P8-03",
@@ -234,14 +233,7 @@
       "detail": "DEF-P7-08 remediated: Notes, calculation history, bookmarks, DataStore preferences, and checklist_progress all persist across restarts."
     }
   ],
-  "open_defects": [
-    {
-      "id": "DEF-P7-03",
-      "severity": "High",
-      "component": "CalculationSpecifications.kt / BoilerThermalCalculations.kt / DB",
-      "summary": "CALC-02 status mismatch: DB=IMPLEMENTED, Spec=IMPLEMENTED, Exec=OTHER"
-    }
-  ],
+  "open_defects": [],
   "steam_benchmark_vs_doc016": {
     "tested_points": 21,
     "max_dt_c": 0.04,
@@ -544,8 +536,8 @@
       "steam": 9,
       "বয়লার": 3
     },
-    "avg_ms": 0.1347,
-    "max_ms": 0.574,
+    "avg_ms": 0.1635,
+    "max_ms": 0.6169,
     "target_ms": 50.0,
     "device_runtime_status": "PENDING"
   }

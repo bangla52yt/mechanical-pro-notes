@@ -3,7 +3,7 @@
 Mechanical Pro Notes - Phase 06 Field Calculations, Steam Tables & Maintenance Tools Integration Test Suite
 Tests:
   1. All 20 calculation modules registered in Room SQLite database.
-  2. All 79 formula variables defined with valid bounds and units.
+  2. All 87 formula variables defined with valid bounds and units.
   3. IAPWS-IF97 Offline Saturated Steam Property Engine (0.5 to 20 bar).
   4. Category A: 14 Boiler Thermal & Utility Calculations (CALC-01 to CALC-14).
   5. Category B: 6 Wash Plant Maintenance & Reliability Tools (CALC-15 to CALC-20).
@@ -64,7 +64,7 @@ def run_tests():
     conn.close()
 
     calcs_with_min_vars = all(c[1] >= 2 for c in counts)
-    if var_count >= 70 and distinct_calcs == 20 and calcs_with_min_vars:
+    if var_count == 87 and distinct_calcs == 20 and calcs_with_min_vars:
         print(f"  ✅ Verified {var_count} formula variables across all 20 calculators with min/max bounds.")
         passed += 1
     else:
@@ -196,11 +196,11 @@ def run_tests():
     # Total Cap = 500 * 1.3 * 50 = 32500 g CaCO3 -> Vrun = 32500 / 220 = 147.7 m3
     calc19_vol = (500 * 1.3 * 50) / 220
     calc19_salt = (500 * 140) / 1000 # 70 kg
-    # CALC-20: Compressed Air: CFM=150, d=50 mm, L=60 m, P=7 bar g -> dP ≈ 0.052 bar
-    calc20_dp = (0.00075 * 60 * (150**1.85)) / ((50**5) * 8.01325)
+    # CALC-20: Compressed Air: CFM=150, d=50 mm (5.0 cm), L=60 m, P=7 bar g (8.01325 bar a) -> dP ≈ 0.0191 bar
+    calc20_dp = (0.00075 * 60 * (150**1.85)) / (((50.0 / 10.0) ** 5) * 8.01325)
 
     if (abs(calc15_L - 2539.44) < 1.0 and abs(calc16_g - 484.8) < 2.0 and abs(calc17_steam - 81.2) < 2.0 and
-        abs(calc18_evap - 146.2) < 2.0 and abs(calc19_vol - 147.7) < 1.0 and calc19_salt == 70.0 and calc20_dp < 0.1):
+        abs(calc18_evap - 146.2) < 2.0 and abs(calc19_vol - 147.7) < 1.0 and calc19_salt == 70.0 and abs(calc20_dp - 0.0191) < 0.001):
         print(f"  ✅ CALC-15 V-Belt Pitch Length: {calc15_L:.2f} mm (Ratio 3.0:1)")
         print(f"  ✅ CALC-16 Hydro Extractor G-Force: {calc16_g:.2f} G (Drum Rim Speed 53.4 m/s)")
         print(f"  ✅ CALC-17 Wash Batch Steam Consumption: {calc17_steam:.2f} kg steam/batch")

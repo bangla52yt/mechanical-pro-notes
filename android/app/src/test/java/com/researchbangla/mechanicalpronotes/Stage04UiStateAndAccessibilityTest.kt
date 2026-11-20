@@ -48,6 +48,13 @@ import com.researchbangla.mechanicalpronotes.presentation.search.SearchUiState
 import com.researchbangla.mechanicalpronotes.presentation.search.SearchViewModel
 import com.researchbangla.mechanicalpronotes.presentation.settings.ClearDataConfirmationStep
 import com.researchbangla.mechanicalpronotes.presentation.settings.SettingsViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelStore
+import com.researchbangla.mechanicalpronotes.data.local.database.MechanicalProDatabase
+import com.researchbangla.mechanicalpronotes.di.AppContainer
+import com.researchbangla.mechanicalpronotes.presentation.navigation.AppViewModelFactory
+import com.researchbangla.mechanicalpronotes.presentation.theme.MechanicalTypography
+import com.researchbangla.mechanicalpronotes.presentation.theme.scaledTypography
 import com.researchbangla.mechanicalpronotes.presentation.units.UnitConverterStateHolder
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
@@ -2049,7 +2056,7 @@ class Stage04UiStateAndAccessibilityTest {
         assertTrue(notesVm.uiState.value.bookmarks.any { it.entityId == "EQ-G01" })
 
         // Unpin EQ-G01 via EquipmentViewModel -> reflects back on Home immediately
-        equipVm.toggleDetailBookmark()
+        equipVm.toggleBookmark(eqG)
         assertFalse("EQ-G01" in homeVm.uiState.value.bookmarkedEquipmentIds)
 
         // Safe removeBookmark handles padded/legacy IDs AND ignores stale duplicate taps cleanly
@@ -2083,8 +2090,8 @@ class Stage04UiStateAndAccessibilityTest {
                 CalculationHistoryItem(
                     calculationId = "CALC-01",
                     calculationTitle = "Direct Boiler Thermal Efficiency",
-                    inputsSummary = "m_s=5000",
-                    primaryResultSummary = "84.2 %",
+                    inputValues = mapOf("m_s" to 5000.0),
+                    outputValues = mapOf("Thermal Efficiency" to 84.2),
                     timestamp = 300L
                 )
             )
@@ -2111,7 +2118,7 @@ class Stage04UiStateAndAccessibilityTest {
                 title = "Feedwater Valve Check",
                 description = "Pre-shift feedwater check",
                 equipmentId = "EQ-G01",
-                items = listOf(ChecklistItem(1001, "Feedwater", "Check suction strainer", true))
+                items = listOf(CustomChecklistItem(1001, "Check suction strainer", "Feedwater", true))
             )
         )
         assertEquals(PlantChecklistCatalog.ALL_CHECKLISTS.size + 1, homeVm.uiState.value.activitySummary.totalChecklistsCount)
@@ -2146,8 +2153,165 @@ class Stage04UiStateAndAccessibilityTest {
             resolveBoilerBookmarkTarget(" eq-g01 ")
         )
         assertEquals(
-            BoilerBookmarkTarget.Tab(BoilerTab.SAFETY_LAW),
-            resolveBoilerBookmarkTarget(" boiler:safety_law ")
+            BoilerBookmarkTarget.Tab(BoilerTab.STATUTORY_RULES),
+            resolveBoilerBookmarkTarget(" boiler:statutory_rules ")
         )
+    }
+
+    @Test
+    fun scaledTypographyScalesAll15Material3StylesUniformlyWithoutMutatingBase() {
+        val factor = 1.18f
+        val scaled = scaledTypography(MechanicalTypography, factor)
+
+        val baseStyles = listOf(
+            MechanicalTypography.displayLarge,
+            MechanicalTypography.displayMedium,
+            MechanicalTypography.displaySmall,
+            MechanicalTypography.headlineLarge,
+            MechanicalTypography.headlineMedium,
+            MechanicalTypography.headlineSmall,
+            MechanicalTypography.titleLarge,
+            MechanicalTypography.titleMedium,
+            MechanicalTypography.titleSmall,
+            MechanicalTypography.bodyLarge,
+            MechanicalTypography.bodyMedium,
+            MechanicalTypography.bodySmall,
+            MechanicalTypography.labelLarge,
+            MechanicalTypography.labelMedium,
+            MechanicalTypography.labelSmall
+        )
+        val scaledStyles = listOf(
+            scaled.displayLarge,
+            scaled.displayMedium,
+            scaled.displaySmall,
+            scaled.headlineLarge,
+            scaled.headlineMedium,
+            scaled.headlineSmall,
+            scaled.titleLarge,
+            scaled.titleMedium,
+            scaled.titleSmall,
+            scaled.bodyLarge,
+            scaled.bodyMedium,
+            scaled.bodySmall,
+            scaled.labelLarge,
+            scaled.labelMedium,
+            scaled.labelSmall
+        )
+
+        baseStyles.zip(scaledStyles).forEach { (baseStyle, scaledStyle) ->
+            assertEquals(baseStyle.fontSize.value * factor, scaledStyle.fontSize.value, 0.01f)
+            assertEquals(baseStyle.lineHeight.value * factor, scaledStyle.lineHeight.value, 0.01f)
+        }
+        // Base typography must remain untouched
+        assertEquals(14f, MechanicalTypography.bodyMedium.fontSize.value, 0.01f)
+    }
+
+    @Test
+    fun appViewModelFactoryRetainsAllEightViewModelsAndPreservesStateAcrossSimulatedRotation() = runTest {
+        val equipmentList = listOf(
+            Equipment("EQ-A01", "CAT-A", "FAM-A", "Belly Washer", "বেলি ওয়াশার", ContentDepth.FULL_BLUEPRINT, CriticalityTier.PRIMARY_PRODUCTION),
+            Equipment("EQ-G01", "CAT-G", "FAM-G", "Gas Boiler", "গ্যাস বয়লার", ContentDepth.FULL_BLUEPRINT, CriticalityTier.SAFETY_CRITICAL)
+        )
+        val testCalcDef = CalculationDefinition(
+            id = "CALC-01",
+            code = "CALC-01",
+            title = "Boiler Thermal Efficiency",
+            bengaliTitle = "দক্ষতা",
+            category = "Boiler Thermal",
+            formulaLatex = "eta = ...",
+            engineeringReference = "BS 845",
+            assumptions = "Steady state",
+            limitations = "None",
+            status = CalculationStatus.IMPLEMENTED,
+            variables = listOf(
+                FormulaVariable(1L, "CALC-01", "x", "Input X", "kW", 10.0, 0.0, 1000.0, true)
+            )
+        )
+        val container = object : AppContainer {
+            override val database: MechanicalProDatabase
+                get() = error("Direct DB handle not required by ViewModel constructors")
+            override val equipmentRepository = FakeEquipmentRepository(equipmentList)
+            override val boilerRepository = FakeBoilerRepository(equipmentList)
+            override val searchRepository = object : SearchRepository {
+                override suspend fun search(query: String, limit: Int): List<Equipment> = emptyList()
+                override fun searchFlow(query: String, limit: Int): Flow<List<Equipment>> = flowOf(emptyList())
+            }
+            override val calculationRepository = FakeCalculationRepository(testCalcDef)
+            override val userDataRepository = FakeUserDataRepository()
+            override val userPreferencesRepository = object : UserPreferencesRepository {
+                override val userPreferences: Flow<UserPreferences> = flowOf(UserPreferences())
+                override suspend fun setThemeMode(mode: AppThemeMode) = Unit
+                override suspend fun setLargePlantFloorFont(enabled: Boolean) = Unit
+            }
+        }
+
+        val store = ViewModelStore()
+        val factory = AppViewModelFactory(container)
+        val provider = ViewModelProvider(store, factory)
+
+        val home1 = provider[HomeViewModel::class.java]
+        val equip1 = provider[EquipmentViewModel::class.java]
+        val boiler1 = provider[BoilerViewModel::class.java]
+        val calc1 = provider[CalculationViewModel::class.java]
+        val search1 = provider[SearchViewModel::class.java]
+        val notes1 = provider[NotesViewModel::class.java]
+        val chk1 = provider[ChecklistViewModel::class.java]
+        val settings1 = provider[SettingsViewModel::class.java]
+
+        // Simulate user editing calculator inputs, running result, and switching equipment detail tab
+        calc1.loadCalculationRunner("CALC-01")
+        calc1.onInputChange("x", "42")
+        calc1.executeCalculation()
+        assertEquals(42.0, calc1.runnerState.value.result?.primaryOutputValue ?: 0.0, 0.01)
+
+        equip1.loadEquipmentDetail("EQ-A01")
+        equip1.selectDetailTab(3)
+        assertEquals(3, equip1.detailState.value.selectedTab)
+
+        // Simulate Activity recreation against retained ViewModelStore & LaunchedEffect re-invocation
+        val recreatedProvider = ViewModelProvider(store, factory)
+        assertSame(home1, recreatedProvider[HomeViewModel::class.java])
+        assertSame(equip1, recreatedProvider[EquipmentViewModel::class.java])
+        assertSame(boiler1, recreatedProvider[BoilerViewModel::class.java])
+        assertSame(calc1, recreatedProvider[CalculationViewModel::class.java])
+        assertSame(search1, recreatedProvider[SearchViewModel::class.java])
+        assertSame(notes1, recreatedProvider[NotesViewModel::class.java])
+        assertSame(chk1, recreatedProvider[ChecklistViewModel::class.java])
+        assertSame(settings1, recreatedProvider[SettingsViewModel::class.java])
+
+        recreatedProvider[CalculationViewModel::class.java].loadCalculationRunner("CALC-01")
+        assertEquals("42", calc1.runnerState.value.inputValues["x"])
+        assertEquals(42.0, calc1.runnerState.value.result?.primaryOutputValue ?: 0.0, 0.01)
+
+        recreatedProvider[EquipmentViewModel::class.java].loadEquipmentDetail("EQ-A01")
+        assertEquals(3, equip1.detailState.value.selectedTab)
+
+        // Switching to a different equipment ID resets tab back to 0 cleanly
+        recreatedProvider[EquipmentViewModel::class.java].loadEquipmentDetail("EQ-G01")
+        assertEquals("EQ-G01", equip1.detailState.value.equipment?.id)
+        assertEquals(0, equip1.detailState.value.selectedTab)
+
+        store.clear()
+    }
+
+    @Test
+    fun unitConverterStateHolderSnapshotsAndRestoresCategoryUnitsAndInput() {
+        val original = UnitConverterStateHolder()
+        original.applyUnitSystemPreference(UnitSystem.IMPERIAL)
+        original.selectCategory(UnitCategory.TEMPERATURE)
+        original.selectFromUnit("deg_f")
+        original.selectToUnit("deg_c")
+        original.onInputChange("212")
+
+        val snap = original.snapshot()
+        val restored = UnitConverterStateHolder(snap)
+
+        assertEquals(UnitCategory.TEMPERATURE, restored.uiState.value.selectedCategory)
+        assertEquals("deg_f", restored.uiState.value.fromUnitCode)
+        assertEquals("deg_c", restored.uiState.value.toUnitCode)
+        assertEquals("212", restored.uiState.value.inputText)
+        assertEquals(UnitSystem.IMPERIAL, restored.uiState.value.preferredUnitSystem)
+        val result = restored.uiState.value.conversionResult as UnitConversionResult.Success
+        assertEquals(100.0, result.outputValue, 0.05)
     }
 }

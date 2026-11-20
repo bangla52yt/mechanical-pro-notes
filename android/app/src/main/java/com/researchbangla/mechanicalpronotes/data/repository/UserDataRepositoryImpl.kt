@@ -19,14 +19,49 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
-class UserDataRepositoryImpl(
-    private val database: MechanicalProDatabase,
+class UserDataRepositoryImpl private constructor(
+    private val database: MechanicalProDatabase?,
     private val userNoteDao: UserNoteDao,
     private val bookmarkDao: BookmarkDao,
     private val calculationDao: CalculationDao,
     private val checklistDao: ChecklistDao,
-    private val userPreferencesRepository: UserPreferencesRepository? = null
+    private val userPreferencesRepository: UserPreferencesRepository?,
+    private val runInTransaction: suspend (suspend () -> Unit) -> Unit
 ) : UserDataRepository {
+
+    constructor(
+        database: MechanicalProDatabase,
+        userNoteDao: UserNoteDao,
+        bookmarkDao: BookmarkDao,
+        calculationDao: CalculationDao,
+        checklistDao: ChecklistDao,
+        userPreferencesRepository: UserPreferencesRepository? = null
+    ) : this(
+        database = database,
+        userNoteDao = userNoteDao,
+        bookmarkDao = bookmarkDao,
+        calculationDao = calculationDao,
+        checklistDao = checklistDao,
+        userPreferencesRepository = userPreferencesRepository,
+        runInTransaction = { block -> database.withTransaction { block() } }
+    )
+
+    internal constructor(
+        userNoteDao: UserNoteDao,
+        bookmarkDao: BookmarkDao,
+        calculationDao: CalculationDao,
+        checklistDao: ChecklistDao,
+        userPreferencesRepository: UserPreferencesRepository? = null,
+        runInTransaction: suspend (suspend () -> Unit) -> Unit = { it() }
+    ) : this(
+        database = null,
+        userNoteDao = userNoteDao,
+        bookmarkDao = bookmarkDao,
+        calculationDao = calculationDao,
+        checklistDao = checklistDao,
+        userPreferencesRepository = userPreferencesRepository,
+        runInTransaction = runInTransaction
+    )
 
     private val fallbackCustomChecklistsFlow = MutableStateFlow<List<CustomChecklistTemplate>>(emptyList())
     private val fallbackExecutionMetadataFlow = MutableStateFlow<Map<String, ChecklistExecutionMetadata>>(emptyMap())
@@ -222,7 +257,7 @@ class UserDataRepositoryImpl(
             persistExecutionMetadata(currentMeta)
         }
 
-        database.withTransaction {
+        runInTransaction {
             checklistDao.clearChecklistProgress(normalizedId)
             bookmarkDao.deleteBookmark(BookmarkEntityType.CHECKLIST.name, normalizedId)
         }
@@ -269,13 +304,17 @@ class UserDataRepositoryImpl(
         val bookmarks = bookmarkDao.getAllBookmarks().first()
         val history = calculationDao.getCalculationHistory().first()
         val checklists = checklistDao.getAllProgress().first()
+        val customChecklists = getCustomChecklists().first()
+        val executionMetadata = getAllChecklistExecutionMetadata().first().values.toList()
 
-        // SHA-256 signed backup v2 covering user_notes, bookmarks, calculation_history, checklist_progress
+        // SHA-256 signed backup v3 covering Room personal tables plus DataStore checklist workflows
         return BackupJsonCodec.encodeBackup(
             notes = notes,
             bookmarks = bookmarks,
             history = history,
-            checklists = checklists
+            checklists = checklists,
+            customChecklists = customChecklists,
+            executionMetadata = executionMetadata
         )
     }
 
@@ -285,13 +324,21 @@ class UserDataRepositoryImpl(
             is BackupParseOutcome.Valid -> parsed.payload
         }
 
-        return try {
-            var notesAdded = 0
-            var bookmarksAdded = 0
-            var historyAdded = 0
-            var checklistsUpdated = 0
+        val prevNotes = userNoteDao.getAllNotes().first()
+        val prevBookmarks = bookmarkDao.getAllBookmarks().first()
+        val prevHistory = calculationDao.getCalculationHistory().first()
+        val prevChecklists = checklistDao.getAllProgress().first()
+        val prevCustomChecklists = getCustomChecklists().first()
+        val prevExecutionMetadata = getAllChecklistExecutionMetadata().first()
 
-            database.withTransaction {
+        var notesAdded = 0
+        var bookmarksAdded = 0
+        var historyAdded = 0
+        var checklistsUpdated = 0
+        var roomCommitted = false
+
+        return try {
+            runInTransaction {
                 if (overwrite) {
                     userNoteDao.deleteAllNotes()
                     bookmarkDao.deleteAllBookmarks()
@@ -339,12 +386,65 @@ class UserDataRepositoryImpl(
                     checklistsUpdated++
                 }
             }
+            roomCommitted = true
+
+            val nextCustomChecklists = if (overwrite) {
+                payload.customChecklists.distinctBy { it.id.trim().uppercase() }
+            } else {
+                val merged = prevCustomChecklists.toMutableList()
+                val seenIds = merged.mapTo(mutableSetOf()) { it.id.trim().uppercase() }
+                for (tpl in payload.customChecklists) {
+                    val key = tpl.id.trim().uppercase()
+                    if (seenIds.add(key)) {
+                        merged += tpl
+                    }
+                }
+                merged
+            }.sortedByDescending { it.updatedAt }
+            val customChecklistsImported = if (overwrite) {
+                nextCustomChecklists.size
+            } else {
+                val prevIds = prevCustomChecklists.mapTo(mutableSetOf()) { it.id.trim().uppercase() }
+                nextCustomChecklists.count { it.id.trim().uppercase() !in prevIds }
+            }
+
+            val nextExecutionMetadata = if (overwrite) {
+                buildMap {
+                    for (meta in payload.checklistExecutionMetadata) {
+                        put(meta.checklistId, meta)
+                    }
+                }
+            } else {
+                val merged = prevExecutionMetadata.toMutableMap()
+                for (meta in payload.checklistExecutionMetadata) {
+                    val existingKey = merged.keys.firstOrNull { it.equals(meta.checklistId, ignoreCase = true) }
+                    if (existingKey == null) {
+                        merged[meta.checklistId] = meta
+                    }
+                }
+                merged
+            }
+            val executionMetadataImported = if (overwrite) {
+                nextExecutionMetadata.size
+            } else {
+                val prevMetaIds = prevExecutionMetadata.keys.mapTo(mutableSetOf()) { it.trim().uppercase() }
+                nextExecutionMetadata.keys.count { it.trim().uppercase() !in prevMetaIds }
+            }
+
+            if (overwrite || customChecklistsImported > 0) {
+                persistCustomChecklists(nextCustomChecklists)
+            }
+            if (overwrite || executionMetadataImported > 0) {
+                persistExecutionMetadata(nextExecutionMetadata)
+            }
 
             BackupImportResult.Success(
                 notesImported = notesAdded,
                 bookmarksImported = bookmarksAdded,
                 historyImported = historyAdded,
-                checklistsImported = checklistsUpdated
+                checklistsImported = checklistsUpdated,
+                customChecklistsImported = customChecklistsImported,
+                executionMetadataImported = executionMetadataImported
             )
         } catch (_: SQLiteException) {
             BackupImportResult.Failure(
@@ -352,16 +452,73 @@ class UserDataRepositoryImpl(
                 "Database transaction failed while restoring backup. Existing data was not modified."
             )
         } catch (_: IllegalStateException) {
-            BackupImportResult.Failure(
-                BackupImportFailureReason.DATABASE_ERROR,
-                "Database state prevented backup restore. Existing data was not modified."
-            )
+            if (roomCommitted) {
+                restorePreImportSnapshot(
+                    prevNotes = prevNotes,
+                    prevBookmarks = prevBookmarks,
+                    prevHistory = prevHistory,
+                    prevChecklists = prevChecklists,
+                    prevCustomChecklists = prevCustomChecklists,
+                    prevExecutionMetadata = prevExecutionMetadata
+                )
+            } else {
+                BackupImportResult.Failure(
+                    BackupImportFailureReason.DATABASE_ERROR,
+                    "Database state prevented backup restore. Existing data was not modified."
+                )
+            }
         } catch (_: Exception) {
-            BackupImportResult.Failure(
-                BackupImportFailureReason.UNEXPECTED_ERROR,
-                "Unexpected error occurred while restoring backup."
-            )
+            if (roomCommitted) {
+                restorePreImportSnapshot(
+                    prevNotes = prevNotes,
+                    prevBookmarks = prevBookmarks,
+                    prevHistory = prevHistory,
+                    prevChecklists = prevChecklists,
+                    prevCustomChecklists = prevCustomChecklists,
+                    prevExecutionMetadata = prevExecutionMetadata
+                )
+            } else {
+                BackupImportResult.Failure(
+                    BackupImportFailureReason.UNEXPECTED_ERROR,
+                    "Unexpected error occurred while restoring backup."
+                )
+            }
         }
+    }
+
+    private suspend fun restorePreImportSnapshot(
+        prevNotes: List<com.researchbangla.mechanicalpronotes.data.local.database.entity.UserNoteEntity>,
+        prevBookmarks: List<com.researchbangla.mechanicalpronotes.data.local.database.entity.UserBookmarkEntity>,
+        prevHistory: List<CalculationHistoryEntity>,
+        prevChecklists: List<com.researchbangla.mechanicalpronotes.data.local.database.entity.ChecklistProgressEntity>,
+        prevCustomChecklists: List<CustomChecklistTemplate>,
+        prevExecutionMetadata: Map<String, ChecklistExecutionMetadata>
+    ): BackupImportResult.Failure {
+        val prefsRolledBack = runCatching {
+            persistCustomChecklists(prevCustomChecklists)
+            persistExecutionMetadata(prevExecutionMetadata)
+        }.isSuccess
+        val roomRolledBack = runCatching {
+            runInTransaction {
+                userNoteDao.deleteAllNotes()
+                bookmarkDao.deleteAllBookmarks()
+                calculationDao.deleteAllHistory()
+                checklistDao.deleteAllChecklistProgress()
+                prevNotes.forEach { userNoteDao.insertNote(it) }
+                prevBookmarks.forEach { bookmarkDao.insertBookmark(it) }
+                prevHistory.forEach { calculationDao.insertHistory(it) }
+                prevChecklists.forEach { checklistDao.upsertProgress(it) }
+            }
+        }.isSuccess
+        val rollbackNote = if (prefsRolledBack && roomRolledBack) {
+            "Previous Room and checklist workflow records were restored."
+        } else {
+            "Compensating rollback was only partially completed across storage stores; verify saved notes and custom checklists."
+        }
+        return BackupImportResult.Failure(
+            BackupImportFailureReason.DATABASE_ERROR,
+            "Failed while saving checklist workflow preferences after database restore. $rollbackNote"
+        )
     }
 
     override suspend fun clearAllPersonalData(): ClearPersonalDataResult {
@@ -372,7 +529,7 @@ class UserDataRepositoryImpl(
             var checklistCount = 0
             val customChecklistsCount = getCustomChecklists().first().size
 
-            database.withTransaction {
+            runInTransaction {
                 notesCount = userNoteDao.getAllNotes().first().size
                 bookmarksCount = bookmarkDao.getAllBookmarks().first().size
                 historyCount = calculationDao.getCalculationHistory().first().size

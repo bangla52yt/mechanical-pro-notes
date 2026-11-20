@@ -151,7 +151,9 @@ sealed interface BackupImportResult {
         val notesImported: Int,
         val bookmarksImported: Int,
         val historyImported: Int,
-        val checklistsImported: Int
+        val checklistsImported: Int,
+        val customChecklistsImported: Int = 0,
+        val executionMetadataImported: Int = 0
     ) : BackupImportResult
 
     data class Failure(

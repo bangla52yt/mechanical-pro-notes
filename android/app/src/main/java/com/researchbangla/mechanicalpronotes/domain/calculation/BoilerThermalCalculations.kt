@@ -290,7 +290,7 @@ object BoilerThermalCalculations {
         require(tdsBoiler > tdsFeed) { "Boiler drum TDS limit ($tdsBoiler ppm) must exceed feedwater TDS ($tdsFeed ppm)." }
 
         val bdPercent = (tdsFeed / (tdsBoiler - tdsFeed)) * 100.0
-        val ms = inputs["m_s"] ?: 0.0
+        val ms = UnitConverters.validateNonNegativeFinite(inputs["m_s"] ?: 0.0, "Steam Generation Rate (m_s, kg/h)")
         val bdFlowKgH = if (ms > 0.0) ms * (bdPercent / 100.0) else 0.0
 
         return CalculationExecutionResult(
@@ -377,9 +377,12 @@ object BoilerThermalCalculations {
     fun executeCalc07(inputs: Map<String, Double>): CalculationExecutionResult {
         val qM3h = UnitConverters.validatePositiveFinite(inputs["Q"], "Flow Rate Q (m3/h)")
         val hMeters = UnitConverters.validatePositiveFinite(inputs["H"], "Total Dynamic Head H (m)")
-        val density = inputs["density"] ?: 960.0 // Feedwater density at ~90°C
-        val pumpEfficiency = inputs["eta_pump"] ?: 0.65
+        val density = UnitConverters.validatePositiveFinite(inputs["density"] ?: 960.0, "Water Density (kg/m3)")
+        val pumpEfficiency = UnitConverters.validatePositiveFinite(inputs["eta_pump"] ?: 0.65, "Pump Efficiency")
 
+        require(density in 800.0..1100.0) {
+            "Water density ($density kg/m3) must be within physical feedwater range [800.0, 1100.0] kg/m3."
+        }
         require(pumpEfficiency in 0.1..0.98) { "Pump efficiency must be between 10% and 98%." }
 
         val g = 9.81
@@ -502,8 +505,14 @@ object BoilerThermalCalculations {
         val tGasIn = UnitConverters.validatePositiveFinite(inputs["T_gas_in"], "Flue Gas Inlet Temp (°C)")
         val tGasOut = UnitConverters.validatePositiveFinite(inputs["T_gas_out"], "Flue Gas Outlet Temp (°C)")
         val mWaterKgH = UnitConverters.validatePositiveFinite(inputs["m_water"], "Feedwater Flow Rate (kg/h)")
-        val tWaterIn = inputs["T_water_in"] ?: 85.0
+        val tWaterIn = UnitConverters.validateNonNegativeFinite(inputs["T_water_in"] ?: 85.0, "Feedwater Inlet Temp (°C)")
 
+        require(tWaterIn in 0.0..150.0) {
+            "Feedwater inlet temperature ($tWaterIn°C) must be within liquid water economizer range [0.0, 150.0] °C."
+        }
+        require(tWaterIn < tGasIn) {
+            "Feedwater inlet temperature ($tWaterIn°C) must be strictly below flue gas inlet temperature ($tGasIn°C)."
+        }
         require(tGasIn > tGasOut) { "Flue gas inlet temp ($tGasIn°C) must exceed outlet ($tGasOut°C)." }
         require(tGasOut >= 120.0) { "Outlet temp ($tGasOut°C) should stay above 120°C to avoid acid dew point condensation." }
 

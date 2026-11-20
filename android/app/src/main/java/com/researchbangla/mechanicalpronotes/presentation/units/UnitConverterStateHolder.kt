@@ -1,5 +1,7 @@
 package com.researchbangla.mechanicalpronotes.presentation.units
 
+import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.listSaver
 import com.researchbangla.mechanicalpronotes.domain.model.UnitSystem
 import com.researchbangla.mechanicalpronotes.domain.unit.EngineeringUnit
 import com.researchbangla.mechanicalpronotes.domain.unit.UnitCategory
@@ -22,14 +24,62 @@ data class UnitConverterUiState(
     val equivalentConversions: List<Pair<EngineeringUnit, String>> = emptyList()
 )
 
+data class UnitConverterSnapshot(
+    val categoryName: String,
+    val fromUnitCode: String,
+    val toUnitCode: String,
+    val inputText: String,
+    val unitSystemName: String
+)
+
 /**
  * Pure-Kotlin state holder for [UnitConverterScreen] (keeps 8 ViewModel count invariant intact
- * while preserving clean unidirectional data flow via StateFlow).
+ * while preserving clean unidirectional data flow via StateFlow and configuration-change persistence).
  */
-class UnitConverterStateHolder {
+class UnitConverterStateHolder(
+    initialSnapshot: UnitConverterSnapshot? = null
+) {
 
-    private val _uiState = MutableStateFlow(buildInitialState())
+    private val _uiState = MutableStateFlow(
+        initialSnapshot?.let(::buildStateFromSnapshot) ?: buildInitialState()
+    )
     val uiState: StateFlow<UnitConverterUiState> = _uiState.asStateFlow()
+
+    fun snapshot(): UnitConverterSnapshot {
+        val current = _uiState.value
+        return UnitConverterSnapshot(
+            categoryName = current.selectedCategory.name,
+            fromUnitCode = current.fromUnitCode,
+            toUnitCode = current.toUnitCode,
+            inputText = current.inputText,
+            unitSystemName = current.preferredUnitSystem.name
+        )
+    }
+
+    fun restore(snapshot: UnitConverterSnapshot) {
+        _uiState.value = buildStateFromSnapshot(snapshot)
+    }
+
+    private fun buildStateFromSnapshot(snapshot: UnitConverterSnapshot): UnitConverterUiState {
+        val category = runCatching { UnitCategory.valueOf(snapshot.categoryName) }
+            .getOrDefault(UnitCategory.PRESSURE)
+        val unitSystem = runCatching { UnitSystem.valueOf(snapshot.unitSystemName) }
+            .getOrDefault(UnitSystem.METRIC)
+        val units = UnitConverterEngine.getUnits(category)
+        val (fallbackFrom, fallbackTo) = UnitPreferenceHelper.preferredCategoryUnits(category, unitSystem)
+        val resolvedFrom = units.firstOrNull { it.code == snapshot.fromUnitCode }?.code ?: fallbackFrom
+        val resolvedTo = units.firstOrNull { it.code == snapshot.toUnitCode }?.code ?: fallbackTo
+        return recalculate(
+            UnitConverterUiState(
+                selectedCategory = category,
+                availableUnits = units,
+                fromUnitCode = resolvedFrom,
+                toUnitCode = resolvedTo,
+                inputText = snapshot.inputText,
+                preferredUnitSystem = unitSystem
+            )
+        )
+    }
 
     private fun buildInitialState(): UnitConverterUiState {
         val category = UnitCategory.PRESSURE
@@ -45,6 +95,37 @@ class UnitConverterStateHolder {
                 inputText = text,
                 preferredUnitSystem = UnitSystem.METRIC
             )
+        )
+    }
+
+    companion object {
+        val Saver: Saver<UnitConverterStateHolder, Any> = listSaver(
+            save = { holder ->
+                val snap = holder.snapshot()
+                listOf(
+                    snap.categoryName,
+                    snap.fromUnitCode,
+                    snap.toUnitCode,
+                    snap.inputText,
+                    snap.unitSystemName
+                )
+            },
+            restore = { saved ->
+                val list = saved.filterIsInstance<String>()
+                if (list.size == 5) {
+                    UnitConverterStateHolder(
+                        UnitConverterSnapshot(
+                            categoryName = list[0],
+                            fromUnitCode = list[1],
+                            toUnitCode = list[2],
+                            inputText = list[3],
+                            unitSystemName = list[4]
+                        )
+                    )
+                } else {
+                    UnitConverterStateHolder()
+                }
+            }
         )
     }
 

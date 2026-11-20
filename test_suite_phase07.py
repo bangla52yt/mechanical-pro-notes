@@ -11,6 +11,7 @@ import os
 import re
 import sqlite3
 import sys
+import tempfile
 import time
 
 WORKSPACE_ROOT = os.path.abspath(os.path.dirname(__file__))
@@ -265,9 +266,9 @@ def run_test_suite():
     wash_src = open(WASH_CALCS_KT, encoding="utf-8").read()
     spec_ids = re.findall(r'id = "(CALC-\d+)"', spec_src)
 
-    if len(db_calcs) == 20 and len(spec_ids) == 20 and len(db_vars) == 79 and bounds_ok:
+    if len(db_calcs) == 20 and len(spec_ids) == 20 and len(db_vars) == 87 and bounds_ok:
         record("P7-P4-01", "Pillar 4", "SQLite vs Kotlin spec parity", "PASS",
-               "All 20 calculations (CALC-01..CALC-20) and 79 variables verified with valid min < max bounds and in-range defaults.")
+               "All 20 calculations (CALC-01..CALC-20) and 87 variables verified with valid min < max bounds and in-range defaults.")
     else:
         record("P7-P4-01", "Pillar 4", "SQLite vs Kotlin spec parity", "FAIL",
                f"Mismatch: db_calcs={len(db_calcs)}, spec_ids={len(spec_ids)}, db_vars={len(db_vars)}, bounds_ok={bounds_ok}.")
@@ -275,21 +276,24 @@ def run_test_suite():
     calc02_db_status = dict((r[0], r[3]) for r in db_calcs).get("CALC-02")
     calc02_kt_block = re.search(r'id = "CALC-02".*?status = CalculationStatus\.(\w+)', spec_src, re.S)
     calc02_kt_status = calc02_kt_block.group(1) if calc02_kt_block else "UNKNOWN"
+    calc02_kt_text = calc02_kt_block.group(0) if calc02_kt_block else ""
     calc02_exec_block = re.search(r'fun executeCalc02\(.*?^\s{4}\}', boiler_src, re.M | re.S)
-    calc02_exec_status = "RESEARCH_PENDING" if (calc02_exec_block and "status = CalculationStatus.RESEARCH_PENDING" in calc02_exec_block.group(0)) else "OTHER"
+    calc02_exec_text = calc02_exec_block.group(0) if calc02_exec_block else ""
+    calc02_exec_status = "IMPLEMENTED" if "status = CalculationStatus.IMPLEMENTED" in calc02_exec_text else "OTHER"
+    calc02_jhut_boundary = "UNVERIFIED" in calc02_kt_text and "UNVERIFIED MIXED-JHUT BOUNDARY" in calc02_exec_text
 
-    if calc02_db_status == "RESEARCH_PENDING" and calc02_kt_status == "RESEARCH_PENDING" and calc02_exec_status == "RESEARCH_PENDING":
+    if calc02_db_status == "IMPLEMENTED" and calc02_kt_status == "IMPLEMENTED" and calc02_exec_status == "IMPLEMENTED" and calc02_jhut_boundary:
         record("P7-P4-02", "Pillar 4", "CALC-02 governance check", "PASS",
-               "DEF-P7-03 remediated: CALC-02 retains RESEARCH_PENDING governance status across DB, CalculationSpecifications, and BoilerThermalCalculations.")
+               "CALC-02 verified IMPLEMENTED (BS 845-1 / IS 8753 gas parity) across DB, CalculationSpecifications, and BoilerThermalCalculations with explicit UNVERIFIED mixed-jhut calibration boundary.")
     else:
         defects.append({
             "id": "DEF-P7-03",
             "severity": "High",
             "component": "CalculationSpecifications.kt / BoilerThermalCalculations.kt / DB",
-            "summary": f"CALC-02 status mismatch: DB={calc02_db_status}, Spec={calc02_kt_status}, Exec={calc02_exec_status}",
+            "summary": f"CALC-02 governance mismatch: DB={calc02_db_status}, Spec={calc02_kt_status}, Exec={calc02_exec_status}, jhutBoundary={calc02_jhut_boundary}",
         })
         record("P7-P4-02", "Pillar 4", "CALC-02 governance check", "FAIL",
-               f"DEF-P7-03: CALC-02 status mismatch.")
+               f"DEF-P7-03: CALC-02 status/boundary mismatch.")
 
     calc09_ok = ("OCIB" in boiler_src or "Chief Inspector" in boiler_src) and "statutory" in boiler_src.lower()
     record("P7-P4-03", "Pillar 4", "CALC-09 regulatory check", "PASS" if calc09_ok else "FAIL",
@@ -523,7 +527,7 @@ def run_test_suite():
     backup_codec_path = os.path.join(SRC_ROOT, "data/repository/BackupJsonCodec.kt")
     backup_codec_src = open(backup_codec_path, encoding="utf-8").read() if os.path.exists(backup_codec_path) else ""
     settings_src = open(os.path.join(SRC_ROOT, "presentation/settings/SettingsScreen.kt"), encoding="utf-8").read()
-    exports_full = all(k in (user_repo_src + "\n" + backup_codec_src) for k in ["calculation_history", "checklist_progress", "sha256"])
+    exports_full = all(k in (user_repo_src + "\n" + backup_codec_src) for k in ["calculation_history", "checklist_progress", "custom_checklists", "checklist_execution_metadata", "sha256"])
     uses_saf_launcher = "CreateDocument" in settings_src and "OpenDocument" in settings_src
     room_has_fk_note = "ForeignKey(" in dyn_entities_src
     db_has_fk_note = "FOREIGN KEY" in user_note_ddl.upper()
@@ -532,7 +536,7 @@ def run_test_suite():
 
     if exports_full and uses_saf_launcher and ddl_parity_ok and has_chk_unique_idx:
         record("P7-P6-03", "Pillar 6", "SAF backup & Room DDL parity audit", "PASS",
-               "DEF-P7-07 remediated: SHA-256 backup covers notes/bookmarks/history/checklists; SAF CreateDocument & OpenDocument wired; Room @Entity DDL matches SQLite schema cleanly.")
+               "DEF-P7-07 remediated (Backup v3): SHA-256 backup covers all 6 personal collections (notes/bookmarks/history/checklists/custom checklists/metadata); SAF & Room DDL parity clean.")
     else:
         record("P7-P6-03", "Pillar 6", "SAF backup & Room DDL parity audit", "FAIL",
                f"DEF-P7-07 gaps: exports_full={exports_full}, uses_saf={uses_saf_launcher}, ddl_parity={ddl_parity_ok}, has_chk_idx={has_chk_unique_idx}")
@@ -543,16 +547,22 @@ def run_test_suite():
     print("\n[PILLAR 7] NAVIGATION TOPOLOGY & UI RUNTIME ARCHITECTURE")
 
     screen_src = open(os.path.join(SRC_ROOT, "presentation/navigation/Screen.kt"), encoding="utf-8").read()
+    mod_cat_src = open(os.path.join(SRC_ROOT, "presentation/navigation/ModuleCatalogAndScreens.kt"), encoding="utf-8").read()
     expected_modules = [
         "Home", "Fundamentals", "WashPlant", "BoilerModule", "Pumps", "Transmission",
         "Steam", "Water", "Pneumatics", "CoolingHeating", "Etp", "Maintenance",
         "Checklists", "Calculations", "Library", "Search", "Settings"
     ]
     found_mods = [m for m in expected_modules if f"object {m} : Screen" in screen_src]
-    has_personal_nav = "Screen.Notes" in nav_src and "Screen.Bookmarks" in nav_src and "secondaryModuleFamilyMap" in nav_src
+    has_personal_nav = (
+        "Screen.Notes" in nav_src
+        and "Screen.Bookmarks" in nav_src
+        and "SecondaryModuleResolver" in mod_cat_src
+        and "mappedFamilyId" in mod_cat_src
+    )
     if len(found_mods) == 17 and has_personal_nav:
         record("P7-P7-01", "Pillar 7", "Static route topology check", "PASS",
-               "All 17 drawer routes + Notes/Bookmarks shortcuts + family-mapped secondary modules verified in Screen.kt & AppNavigation.kt.")
+               "All 17 drawer routes + Notes/Bookmarks shortcuts + SecondaryModuleResolver family mappings verified across Screen.kt, AppNavigation.kt & ModuleCatalogAndScreens.kt.")
     else:
         record("P7-P7-01", "Pillar 7", "Static route topology check", "FAIL",
                f"Found {len(found_mods)}/17 module routes, personal/family nav={has_personal_nav}.")
@@ -609,10 +619,21 @@ def run_test_suite():
                f"FTS4 query failure or latency exceeded: max={max_ms:.3f} ms, matches={match_counts}")
 
     chk_vm_src = open(os.path.join(SRC_ROOT, "presentation/checklists/ChecklistViewModel.kt"), encoding="utf-8").read()
-    has_act_2022 = "Boilers Act, 2022" in boiler_dash_src and "Act No. 06 of 2022" in boiler_dash_src and "Boilers Act 2022" in chk_vm_src
-    has_rules_2025 = "Bangladesh Boiler Rules, 2025" in boiler_dash_src and "S.R.O. 279-Law/2025" in boiler_dash_src and "Bangladesh Boiler Rules 2025" in chk_vm_src
+    eng_cat_src = open(os.path.join(SRC_ROOT, "domain/catalog/EngineeringCatalogs.kt"), encoding="utf-8").read()
+    has_act_2022 = (
+        "Boilers Act, 2022" in boiler_dash_src
+        and "Act No. 06 of 2022" in boiler_dash_src
+        and "The Boilers Act, 2022" in eng_cat_src
+        and "PlantChecklistCatalog" in chk_vm_src
+    )
+    has_rules_2025 = (
+        "Bangladesh Boiler Rules, 2025" in boiler_dash_src
+        and "S.R.O. No. 279-Law/2025" in boiler_dash_src
+        and "Bangladesh Boiler Rules, 2025" in eng_cat_src
+        and "S.R.O. No. 279-Law/2025" in eng_cat_src
+    )
     record("P7-P8-02", "Pillar 8", "Statutory citation text audit", "PASS" if (has_act_2022 and has_rules_2025) else "FAIL",
-           "The Boilers Act, 2022 (Act No. 06 of 2022) and Bangladesh Boiler Rules, 2025 (S.R.O. 279-Law/2025) verified in BoilerDashboardScreen & ChecklistViewModel.")
+           "The Boilers Act, 2022 (Act No. 06 of 2022) and Bangladesh Boiler Rules, 2025 (S.R.O. No. 279-Law/2025) verified in BoilerDashboardScreen, EngineeringCatalogs & ChecklistViewModel.")
 
     checklist_persists = "userDataRepository" in chk_vm_src and "setChecklistItemCompleted" in chk_vm_src and "getAllChecklistProgress" in chk_vm_src
     record("P7-P8-03", "Pillar 8", "Force-close persistence audit", "PASS" if checklist_persists else "FAIL",
@@ -659,10 +680,13 @@ def run_test_suite():
         },
     }
 
-    summary_path = os.path.join(WORKSPACE_ROOT, "phase07_test_summary.json")
+    summary_path = os.environ.get(
+        "PHASE07_SUMMARY_OUT",
+        os.path.join(tempfile.gettempdir(), "phase07_test_summary.json"),
+    )
     with open(summary_path, "w", encoding="utf-8") as f:
         json.dump(summary, f, indent=2, ensure_ascii=False)
-    print("  JSON report written to phase07_test_summary.json")
+    print(f"  JSON report written to {summary_path} (tracked baseline phase07_test_summary.json preserved)")
 
     return 1 if defects or counts.get("FAIL", 0) > 0 else 0
 

@@ -15,6 +15,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
@@ -43,10 +44,15 @@ fun NotesScreen(
 ) {
     val state by viewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
-    var pendingDeleteNote by remember { mutableStateOf<UserNote?>(null) }
+    var pendingDeleteNoteId by rememberSaveable { mutableStateOf<Long?>(null) }
+    var consumedInitialEquipmentId by rememberSaveable { mutableStateOf<String?>(null) }
+    val pendingDeleteNote = pendingDeleteNoteId?.let { targetId ->
+        state.allNotes.firstOrNull { it.id == targetId }
+    }
 
     LaunchedEffect(initialEquipmentId) {
-        if (!initialEquipmentId.isNullOrBlank()) {
+        if (!initialEquipmentId.isNullOrBlank() && consumedInitialEquipmentId != initialEquipmentId) {
+            consumedInitialEquipmentId = initialEquipmentId
             viewModel.openNoteEditor(equipmentId = initialEquipmentId)
         }
     }
@@ -79,12 +85,12 @@ fun NotesScreen(
         onAddEditorTag = { viewModel.addEditorTag() },
         onRemoveEditorTag = viewModel::removeEditorTag,
         onSaveNote = viewModel::saveNote,
-        onRequestDeleteNote = { pendingDeleteNote = it },
+        onRequestDeleteNote = { pendingDeleteNoteId = it.id },
         onConfirmDeleteNote = { target ->
             viewModel.deleteNote(target.id)
-            pendingDeleteNote = null
+            pendingDeleteNoteId = null
         },
-        onDismissDeleteNote = { pendingDeleteNote = null }
+        onDismissDeleteNote = { pendingDeleteNoteId = null }
     )
 }
 
@@ -116,7 +122,7 @@ fun NotesScreenContent(
     onDismissDeleteNote: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var isEquipmentPickerOpen by remember { mutableStateOf(false) }
+    var isEquipmentPickerOpen by rememberSaveable { mutableStateOf(false) }
 
     Scaffold(
         modifier = modifier,
@@ -588,7 +594,7 @@ private fun EquipmentPickerDialog(
     onSelectEquipmentId: (String) -> Unit,
     onDismiss: () -> Unit
 ) {
-    var pickerQuery by remember { mutableStateOf("") }
+    var pickerQuery by rememberSaveable { mutableStateOf("") }
     val normalizedSelected = NoteAssociationHelper.normalizeEquipmentIdForStorage(selectedEquipmentId)
     val isUnknownLegacySelection = !NoteAssociationHelper.isUnassociated(normalizedSelected) &&
         availableEquipment.none { it.id.equals(normalizedSelected, ignoreCase = true) }

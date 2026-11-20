@@ -1,6 +1,6 @@
 # Mechanical Pro Notes
 
-**Personal Offline-First Mechanical Engineering & Garment Washing Plant Maintenance Reference App (Android)**
+**Offline-First Mechanical Engineering & Garment Washing Plant Maintenance Reference App (Android)**
 
 Target repository: `researchbangla/mechanical-pro-notes` (`DEC-002`)
 
@@ -9,61 +9,63 @@ Target repository: `researchbangla/mechanical-pro-notes` (`DEC-002`)
 ## Key Architecture & Safety Policies
 
 - **Zero Network Policy (`DEC-016`):** `android.permission.INTERNET` and `ACCESS_NETWORK_STATE` are completely absent from `AndroidManifest.xml`, and `android:allowBackup="false"` is enforced. All knowledge lookup, full-text search, steam tables, and engineering calculations execute 100% locally.
-- **Personal Data Separation (`DEC-014`):** Personal field notes (`user_note` with `ON DELETE NO ACTION` foreign key protection), bookmarks (`user_bookmark`), calculation history (`calculation_history`), and checklist state (`checklist_progress`) are isolated from static equipment seed updates and support **SHA-256 checksummed JSON export/import** via Android Storage Access Framework (SAF).
-- **Content-Depth Transparency (`DEC-009`):** All **64 equipment records** across **16 system families (`FAM-A`..`FAM-P`)** display honest status badges (`FULL_CONTENT_BLUEPRINT`, `PARTIAL_CONTENT_BLUEPRINT`, `RESEARCH_PENDING`, `INVENTORY_ONLY`).
-- **Dedicated Boiler Module (`DEC-008`):** Industrial gas and jhut/biomass boilers (`FAM-G`) are separated into a top-level dashboard citing **The Boilers Act, 2022 (Act No. 06 of 2022)** and **Bangladesh Boiler Rules, 2025 (S.R.O. No. 279-Law/2025)**.
+- **Personal Data Separation (`DEC-014`):** Personal field notes (`user_note`), bookmarks (`user_bookmark`), calculation history (`calculation_history`), and checklist progress (`checklist_progress`) live in isolated Room tables with zero cascading links to static equipment rows, alongside custom checklists and execution metadata in DataStore Preferences.
+- **Backup v3 Portability & Recovery:** Supports **SHA-256 checksummed JSON export/import (`backup_version = 3`)** covering all 6 personal collections (`user_notes`, `user_bookmarks`, `checklist_progress`, `calculation_history`, `custom_checklists`, `checklist_execution_metadata`) via Android Storage Access Framework (SAF), with pre-restore snapshot and compensating rollback across Room + DataStore on error and backward compatibility with v1/v2 backups.
+- **Content-Depth Transparency (`DEC-009`):** All **64 equipment records** across **16 system families (`FAM-A`–`FAM-P`)** display explicit status badges (**`56` `FULL_CONTENT_BLUEPRINT`**, **`1` `PARTIAL_CONTENT_BLUEPRINT`** [`EQ-G02`], **`7` `RESEARCH_PENDING`**, **`0` `INVENTORY_ONLY`**), **`18` offline AAPT2-safe Vector Drawable schematics**, and **`15/15` verified Mechanical Fundamentals (`FUND-01`–`FUND-15`)**.
+- **Dedicated Boiler Module & Statutory Citations (`DEC-008`):** Industrial gas and jhut/biomass boilers (`FAM-G`) are separated into a top-level dashboard citing **The Boilers Act, 2022 (Act No. 06 of 2022)**, **Bangladesh Boiler Rules, 2025 (S.R.O. No. 279-Law/2025)**, and **ISO 20816-3:2026 (`120–30,000 r/min`, `> 15 kW`)** condition monitoring boundaries.
 - **Safety Governance & Calculation Boundaries:**
-  - `CALC-01`..`CALC-20` implemented across boiler thermal efficiency/utilities and wash plant maintenance tools (`CALC-02` retains `RESEARCH_PENDING` governance status until plant gas-analyzer calibration and jhut elemental fuel limits are established).
-  - Offline saturated steam table (`0.50`–`20.00 bar a`) using approved **linear-pressure interpolation** across a **56-node** IAPWS-IF97 saturation grid (`21/21` points reconciled to DOC-MPN-016 anchors; independent external NIST REFPROP verification remains recommended prior to statutory certification).
+  - All **`20` calculations (`CALC-01`–`CALC-20`, `87` formula variables)** are `IMPLEMENTED` with strict `NaN`/`Infinity` and physical bounds validation.
+  - **`CALC-02` (Indirect Boiler Efficiency):** Verified for natural gas (BS 845-1 / IS 8753, enforcing mass `kJ/kg` vs volumetric `kJ/Nm3 + fuel_density` parity); solid/mixed garment **jhut** (`fuel_type = 2`) retains an explicit **`UNVERIFIED` calibration boundary** requiring lab-measured GCV (`kJ/kg`), H2%, `siegert_k`, `theoretical_air`, `M_fuel`, and `L_unburnt`.
+  - **Saturated Steam Table (`IapwsIf97SteamEngine`):** IAPWS-IF97 Region 4 only (`0.50–20.00 bar(a)`, dynamic gauge offset `Patm` defaulting to `1.01325 bar`), using exact Region 4 Equation 31 for `T_sat(P)`, log-pressure interpolation for `v_g`, and 56-node linear-P interpolation for `h_f` / `h_fg`. Independent external **NIST REFPROP / CoolProp** solver cross-check remains recommended prior to statutory certification.
 
 ---
 
-## Tech Stack
+## Tech Stack & Workspace Layout
 
-- **Language & UI:** Kotlin `2.0.21`, Jetpack Compose (BOM `2024.10.01`), Material 3 (`1.3.0`), Material Icons Extended
-- **Persistence:** Android Room `2.6.1` (KSP) + SQLite `FTS4` bilingual English/Bengali search (`mechanical_pro_notes.db`) + Jetpack DataStore Preferences
-- **Build Target:** Android Gradle Plugin `8.7.2`, Gradle `8.9`, JDK `17`, `compileSdk = 35`, `minSdk = 26`, `targetSdk = 35`
+- **Authoritative Android App (`android/`):** Kotlin `2.0.21`, Jetpack Compose (BOM `2024.10.01`), Material 3 (`1.3.0`), Material Icons Extended, Room `2.6.1` (KSP) + SQLite `FTS4` bilingual English/Bengali search (`mechanical_pro_notes.db`, `user_version = 1`), Jetpack DataStore Preferences, `kotlinx.serialization`.
+- **Build Target:** Android Gradle Plugin `8.7.2`, Gradle `8.9`, JDK `17`, `compileSdk = 35`, `minSdk = 26`, `targetSdk = 35`.
+- **Root Workspace Helper Files:**
+  - `build_database.py`, `seed_equipment_part1.py`, `seed_equipment_part2.py`, `seed_phase06_calculations.py` — authoritative Python generators that built `android/app/src/main/assets/database/mechanical_pro_notes.db` (`856,064` bytes). *(Note: `docs/archive/seed_data.sql` is an obsolete Phase 04 partial draft relocated out of Android assets and kept only for historical context.)*
+  - `test_suite_phase04.py`..`07.py` & `test_suite_stage01.py`..`04.py` — offline Python DB, engineering formula parity, and Kotlin static integrity suites.
+  - `visual-preview-gallery/` — standalone historical HTML mockup viewer for quick browser inspection (non-authoritative; does not replace the Jetpack Compose app).
+  - `index.html`, `package.json`, `vite.config.ts`, `src/` — container environment web host scaffolding unused by the Android app.
 
 ---
 
-## Building the APK on Android Studio / Local Workstation
+## Building & Testing on Android Studio / Local Workstation
 
-The Linux workspace container used to author this repository does not bundle JDK 17 or Android SDK, while the official **Gradle 8.9 wrapper binary (`android/gradle/wrapper/gradle-wrapper.jar`)** and `gradlew` scripts are already included. To compile and install on your personal Android phone:
+The Linux container used for authoring does not bundle JDK 17 or Android SDK 35, while the official **Gradle 8.9 wrapper (`android/gradlew`, `gradle-wrapper.jar`)** and `android/gradle.properties` are included. Run native Android build and test verification on a workstation with **JDK 17** and **Android SDK Platform 35**:
 
-1. **Install Prerequisites:** OpenJDK 17 and Android Studio (Ladybug+ with Android SDK Platform 35 & Build-Tools 35).
-2. **Run JVM Unit Tests:**
+1. **JVM Unit Tests (12+ test files in `android/app/src/test/`):**
    ```bash
    cd android
    ./gradlew testDebugUnitTest
    ```
-3. **Build Debug APK & Install via USB/Wireless ADB:**
+2. **Android Lint & Debug APK:**
    ```bash
-   ./gradlew assembleDebug
+   ./gradlew lintDebug assembleDebug
    adb install -r app/build/outputs/apk/debug/app-debug.apk
    ```
-   *(You can also open the `android/` directory directly in Android Studio to sync KSP, inspect Vector Drawable schematics, and run directly onto your USB/wireless Android phone.)*
-4. **Rebuilding Pre-Populated SQLite Seed DB (optional):**
+3. **Android Instrumented Tests (`android/app/src/androidTest/`):**
+   Connect an API 26–35 Android device or emulator (`androidx.test` Room asset opening, FTS4 bilingual search, Backup v3 round-trip, and `MainActivity` launch/recreation smoke tests):
    ```bash
-   python3 build_database.py
+   ./gradlew connectedDebugAndroidTest
    ```
-5. **Running Python Structural & Formula Verification Suites:**
+4. **Release APK Signing (Personal / Owner Build):**
+   `release` build type enables R8 minification and resource shrinking (`android/app/proguard-rules.pro`). Do **not** commit keystores or passwords into the repository. Configure your private signing keystore locally via `keystore.properties` (excluded by `.gitignore`) or Gradle `-P` / environment variables inside `android/app/build.gradle.kts`, then run:
+   ```bash
+   ./gradlew assembleRelease
+   ```
+5. **Running Offline Python Verification Suites (from repo root):**
    ```bash
    python3 test_suite_phase04.py
    python3 test_suite_phase05.py
    python3 test_suite_phase06.py
    python3 test_suite_phase07.py
+   python3 test_suite_stage01.py
+   python3 test_suite_stage02.py
+   python3 test_suite_stage03.py
+   python3 test_suite_stage04.py
    ```
+   *(Pre-built `android/app/src/main/assets/database/mechanical_pro_notes.db` is committed directly; only re-run `python3 build_database.py` if intentionally modifying seed scripts.)*
 
----
-
-## Owner Git Push Checklist (Phase 08)
-
-Per `DEC-002` and `DEC-004`, push only to `researchbangla/mechanical-pro-notes`:
-
-```bash
-git status
-git add .
-git commit -m "Complete Mechanical Pro Notes v1.0.0 offline Android codebase and Phase 07/08 readiness"
-git remote add origin https://github.com/researchbangla/mechanical-pro-notes.git
-git push -u origin main
-```

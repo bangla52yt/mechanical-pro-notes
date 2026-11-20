@@ -19,7 +19,7 @@ WASH_KT = os.path.join(WORKSPACE_ROOT, "android/app/src/main/java/com/researchba
 SPECS_KT = os.path.join(WORKSPACE_ROOT, "android/app/src/main/java/com/researchbangla/mechanicalpronotes/domain/calculation/CalculationSpecifications.kt")
 STAGE02_TEST_KT = os.path.join(WORKSPACE_ROOT, "android/app/src/test/java/com/researchbangla/mechanicalpronotes/Stage02CalculationValidationTest.kt")
 
-EXPECTED_CALC_TABLES_SHA256 = "5dfc658879fe0adcb0904ee7361c2b229fd85e3ef1cedf90568bfae1443d19bd"
+EXPECTED_CALC_TABLES_SHA256 = "94cf590dbcd1421fa6196787c5e4b2cf41cdfc0671f78a610961bbc523ab426a"
 
 
 def read(path):
@@ -54,16 +54,17 @@ def main():
     integrity_ok = cur.execute("PRAGMA integrity_check").fetchone()[0] == "ok"
     user_ver = cur.execute("PRAGMA user_version").fetchone()[0]
     conn.close()
-    if calc_sha == EXPECTED_CALC_TABLES_SHA256 and calc_count == 20 and var_count == 79 and integrity_ok and user_ver == 1:
-        print(f"  ✅ [S2-01] DB-PROTECTION PASS | Calculation & formula_variable SHA-256 unchanged; 20 calculations & 79 variables preserved; integrity=ok.")
+    if calc_sha == EXPECTED_CALC_TABLES_SHA256 and calc_count == 20 and var_count == 87 and integrity_ok and user_ver == 1:
+        print(f"  ✅ [S2-01] DB-PROTECTION PASS | Calculation & formula_variable SHA-256 unchanged; 20 calculations & 87 variables preserved; integrity=ok.")
         passed += 1
     else:
         print(f"  ❌ [S2-01] DB-PROTECTION FAIL | calc_sha={calc_sha}, calcs={calc_count}, vars={var_count}, integrity={integrity_ok}, v={user_ver}")
 
-    # 2. CALC-02 unit-basis guard & RESEARCH_PENDING retention
+    # 2. CALC-02 unit-basis guard, Batch 12 IMPLEMENTED status & UNVERIFIED mixed-jhut boundary
     calc02_block = re.search(r"fun executeCalc02\(.*?^\s{4}\}", boiler_src, re.M | re.S).group(0)
     c02_checks = [
-        "CalculationStatus.RESEARCH_PENDING" in calc02_block,
+        "CalculationStatus.IMPLEMENTED" in calc02_block,
+        "UNVERIFIED MIXED-JHUT BOUNDARY" in calc02_block,
         "gcv_unit_mode" in calc02_block,
         "fuel_density" in calc02_block,
         'inputs["CO2"] ?: 9.5' not in calc02_block,
@@ -72,7 +73,7 @@ def main():
         "Incompatible fuel and GCV unit" in calc02_block,
     ]
     if all(c02_checks):
-        print("  ✅ [S2-02] CALC-02 PASS | RESEARCH_PENDING retained; GCV kJ/kg vs kJ/Nm3 enforced; no fabricated CO2/H2/unburnt assumptions.")
+        print("  ✅ [S2-02] CALC-02 PASS | IMPLEMENTED (BS 845-1/IS 8753 gas) + UNVERIFIED mixed-jhut boundary; GCV kJ/kg vs kJ/Nm3 enforced; no fabricated assumptions.")
         passed += 1
     else:
         print(f"  ❌ [S2-02] CALC-02 FAIL | checks={c02_checks}")

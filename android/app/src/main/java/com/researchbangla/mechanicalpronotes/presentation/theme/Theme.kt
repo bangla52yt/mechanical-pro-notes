@@ -8,6 +8,7 @@ import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.unit.isSpecified
 import com.researchbangla.mechanicalpronotes.domain.model.AppThemeMode
 
 private val DarkColorScheme = darkColorScheme(
@@ -59,21 +60,28 @@ fun AppThemeMode.toThemeMode(): ThemeMode = when (this) {
 }
 
 private fun TextStyle.scaled(factor: Float): TextStyle = copy(
-    fontSize = fontSize * factor,
-    lineHeight = lineHeight * factor
+    fontSize = if (fontSize.isSpecified) fontSize * factor else fontSize,
+    lineHeight = if (lineHeight.isSpecified) lineHeight * factor else lineHeight
 )
 
-private fun scaledTypography(base: Typography, factor: Float): Typography = if (factor == 1f) {
+internal fun scaledTypography(base: Typography, factor: Float): Typography = if (factor == 1f) {
     base
 } else {
     base.copy(
+        displayLarge = base.displayLarge.scaled(factor),
+        displayMedium = base.displayMedium.scaled(factor),
+        displaySmall = base.displaySmall.scaled(factor),
         headlineLarge = base.headlineLarge.scaled(factor),
         headlineMedium = base.headlineMedium.scaled(factor),
+        headlineSmall = base.headlineSmall.scaled(factor),
         titleLarge = base.titleLarge.scaled(factor),
         titleMedium = base.titleMedium.scaled(factor),
+        titleSmall = base.titleSmall.scaled(factor),
         bodyLarge = base.bodyLarge.scaled(factor),
         bodyMedium = base.bodyMedium.scaled(factor),
+        bodySmall = base.bodySmall.scaled(factor),
         labelLarge = base.labelLarge.scaled(factor),
+        labelMedium = base.labelMedium.scaled(factor),
         labelSmall = base.labelSmall.scaled(factor)
     )
 }

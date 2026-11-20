@@ -1,6 +1,9 @@
 package com.researchbangla.mechanicalpronotes.domain.steam
 
+import java.util.Locale
+import kotlin.math.ceil
 import kotlin.math.exp
+import kotlin.math.floor
 import kotlin.math.ln
 import kotlin.math.pow
 import kotlin.math.sqrt
@@ -68,6 +71,8 @@ object IapwsIf97SteamEngine {
     )
 
     // High-density 56-node IAPWS-IF97 Region 4 grid [P_bar_a, T_sat_C, h_f, h_fg, h_g, v_g, v_f]
+    // Note: T_sat [1] and h_g [4] are retained as reference anchor columns for independent table audits;
+    // runtime evaluation uses exact IAPWS-IF97 Eq. 31 for T_sat and h_g = h_f + h_fg for consistency.
     private val GRID: Array<DoubleArray> = arrayOf(
         doubleArrayOf(   0.50,  81.32, 340.54, 2304.8, 2645.3, 3.2402, 0.0010299),
         doubleArrayOf(   0.55,  83.71, 350.56, 2298.7, 2649.3, 2.9636, 0.0010315),
@@ -208,20 +213,34 @@ object IapwsIf97SteamEngine {
         }
         val minGauge = MIN_PRESSURE_BAR_A - atmosphericBar
         val maxGauge = MAX_PRESSURE_BAR_A - atmosphericBar
+        val minGaugeText = formatTwoDecimal(ceil(minGauge * 100.0) / 100.0)
+        val maxGaugeText = formatTwoDecimal(floor(maxGauge * 100.0) / 100.0)
         require(pressureBarG in minGauge..maxGauge) {
-            "Gauge pressure ($pressureBarG bar g) is outside supported IAPWS-IF97 Region 4 boundary [-0.51, 18.98 bar g / $MIN_PRESSURE_BAR_A, $MAX_PRESSURE_BAR_A bar a]."
+            "Gauge pressure ($pressureBarG bar g) is outside supported IAPWS-IF97 Region 4 boundary " +
+                "[$minGaugeText, $maxGaugeText bar g / $MIN_PRESSURE_BAR_A, $MAX_PRESSURE_BAR_A bar a]."
         }
         val pressureBarA = (pressureBarG + atmosphericBar).coerceIn(MIN_PRESSURE_BAR_A, MAX_PRESSURE_BAR_A)
         return getPropertiesByAbsolutePressure(pressureBarA, atmosphericBar)
     }
 
-    fun formatValidRangeHint(isGaugeMode: Boolean): String {
+    fun formatValidRangeHint(
+        isGaugeMode: Boolean,
+        atmosphericBar: Double = DEFAULT_ATMOSPHERIC_BAR
+    ): String {
         return if (isGaugeMode) {
-            "Valid Range: -0.51 to 18.98 bar(g) (Patm = 1.013 bar)"
+            require(atmosphericBar.isFinite() && atmosphericBar > 0.0) {
+                "Atmospheric reference must be a finite positive value."
+            }
+            val minGaugeText = formatTwoDecimal(ceil((MIN_PRESSURE_BAR_A - atmosphericBar) * 100.0) / 100.0)
+            val maxGaugeText = formatTwoDecimal(floor((MAX_PRESSURE_BAR_A - atmosphericBar) * 100.0) / 100.0)
+            val patmText = String.format(Locale.US, "%.3f", atmosphericBar)
+            "Valid Range: $minGaugeText to $maxGaugeText bar(g) (Patm = $patmText bar)"
         } else {
             "Valid Range: 0.50 to 20.00 bar(a)"
         }
     }
+
+    private fun formatTwoDecimal(value: Double): String = String.format(Locale.US, "%.2f", value)
 
     private fun interpolate(v0: Double, v1: Double, frac: Double): Double {
         return v0 + (v1 - v0) * frac

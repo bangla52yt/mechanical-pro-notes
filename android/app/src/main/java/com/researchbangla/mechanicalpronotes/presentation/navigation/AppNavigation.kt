@@ -8,6 +8,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -15,6 +16,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.*
@@ -64,61 +66,40 @@ fun AppNavigation(
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
-    val homeViewModel = remember {
-        HomeViewModel(
-            appContainer.equipmentRepository,
-            appContainer.boilerRepository,
-            appContainer.userDataRepository
-        )
+    val searchFactory = remember(appContainer) {
+        AppViewModelFactory(appContainer)
     }
-    val equipmentViewModel = remember {
-        EquipmentViewModel(appContainer.equipmentRepository, appContainer.userDataRepository)
-    }
-    val boilerViewModel = remember {
-        BoilerViewModel(appContainer.boilerRepository)
-    }
-    val calculationViewModel = remember {
-        CalculationViewModel(
-            calculationRepository = appContainer.calculationRepository,
-            userDataRepository = appContainer.userDataRepository,
-            userPreferencesRepository = appContainer.userPreferencesRepository
-        )
-    }
-    val searchViewModel = remember {
-        SearchViewModel(appContainer.searchRepository)
-    }
-    val notesViewModel = remember {
-        NotesViewModel(
-            userDataRepository = appContainer.userDataRepository,
-            equipmentRepository = appContainer.equipmentRepository,
-            onNotesMutated = { searchViewModel.refreshSearchIfActive() }
-        )
-    }
-    val checklistViewModel = remember {
-        ChecklistViewModel(
-            userDataRepository = appContainer.userDataRepository,
-            equipmentRepository = appContainer.equipmentRepository
-        )
-    }
-    val settingsViewModel = remember {
-        SettingsViewModel(
-            userDataRepository = appContainer.userDataRepository,
-            userPreferencesRepository = appContainer.userPreferencesRepository,
+    val searchViewModel: SearchViewModel = viewModel(factory = searchFactory)
+    val viewModelFactory = remember(appContainer, searchViewModel) {
+        AppViewModelFactory(
+            appContainer = appContainer,
+            onNotesMutated = { searchViewModel.refreshSearchIfActive() },
             onPersonalDataCleared = { searchViewModel.refreshSearchIfActive() }
         )
     }
-    val unitConverterStateHolder = remember {
+    val homeViewModel: HomeViewModel = viewModel(factory = viewModelFactory)
+    val equipmentViewModel: EquipmentViewModel = viewModel(factory = viewModelFactory)
+    val boilerViewModel: BoilerViewModel = viewModel(factory = viewModelFactory)
+    val calculationViewModel: CalculationViewModel = viewModel(factory = viewModelFactory)
+    val notesViewModel: NotesViewModel = viewModel(factory = viewModelFactory)
+    val checklistViewModel: ChecklistViewModel = viewModel(factory = viewModelFactory)
+    val settingsViewModel: SettingsViewModel = viewModel(factory = viewModelFactory)
+
+    val unitConverterStateHolder = rememberSaveable(saver = UnitConverterStateHolder.Saver) {
         UnitConverterStateHolder()
     }
-    val userPrefs by appContainer.userPreferencesRepository.userPreferences.collectAsState(
-        initial = UserPreferences()
+    val userPrefsState by appContainer.userPreferencesRepository.userPreferences.collectAsState(
+        initial = null
     )
-    LaunchedEffect(userPrefs.unitSystem) {
-        unitConverterStateHolder.applyUnitSystemPreference(userPrefs.unitSystem)
+    val activeUnitSystem = userPrefsState?.unitSystem ?: UserPreferences().unitSystem
+    LaunchedEffect(userPrefsState?.unitSystem) {
+        userPrefsState?.let { prefs ->
+            unitConverterStateHolder.applyUnitSystemPreference(prefs.unitSystem)
+        }
     }
 
-    var pendingReferenceFocusId by remember { mutableStateOf<String?>(null) }
-    var pendingFundamentalsFocusId by remember { mutableStateOf<String?>(null) }
+    var pendingReferenceFocusId by rememberSaveable { mutableStateOf<String?>(null) }
+    var pendingFundamentalsFocusId by rememberSaveable { mutableStateOf<String?>(null) }
     val notesState by notesViewModel.uiState.collectAsState()
     val bookmarkedBoilerSectionIds = remember(notesState.bookmarks) {
         notesState.bookmarks
@@ -492,7 +473,7 @@ fun AppNavigation(
                         onNavigateToSteamTable = {
                             navController.navigate(Screen.SteamTable.route)
                         },
-                        unitSystem = userPrefs.unitSystem
+                        unitSystem = activeUnitSystem
                     )
                 }
 
@@ -515,7 +496,7 @@ fun AppNavigation(
                 composable(Screen.SteamTable.route) {
                     SteamTableScreen(
                         onNavigateBack = { navController.popBackStack() },
-                        unitSystem = userPrefs.unitSystem
+                        unitSystem = activeUnitSystem
                     )
                 }
 

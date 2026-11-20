@@ -60,9 +60,10 @@ object WashPlantMaintenanceCalculations {
     fun executeCalc16(inputs: Map<String, Double>): CalculationExecutionResult {
         val radiusCm = UnitConverters.validatePositiveFinite(inputs["r_basket"], "Basket Drum Radius (r, cm)")
         val speedRpm = UnitConverters.validatePositiveFinite(inputs["N_rpm"], "Operating Rotational Speed (N, RPM)")
-        val maxRatedRpm = inputs["max_rated_rpm"] ?: (speedRpm * 1.10)
-
-        require(maxRatedRpm > 0.0) { "Manufacturer rated maximum RPM ($maxRatedRpm) must be greater than zero." }
+        val maxRatedRpm = UnitConverters.validatePositiveFinite(
+            inputs["max_rated_rpm"] ?: (speedRpm * 1.10),
+            "Manufacturer Rated Maximum RPM"
+        )
 
         // a = r * omega^2 -> RCF = 0.00001118 * r_cm * N^2
         val omegaRadS = (2.0 * Math.PI * speedRpm) / 60.0

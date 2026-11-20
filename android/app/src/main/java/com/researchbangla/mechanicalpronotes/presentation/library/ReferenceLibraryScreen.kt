@@ -15,6 +15,7 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Security
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontFamily
@@ -36,7 +37,7 @@ fun ReferenceLibraryScreen(
     onToggleBookmark: (EngineeringReferenceItem) -> Unit = {}
 ) {
     val references = remember { TechnicalReferenceCatalog.ALL_REFERENCES }
-    var selectedCategory by remember(initialFocusRefId) {
+    var selectedCategory by rememberSaveable(initialFocusRefId) {
         val targetCat = initialFocusRefId?.let { id ->
             TechnicalReferenceCatalog.ALL_REFERENCES.firstOrNull { it.id == id }?.category
         }

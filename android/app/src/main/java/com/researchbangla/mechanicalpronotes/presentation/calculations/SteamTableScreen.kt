@@ -7,9 +7,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.luminance
@@ -41,8 +42,8 @@ fun SteamTableScreen(
     initialGaugeMode: Boolean = true,
     unitSystem: UnitSystem = UnitSystem.METRIC
 ) {
-    var isGaugeMode by remember { mutableStateOf(initialGaugeMode) }
-    var inputPressureStr by remember { mutableStateOf(initialPressureText) }
+    var isGaugeMode by rememberSaveable { mutableStateOf(initialGaugeMode) }
+    var inputPressureStr by rememberSaveable { mutableStateOf(initialPressureText) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
     var currentProperties by remember { mutableStateOf<SaturatedSteamProperties?>(null) }
 
@@ -97,7 +98,7 @@ fun SteamTableScreen(
                 },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(

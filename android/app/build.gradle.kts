@@ -19,11 +19,6 @@ android {
         versionName = "1.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-
-        // Room SQLite schema export location
-        room {
-            schemaDirectory("$projectDir/schemas")
-        }
     }
 
     buildTypes {
@@ -65,6 +60,11 @@ android {
     }
 }
 
+// Room SQLite schema export location
+room {
+    schemaDirectory("$projectDir/schemas")
+}
+
 dependencies {
     // AndroidX Core & Lifecycle
     implementation(libs.androidx.core.ktx)
@@ -100,6 +100,7 @@ dependencies {
     testImplementation(libs.junit)
     testImplementation(libs.androidx.room.testing)
     testImplementation(libs.kotlinx.coroutines.test)
+    androidTestImplementation(libs.androidx.test.core)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 }

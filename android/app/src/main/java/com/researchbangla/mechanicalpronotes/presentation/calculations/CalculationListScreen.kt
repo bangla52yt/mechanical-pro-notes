@@ -11,7 +11,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.History
@@ -21,6 +21,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.SwapHoriz
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.luminance
@@ -117,9 +118,9 @@ fun CalculationListContent(
     onSelectCategory: (String?) -> Unit = {},
     onClearFilters: () -> Unit = {}
 ) {
-    var localSearchQuery by remember(state.searchQuery) { mutableStateOf(state.searchQuery) }
-    var localSelectedCategory by remember(state.selectedCategory) { mutableStateOf(state.selectedCategory) }
-    var showHistorySheet by remember { mutableStateOf(false) }
+    var localSearchQuery by rememberSaveable(state.searchQuery) { mutableStateOf(state.searchQuery) }
+    var localSelectedCategory by rememberSaveable(state.selectedCategory) { mutableStateOf(state.selectedCategory) }
+    var showHistorySheet by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(state.pendingHistoryFocusId) {
         if (state.pendingHistoryFocusId != null) {
@@ -284,7 +285,7 @@ fun CalculationListContent(
                             }
                             Spacer(modifier = Modifier.width(8.dp))
                             Icon(
-                                Icons.Default.ArrowForward,
+                                Icons.AutoMirrored.Filled.ArrowForward,
                                 contentDescription = null,
                                 tint = MaterialTheme.colorScheme.primary
                             )
@@ -342,7 +343,7 @@ fun CalculationListContent(
                             }
                             Spacer(modifier = Modifier.width(8.dp))
                             Icon(
-                                Icons.Default.ArrowForward,
+                                Icons.AutoMirrored.Filled.ArrowForward,
                                 contentDescription = null,
                                 tint = MaterialTheme.colorScheme.secondary
                             )
@@ -568,7 +569,7 @@ fun CalculationItemCard(
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Icon(
-                        Icons.Default.ArrowForward,
+                        Icons.AutoMirrored.Filled.ArrowForward,
                         contentDescription = null,
                         modifier = Modifier.size(16.dp),
                         tint = MaterialTheme.colorScheme.primary
@@ -800,7 +801,7 @@ private fun CalculationHistoryEntryCard(
                     Text("Open Calculator")
                     Spacer(modifier = Modifier.width(6.dp))
                     Icon(
-                        imageVector = Icons.Default.ArrowForward,
+                        imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                         contentDescription = null,
                         modifier = Modifier.size(16.dp)
                     )

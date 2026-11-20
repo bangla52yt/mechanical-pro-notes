@@ -10,7 +10,7 @@ This test suite executes deterministic verification of:
 2. Foreign Key Referential Integrity and CASCADE/RESTRICT enforcement.
 3. Content-Depth Status enforcement (FULL, PARTIAL, INVENTORY_ONLY, RESEARCH_PENDING).
 4. Dedicated Boiler categorization (EQ-G01, EQ-G02, FAM-G).
-5. FTS5 Virtual Table Full-Text Search (English, Bengali, ID, Aliases).
+5. FTS4 Virtual Table Full-Text Search (English, Bengali, ID, Aliases).
 6. Separation of Static Knowledge vs Dynamic Personal User Data.
 7. Personal Notes Isolation (updates/deletions on static records must NOT drop user notes).
 8. Unit Conversions & Physical Boundary Validations (Pressure, Temp, Delta T, Flow, Power).
@@ -35,12 +35,38 @@ def run_tests():
 
     test_results = []
 
-    def record_test(name, passed, detail=""):
-        status = "PASS" if passed else "FAIL"
+    def record_test(name, passed, detail="", status_override=None):
+        status = status_override if status_override is not None else ("PASS" if passed else "FAIL")
         test_results.append((name, status, detail))
         print(f"[{status}] {name}")
         if detail:
             print(f"       Detail: {detail}")
+
+    # Verify Python SQLite environment supports FTS4 before creating schema
+    cur.execute("PRAGMA compile_options;")
+    compile_options = {row[0] for row in cur.fetchall()}
+    fts4_probe_ok = False
+    try:
+        cur.execute("CREATE VIRTUAL TABLE _fts4_probe USING FTS4 (sample_col);")
+        cur.execute("DROP TABLE _fts4_probe;")
+        fts4_probe_ok = True
+    except sqlite3.OperationalError:
+        fts4_probe_ok = False
+
+    if not fts4_probe_ok:
+        record_test(
+            "Schema Creation & Entity Definitions",
+            False,
+            f"FTS4 unavailable in Python sqlite3 (SQLITE_VERSION={sqlite3.sqlite_version}, "
+            f"compile_options={[o for o in sorted(compile_options) if 'FTS' in o]}). "
+            "Cannot fall back to FTS5; reporting BLOCKED.",
+            status_override="BLOCKED",
+        )
+        print("=" * 70)
+        print("TEST EXECUTION SUMMARY: BLOCKED (SQLite FTS4 extension unavailable)")
+        print("=" * 70)
+        con.close()
+        return False
 
     # -------------------------------------------------------------------------
     # TEST 1: Schema Creation (Room Table Equivalents)
@@ -190,8 +216,8 @@ def run_tests():
             user_remark TEXT
         );
 
-        -- SQLite FTS5 Virtual Table
-        CREATE VIRTUAL TABLE equipment_fts USING fts5 (
+        -- SQLite FTS4 Virtual Table (matches Room @Fts4 EquipmentFtsEntity)
+        CREATE VIRTUAL TABLE equipment_fts USING FTS4 (
             id,
             name,
             bengali_name,
@@ -200,7 +226,7 @@ def run_tests():
             primary_drive_type
         );
         """)
-        record_test("Schema Creation & Entity Definitions", True, "Created 11 static tables, 3 personal tables, 1 FTS5 virtual table")
+        record_test("Schema Creation & Entity Definitions", True, "Created 11 static tables, 3 personal tables, 1 FTS4 virtual table")
     except Exception as e:
         record_test("Schema Creation & Entity Definitions", False, str(e))
         return
@@ -208,7 +234,7 @@ def run_tests():
     # -------------------------------------------------------------------------
     # TEST 2: Seed Data Insertion & Relationships
     # -------------------------------------------------------------------------
-    seed_sql_path = "android/app/src/main/assets/database/seed_data.sql"
+    seed_sql_path = "docs/archive/seed_data.sql"
     try:
         with open(seed_sql_path, "r", encoding="utf-8") as f:
             seed_sql = f.read()
@@ -285,7 +311,7 @@ def run_tests():
         record_test("Foreign Key Integrity Constraint (RESTRICT invalid parent)", False, str(e))
 
     # -------------------------------------------------------------------------
-    # TEST 6: SQLite FTS5 Full-Text Search (English, Bengali, ID)
+    # TEST 6: SQLite FTS4 Full-Text Search (English, Bengali, ID)
     # -------------------------------------------------------------------------
     try:
         # Search 1: English exact/prefix
@@ -301,10 +327,10 @@ def run_tests():
         res_id = [r[0] for r in cur.fetchall()]
 
         passed = ('EQ-A01' in res_belly and 'EQ-G01' in res_boiler_bn and 'EQ-B01' in res_id)
-        record_test("SQLite FTS5 Multi-Language Search (English, Bengali, ID)", passed,
+        record_test("SQLite FTS4 Multi-Language Search (English, Bengali, ID)", passed,
                     f"Belly: {res_belly}, Bengali 'বয়লার': {res_boiler_bn}, ID: {res_id}")
     except Exception as e:
-        record_test("SQLite FTS5 Multi-Language Search (English, Bengali, ID)", False, str(e))
+        record_test("SQLite FTS4 Multi-Language Search (English, Bengali, ID)", False, str(e))
 
     # -------------------------------------------------------------------------
     # TEST 7: Personal User Data Separation & Preservation

@@ -247,4 +247,64 @@ class Stage02CalculationValidationTest {
             mapOf("Q_cfm" to 150.0, "d_pipe" to 50.0, "L_pipe" to 60.0, "P_air" to -1.01325)
         )
     }
+
+    // -------------------------------------------------------------------------
+    // AUD-008: Optional/Default Domain Validation in CALC-05, CALC-07, CALC-10, CALC-16
+    // -------------------------------------------------------------------------
+
+    @Test(expected = IllegalArgumentException::class)
+    fun calc05RejectsNegativeOptionalSteamGeneration() {
+        BoilerThermalCalculations.executeCalc05(
+            mapOf("TDS_feed" to 150.0, "TDS_boiler" to 3500.0, "m_s" to -500.0)
+        )
+    }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun calc05RejectsNonFiniteOptionalSteamGeneration() {
+        BoilerThermalCalculations.executeCalc05(
+            mapOf("TDS_feed" to 150.0, "TDS_boiler" to 3500.0, "m_s" to Double.NaN)
+        )
+    }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun calc07RejectsOutOfRangeWaterDensity() {
+        BoilerThermalCalculations.executeCalc07(
+            mapOf("Q" to 10.0, "H" to 120.0, "density" to 250.0)
+        )
+    }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun calc07RejectsNonFiniteWaterDensity() {
+        BoilerThermalCalculations.executeCalc07(
+            mapOf("Q" to 10.0, "H" to 120.0, "density" to Double.POSITIVE_INFINITY)
+        )
+    }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun calc10RejectsSubFreezingOrOverTempFeedwaterInlet() {
+        BoilerThermalCalculations.executeCalc10(
+            mapOf("m_gas" to 4500.0, "T_gas_in" to 220.0, "T_gas_out" to 140.0, "m_water" to 4000.0, "T_water_in" to -5.0)
+        )
+    }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun calc10RejectsFeedwaterTempExceedingFlueGasInlet() {
+        BoilerThermalCalculations.executeCalc10(
+            mapOf("m_gas" to 4500.0, "T_gas_in" to 160.0, "T_gas_out" to 140.0, "m_water" to 4000.0, "T_water_in" to 180.0)
+        )
+    }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun calc16RejectsInfiniteOrNonFiniteMaxRatedRpm() {
+        WashPlantMaintenanceCalculations.executeCalc16(
+            mapOf("r_basket" to 60.0, "N_rpm" to 850.0, "max_rated_rpm" to Double.POSITIVE_INFINITY)
+        )
+    }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun calc16RejectsZeroOrNegativeMaxRatedRpm() {
+        WashPlantMaintenanceCalculations.executeCalc16(
+            mapOf("r_basket" to 60.0, "N_rpm" to 850.0, "max_rated_rpm" to 0.0)
+        )
+    }
 }

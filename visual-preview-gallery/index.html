@@ -733,7 +733,7 @@
     </svg>
     <div>
       <h1>Mechanical Pro Notes — Preview Gallery</h1>
-      <div class="sub">Phase-A/B Source-Verified Audit Artifact (Not Android APK Replacement)</div>
+      <div class="sub">Historical Standalone HTML Mockup (Non-Authoritative Static Companion — Does Not Replace Android APK)</div>
     </div>
   </div>
   <div class="studio-controls">
@@ -741,7 +741,7 @@
     <button class="ctrl-btn mobile-only" id="btnMobInspector" onclick="toggleMobPanel('right')">Inspector</button>
     <button class="ctrl-btn" id="btnToggleTheme" onclick="toggleAppTheme()">Theme: Dark</button>
     <button class="ctrl-btn" id="btnToggleLegible" onclick="toggleLegible()">Font: 1.0x</button>
-    <button class="ctrl-btn warn-btn" id="btnAuditMode" onclick="navigate('audit')">Audit Matrix (13 Gaps)</button>
+    <button class="ctrl-btn warn-btn" id="btnAuditMode" onclick="navigate('audit')">Status Summary</button>
   </div>
 </header>
 
@@ -822,57 +822,57 @@ const STATUS_META = {
 };
 
 const FAMILIES = [
-  { id: "FAM-A", name: "Production & Washing Machinery", bn: "উৎপাদন ও ওয়াশিং যন্ত্রপাতি", counts: { total: 5, full: 1, partial: 1, pending: 1, inv: 2 } },
-  { id: "FAM-B", name: "Extraction & Drying Systems", bn: "এক্সট্রাকশন ও ড্রায়িং সিস্টেম", counts: { total: 5, full: 1, partial: 2, pending: 2, inv: 0 } },
-  { id: "FAM-C", name: "Garment Finishing & Special Process", bn: "গার্মেন্টস ফিনিশিং ও স্পেশাল প্রসেস", counts: { total: 5, full: 0, partial: 0, pending: 2, inv: 3 } },
-  { id: "FAM-D", name: "Pumps & Fluid Handling", bn: "পাম্প ও ফ্লুইড হ্যান্ডলিং যন্ত্রপাতি", counts: { total: 6, full: 0, partial: 1, pending: 0, inv: 5 } },
-  { id: "FAM-E", name: "Power Transmission & Tribology", bn: "পাওয়ার ট্রান্সমিশন ও বিয়ারিং সিস্টেম", counts: { total: 6, full: 0, partial: 0, pending: 0, inv: 6 } },
-  { id: "FAM-F", name: "Steam & Thermal Distribution", bn: "স্টিম ও থার্মাল ডিস্ট্রিবিউশন সিস্টেম", counts: { total: 6, full: 0, partial: 1, pending: 0, inv: 5 } },
-  { id: "FAM-G", name: "Industrial Boiler Systems (Gas & Jhut)", bn: "ইন্ডাস্ট্রিয়াল বয়লার সিস্টেম (গ্যাস ও ঝুট)", counts: { total: 4, full: 0, partial: 2, pending: 0, inv: 2 } },
-  { id: "FAM-H", name: "Water Treatment & Distribution", bn: "ওয়াটার ট্রিটমেন্ট ও প্রসেস লাইন", counts: { total: 4, full: 0, partial: 0, pending: 1, inv: 3 } },
-  { id: "FAM-I", name: "Chemical Storage, Mixing & Dosing", bn: "কেমিক্যাল মিক্সিং ও ডোজিং সিস্টেম", counts: { total: 3, full: 0, partial: 0, pending: 0, inv: 3 } },
-  { id: "FAM-J", name: "Compressed Air Generation & Line", bn: "কম্প্রেসড এয়ার জেনারেশন ও লাইন", counts: { total: 4, full: 0, partial: 1, pending: 0, inv: 3 } },
-  { id: "FAM-K", name: "Cooling & Industrial Refrigeration", bn: "কুলিং টাওয়ার ও ইন্ডাস্ট্রিয়াল চিলার", counts: { total: 2, full: 0, partial: 0, pending: 1, inv: 1 } },
-  { id: "FAM-L", name: "Effluent Treatment Plant (ETP)", bn: "ইটিপি (ETP) বর্জ্য শোধনাগার যন্ত্রপাতি", counts: { total: 5, full: 0, partial: 1, pending: 0, inv: 4 } },
-  { id: "FAM-M", name: "Material Handling & Overhead Hoist", bn: "ম্যাটেরিয়াল হ্যান্ডলিং ও ওভারহেড হোয়েস্ট", counts: { total: 3, full: 0, partial: 0, pending: 0, inv: 3 } },
-  { id: "FAM-N", name: "Maintenance Workshop & Fabrication", bn: "মেইনটেন্যান্স ওয়ার্কশপ ও মেশিন শপ", counts: { total: 3, full: 0, partial: 0, pending: 0, inv: 3 } },
-  { id: "FAM-O", name: "Plant Safety & Fire Protection", bn: "প্ল্যান্ট সেফটি ও ফায়ার প্রোটেকশন", counts: { total: 2, full: 0, partial: 0, pending: 0, inv: 2 } },
-  { id: "FAM-P", name: "Plant Ventilation & Lint Extraction", bn: "ভেন্টিলেশন, এগজস্ট ও লিন্ট এক্সট্রাকশন", counts: { total: 1, full: 0, partial: 0, pending: 0, inv: 1 } }
+  { id: "FAM-A", name: "Production & Washing Machinery", bn: "উৎপাদন ও ওয়াশিং যন্ত্রপাতি", counts: { total: 5, full: 4, partial: 0, pending: 1, inv: 0 } },
+  { id: "FAM-B", name: "Extraction & Drying Systems", bn: "এক্সট্রাকশন ও ড্রায়িং সিস্টেম", counts: { total: 5, full: 3, partial: 0, pending: 2, inv: 0 } },
+  { id: "FAM-C", name: "Garment Finishing & Special Process", bn: "গার্মেন্টস ফিনিশিং ও স্পেশাল প্রসেস", counts: { total: 5, full: 3, partial: 0, pending: 2, inv: 0 } },
+  { id: "FAM-D", name: "Pumps & Fluid Handling", bn: "পাম্প ও ফ্লুইড হ্যান্ডলিং যন্ত্রপাতি", counts: { total: 6, full: 6, partial: 0, pending: 0, inv: 0 } },
+  { id: "FAM-E", name: "Power Transmission & Tribology", bn: "পাওয়ার ট্রান্সমিশন ও বিয়ারিং সিস্টেম", counts: { total: 6, full: 6, partial: 0, pending: 0, inv: 0 } },
+  { id: "FAM-F", name: "Steam & Thermal Distribution", bn: "স্টিম ও থার্মাল ডিস্ট্রিবিউশন সিস্টেম", counts: { total: 6, full: 6, partial: 0, pending: 0, inv: 0 } },
+  { id: "FAM-G", name: "Industrial Boiler Systems (Gas & Jhut)", bn: "ইন্ডাস্ট্রিয়াল বয়লার সিস্টেম (গ্যাস ও ঝুট)", counts: { total: 4, full: 3, partial: 1, pending: 0, inv: 0 } },
+  { id: "FAM-H", name: "Water Treatment & Distribution", bn: "ওয়াটার ট্রিটমেন্ট ও প্রসেস লাইন", counts: { total: 4, full: 3, partial: 0, pending: 1, inv: 0 } },
+  { id: "FAM-I", name: "Chemical Storage, Mixing & Dosing", bn: "কেমিক্যাল মিক্সিং ও ডোজিং সিস্টেম", counts: { total: 3, full: 3, partial: 0, pending: 0, inv: 0 } },
+  { id: "FAM-J", name: "Compressed Air Generation & Line", bn: "কম্প্রেসড এয়ার জেনারেশন ও লাইন", counts: { total: 4, full: 4, partial: 0, pending: 0, inv: 0 } },
+  { id: "FAM-K", name: "Cooling & Industrial Refrigeration", bn: "কুলিং টাওয়ার ও ইন্ডাস্ট্রিয়াল চিলার", counts: { total: 2, full: 1, partial: 0, pending: 1, inv: 0 } },
+  { id: "FAM-L", name: "Effluent Treatment Plant (ETP)", bn: "ইটিপি (ETP) বর্জ্য শোধনাগার যন্ত্রপাতি", counts: { total: 5, full: 5, partial: 0, pending: 0, inv: 0 } },
+  { id: "FAM-M", name: "Material Handling & Overhead Hoist", bn: "ম্যাটেরিয়াল হ্যান্ডলিং ও ওভারহেড হোয়েস্ট", counts: { total: 3, full: 3, partial: 0, pending: 0, inv: 0 } },
+  { id: "FAM-N", name: "Maintenance Workshop & Fabrication", bn: "মেইনটেন্যান্স ওয়ার্কশপ ও মেশিন শপ", counts: { total: 3, full: 3, partial: 0, pending: 0, inv: 0 } },
+  { id: "FAM-O", name: "Plant Safety & Fire Protection", bn: "প্ল্যান্ট সেফটি ও ফায়ার প্রোটেকশন", counts: { total: 2, full: 2, partial: 0, pending: 0, inv: 0 } },
+  { id: "FAM-P", name: "Plant Ventilation & Lint Extraction", bn: "ভেন্টিলেশন, এগজস্ট ও লিন্ট এক্সট্রাকশন", counts: { total: 1, full: 1, partial: 0, pending: 0, inv: 0 } }
 ];
 
 const EQUIPMENT_SAMPLES = [
   { id: "EQ-A01", fam: "FAM-A", name: "Horizontal Front-Loading Belly Washer (Open Pocket)", bn: "হরিজন্টাল ফ্রন্ট-লোডিং বেলি ওয়াশার", depth: "FULL_CONTENT_BLUEPRINT", tier: "PRIMARY_PRODUCTION", cap: "150 - 350 kg dry garment/batch", temp: "30°C - 95°C", drive: "VFD Three-Phase Motor + Twin SPB V-Belts", lube: "NLGI EP2 Lithium Complex (22222K)", law: "ISO 10472 Safety Door Interlock", svg: "washer", specs: [["Basket Diameter", "1100 - 1550 mm (SS 316L)"], ["Wash Speed / Extract", "28 - 38 RPM / up to 650 RPM"], ["Steam Injection", "25 - 40 mm Pneumatic Angle-Seat"]], ops: "Verify air pressure 6 bar, test safety door interlock, verify bath level float before injecting steam.", fmea: [["Trunnion Shaft Fatigue", "HIGH", "Heavy eccentric imbalance shocks; crack at shoulder radius"], ["Pneumatic Drain Leak", "MEDIUM", "Button/rivet trapped in EPDM flap seal"]], pm: "Weekly belt deflection 8-10 mm; bi-weekly main shaft bearing re-grease 35g NLGI EP2; monthly steam trap test." },
-  { id: "EQ-A02", fam: "FAM-A", name: "Side-Loading Divided-Pocket Belly Washer", bn: "সাইড-লোডিং ডিভাইডেড বেলি ওয়াশার", depth: "INVENTORY_ONLY", tier: "PRIMARY_PRODUCTION", cap: "100 - 250 kg", temp: "30°C - 90°C", drive: "Geared Induction Motor + Chain/Belt", lube: "NLGI EP2 + ISO VG 220", law: "ISO 10472", svg: null },
-  { id: "EQ-A04", fam: "FAM-A", name: "High-Speed Garment Washer-Extractor", bn: "হাই-স্পিড ওয়াশার-এক্সট্রাক্টর", depth: "PARTIAL_CONTENT_BLUEPRINT", tier: "PRIMARY_PRODUCTION", cap: "120 - 220 kg", temp: "40°C - 90°C", drive: "Direct VFD / Poly-V High Extraction", lube: "Sealed Bearing + Shock Isolators", law: "ISO 10472 Unbalance Trip", svg: "washer" },
-  { id: "EQ-A05", fam: "FAM-A", name: "Garment Laser Whiskering & Ageing System", bn: "গার্মেন্টস লেজার হুইস্কারিং সিস্টেম", depth: "RESEARCH_PENDING", tier: "PRIMARY_PRODUCTION", cap: "Plant-Specific", temp: "Ambient", drive: "Galvo Optics + Chiller", lube: "Closed Linear Rail", law: "Class 4 Laser Enclosure", svg: null },
+  { id: "EQ-A02", fam: "FAM-A", name: "Side-Loading Divided-Pocket Belly Washer", bn: "সাইড-লোডিং ডিভাইডেড বেলি ওয়াশার", depth: "FULL_CONTENT_BLUEPRINT", tier: "PRIMARY_PRODUCTION", cap: "100 - 250 kg", temp: "30°C - 90°C", drive: "Geared Induction Motor + Chain/Belt", lube: "NLGI EP2 + ISO VG 220", law: "ISO 10472", svg: "washer" },
+  { id: "EQ-A04", fam: "FAM-A", name: "High-Speed Garment Washer-Extractor", bn: "হাই-স্পিড ওয়াশার-এক্সট্রাক্টর", depth: "FULL_CONTENT_BLUEPRINT", tier: "PRIMARY_PRODUCTION", cap: "120 - 220 kg", temp: "40°C - 90°C", drive: "Direct VFD / Poly-V High Extraction", lube: "Sealed Bearing + Shock Isolators", law: "ISO 10472 Unbalance Trip", svg: "washer" },
+  { id: "EQ-A05", fam: "FAM-A", name: "Garment Laser Whiskering & Ageing System", bn: "গার্মেন্টস লেজার হুইস্কারিং সিস্টেম", depth: "RESEARCH_PENDING", tier: "PRIMARY_PRODUCTION", cap: "Plant-Specific", temp: "Ambient", drive: "Galvo Optics + Chiller", lube: "Closed Linear Rail", law: "Class 4 Laser Enclosure", svg: "washer" },
   { id: "EQ-B01", fam: "FAM-B", name: "Vertical Basket Centrifugal Hydro Extractor (Suspended 3-Point)", bn: "সাসপেন্ডেড সেন্ট্রিফিউগাল হাইড্রো এক্সট্রাক্টর", depth: "FULL_CONTENT_BLUEPRINT", tier: "SAFETY_CRITICAL", cap: "80 - 150 kg wet garments", temp: "Ambient - 60°C", drive: "15-22 kW High-Slip Motor + Centrifugal Clutch", lube: "NLGI 2 Lithium Complex Spindle", law: "Bangladesh Labour Rules 2015 Schedule IV", svg: "hydro", specs: [["Basket Diameter", "1000 - 1200 mm (SS 304/316)"], ["Rated Speed", "900 - 1050 RPM (~450-650 G)"], ["Brake Stop Time", "< 20 sec pneumatic shoe brake"]], ops: "Distribute wet denim evenly around basket wall; NEVER override lid interlock; listen for pendulum knock on ramp-up.", fmea: [["Pendulum Link Snap", "CRITICAL", "Severe imbalance causes basket strike & fatal projectile risk"], ["Mechanical Brake Fade", "HIGH", "Wet oil/soap glazed brake shoes fail to halt in <20s"]], pm: "Daily lid zero-speed interlock check; weekly pendulum spring/rod inspection; monthly brake lining thickness check (>=4 mm)." },
-  { id: "EQ-B03", fam: "FAM-B", name: "Industrial Steam-Heated Tumble Dryer", bn: "স্টিম-হিটেড টাম্বল ড্রায়ার", depth: "PARTIAL_CONTENT_BLUEPRINT", tier: "PRIMARY_PRODUCTION", cap: "100 - 200 kg", temp: "65°C - 85°C exhaust", drive: "Chain/Gear Drum + Centrifugal Blower", lube: "High-Temp NLGI EP2", law: "ISO 10472", svg: null },
+  { id: "EQ-B03", fam: "FAM-B", name: "Industrial Steam-Heated Tumble Dryer", bn: "স্টিম-হিটেড টাম্বল ড্রায়ার", depth: "FULL_CONTENT_BLUEPRINT", tier: "PRIMARY_PRODUCTION", cap: "100 - 200 kg", temp: "65°C - 85°C exhaust", drive: "Chain/Gear Drum + Centrifugal Blower", lube: "High-Temp NLGI EP2", law: "ISO 10472", svg: null },
   { id: "EQ-B04", fam: "FAM-B", name: "Gas-Fired Direct Industrial Tumble Dryer", bn: "গ্যাস-ফায়ার্ড টাম্বল ড্রায়ার", depth: "RESEARCH_PENDING", tier: "SAFETY_CRITICAL", cap: "100 - 180 kg", temp: "80°C - 110°C", drive: "Direct Flame Burner + Drum Drive", lube: "High-Temp Bearing Grease", law: "Gas Train Safety Shutoff", svg: null },
-  { id: "EQ-C01", fam: "FAM-C", name: "Curing / Baking Box Oven", bn: "কিউরিং / বেকিং বক্স ওভেন", depth: "INVENTORY_ONLY", tier: "PRIMARY_PRODUCTION", cap: "Batch Rack", temp: "140°C - 170°C", drive: "Recirculation Blower", lube: "Synthetic High-Temp", law: "Thermal Cutoff Interlock", svg: null },
+  { id: "EQ-C01", fam: "FAM-C", name: "Curing / Baking Box Oven", bn: "কিউরিং / বেকিং বক্স ওভেন", depth: "FULL_CONTENT_BLUEPRINT", tier: "PRIMARY_PRODUCTION", cap: "Batch Rack", temp: "140°C - 170°C", drive: "Recirculation Blower", lube: "Synthetic High-Temp", law: "Thermal Cutoff Interlock", svg: null },
   { id: "EQ-C04", fam: "FAM-C", name: "Pneumatic Garment Pressing & Crinkling Station", bn: "নিউমেটিক প্রেসিং ও ক্রিংকলিং", depth: "RESEARCH_PENDING", tier: "PRIMARY_PRODUCTION", cap: "Plant-Specific", temp: "120°C - 160°C", drive: "Pneumatic Cylinders", lube: "ISO VG 32 Airline Oil", law: "Two-Hand Safety Control", svg: null },
-  { id: "EQ-D01", fam: "FAM-D", name: "Single-Stage End-Suction Centrifugal Water Pump", bn: "এন্ড-সাকশন সেন্ট্রিফিউগাল পাম্প", depth: "INVENTORY_ONLY", tier: "PRIMARY_PRODUCTION", cap: "20 - 120 m3/h", temp: "20°C - 60°C", drive: "Direct Coupling 2900/1450 RPM", lube: "2RS Sealed / ISO VG 46", law: "ISO 5199 Guarding", svg: null },
-  { id: "EQ-D02", fam: "FAM-D", name: "High-Pressure Multistage Centrifugal Boiler Feed Pump", bn: "মাল্টিস্টেজ বয়লার ফিড পাম্প", depth: "PARTIAL_CONTENT_BLUEPRINT", tier: "SAFETY_CRITICAL", cap: "5 - 25 m3/h @ 14-18 bar", temp: "85°C - 105°C", drive: "Vertical Multistage Direct (CR/CRN)", lube: "SiC/SiC Mechanical Seal + Thrust Bearing", law: "Boilers Act 2022 Feedwater Capacity >=2x", svg: null },
-  { id: "EQ-E01", fam: "FAM-E", name: "Three-Phase Squirrel Cage Induction Motor", bn: "থ্রি-ফেজ ইন্ডাকশন মোটর", depth: "INVENTORY_ONLY", tier: "PRIMARY_PRODUCTION", cap: "1.5 - 75 kW", temp: "Class F (155°C)", drive: "DOL / Star-Delta / VFD", lube: "Polyurea / Lithium EP2", law: "BNBC / Electrical Guarding", svg: null },
-  { id: "EQ-F02", fam: "FAM-F", name: "Industrial Steam Traps (Thermodynamic & Ball Float)", bn: "স্টিম ট্র্যাপ (থার্মোডাইনামিক ও বল ফ্লোট)", depth: "PARTIAL_CONTENT_BLUEPRINT", tier: "PRIMARY_PRODUCTION", cap: "DN15 - DN40", temp: "150°C - 190°C", drive: "Self-Acting Differential", lube: "None (Clean Y-Strainer)", law: "Spirax Sarco Loop Standard", svg: "steam" },
-  { id: "EQ-G01", fam: "FAM-G", name: "3-Pass Wet-Back Gas-Fired Industrial Steam Boiler", bn: "৩-পাস ওয়েট-ব্যাক গ্যাস বয়লার", depth: "PARTIAL_CONTENT_BLUEPRINT", tier: "SAFETY_CRITICAL", cap: "2,000 - 10,000 kg/h (10.54 bar)", temp: "184°C saturated", drive: "Modulating Gas Burner + FD Fan", lube: "Burner Fan Sealed Bearings", law: "The Boilers Act, 2022 + Rules 2025", svg: "gas_boiler" },
+  { id: "EQ-D01", fam: "FAM-D", name: "Single-Stage End-Suction Centrifugal Water Pump", bn: "এন্ড-সাকশন সেন্ট্রিফিউগাল পাম্প", depth: "FULL_CONTENT_BLUEPRINT", tier: "PRIMARY_PRODUCTION", cap: "20 - 120 m3/h", temp: "20°C - 60°C", drive: "Direct Coupling 2900/1450 RPM", lube: "2RS Sealed / ISO VG 46", law: "ISO 5199 Guarding", svg: null },
+  { id: "EQ-D02", fam: "FAM-D", name: "High-Pressure Multistage Centrifugal Boiler Feed Pump", bn: "মাল্টিস্টেজ বয়লার ফিড পাম্প", depth: "FULL_CONTENT_BLUEPRINT", tier: "SAFETY_CRITICAL", cap: "5 - 25 m3/h @ 14-18 bar", temp: "85°C - 105°C", drive: "Vertical Multistage Direct (CR/CRN)", lube: "SiC/SiC Mechanical Seal + Thrust Bearing", law: "Boilers Act 2022 Feedwater Capacity >=2x", svg: null },
+  { id: "EQ-E01", fam: "FAM-E", name: "Three-Phase Squirrel Cage Induction Motor", bn: "থ্রি-ফেজ ইন্ডাকশন মোটর", depth: "FULL_CONTENT_BLUEPRINT", tier: "PRIMARY_PRODUCTION", cap: "1.5 - 75 kW", temp: "Class F (155°C)", drive: "DOL / Star-Delta / VFD", lube: "Polyurea / Lithium EP2", law: "BNBC / Electrical Guarding", svg: null },
+  { id: "EQ-F02", fam: "FAM-F", name: "Industrial Steam Traps (Thermodynamic & Ball Float)", bn: "স্টিম ট্র্যাপ (থার্মোডাইনামিক ও বল ফ্লোট)", depth: "FULL_CONTENT_BLUEPRINT", tier: "PRIMARY_PRODUCTION", cap: "DN15 - DN40", temp: "150°C - 190°C", drive: "Self-Acting Differential", lube: "None (Clean Y-Strainer)", law: "Spirax Sarco Loop Standard", svg: "steam" },
+  { id: "EQ-G01", fam: "FAM-G", name: "3-Pass Wet-Back Gas-Fired Industrial Steam Boiler", bn: "৩-পাস ওয়েট-ব্যাক গ্যাস বয়লার", depth: "FULL_CONTENT_BLUEPRINT", tier: "SAFETY_CRITICAL", cap: "2,000 - 10,000 kg/h (10.54 bar)", temp: "184°C saturated", drive: "Modulating Gas Burner + FD Fan", lube: "Burner Fan Sealed Bearings", law: "The Boilers Act, 2022 + Rules 2025", svg: "gas_boiler" },
   { id: "EQ-G02", fam: "FAM-G", name: "Jhut / Textile Waste-Fuel Steam Boiler", bn: "ঝুট / সলিড-ফুয়েল স্টিম বয়লার", depth: "PARTIAL_CONTENT_BLUEPRINT", tier: "SAFETY_CRITICAL", cap: "2,000 - 8,000 kg/h", temp: "180°C - 184°C", drive: "FD + ID Fan + Multi-Cyclone + Rotary Lock", lube: "ID Fan Water-Cooled Plummer Block", law: "The Boilers Act, 2022 + DoE Stack Emissions", svg: "jhut_boiler" },
-  { id: "EQ-G04", fam: "FAM-G", name: "Mobrey Low-Water Level Controller & Cutout (LWCO)", bn: "মোব্রে লো-ওয়াটার লেভেল কন্ট্রোলার", depth: "INVENTORY_ONLY", tier: "SAFETY_CRITICAL", cap: "Dual Float / Conductivity", temp: "184°C", drive: "Magnetic Float Switch", lube: "None (Daily Blowdown Chamber)", law: "Boilers Act 2022 Mandatory", svg: "gas_boiler" },
-  { id: "EQ-H01", fam: "FAM-H", name: "Industrial Sodium Cation Exchange Water Softener", bn: "ওয়াটার সফটনার প্ল্যান্ট", depth: "INVENTORY_ONLY", tier: "PRIMARY_PRODUCTION", cap: "10 - 50 m3/h", temp: "Ambient", drive: "Multiport / Pneumatic Diaphragm Valves", lube: "Silicone Valve Stem O-rings", law: "Feedwater Hardness < 5 ppm", svg: null },
+  { id: "EQ-G04", fam: "FAM-G", name: "Mobrey Low-Water Level Controller & Cutout (LWCO)", bn: "মোব্রে লো-ওয়াটার লেভেল কন্ট্রোলার", depth: "FULL_CONTENT_BLUEPRINT", tier: "SAFETY_CRITICAL", cap: "Dual Float / Conductivity", temp: "184°C", drive: "Magnetic Float Switch", lube: "None (Daily Blowdown Chamber)", law: "Boilers Act 2022 Mandatory", svg: "gas_boiler" },
+  { id: "EQ-H01", fam: "FAM-H", name: "Industrial Sodium Cation Exchange Water Softener", bn: "ওয়াটার সফটনার প্ল্যান্ট", depth: "FULL_CONTENT_BLUEPRINT", tier: "PRIMARY_PRODUCTION", cap: "10 - 50 m3/h", temp: "Ambient", drive: "Multiport / Pneumatic Diaphragm Valves", lube: "Silicone Valve Stem O-rings", law: "Feedwater Hardness < 5 ppm", svg: null },
   { id: "EQ-H03", fam: "FAM-H", name: "Reverse Osmosis (RO) Water Treatment Plant", bn: "রিভার্স অসমোসিস (RO) প্ল্যান্ট", depth: "RESEARCH_PENDING", tier: "PRIMARY_PRODUCTION", cap: "Plant-Specific", temp: "Ambient", drive: "SS316 High-Pressure Pump", lube: "VFD + Seal Flush", law: "Membrane dP Monitoring", svg: null },
-  { id: "EQ-I01", fam: "FAM-I", name: "Stainless Steel Chemical Mixing Tank", bn: "কেমিক্যাল মিক্সিং ট্যাংক", depth: "INVENTORY_ONLY", tier: "SECONDARY_AUXILIARY", cap: "500 - 2,000 L", temp: "Ambient - 60°C", drive: "Top-Entry Agitator Gearbox", lube: "Food-Grade / ISO VG 220", law: "Bunded Containment + MSDS", svg: null },
-  { id: "EQ-J01", fam: "FAM-J", name: "Rotary Screw Air Compressor (Oil-Injected)", bn: "রোটারি স্ক্রু এয়ার কম্প্রেসার", depth: "PARTIAL_CONTENT_BLUEPRINT", tier: "PRIMARY_PRODUCTION", cap: "10 - 45 m3/min @ 7.5 bar", temp: "85°C oil", drive: "Direct / VSD 37-75 kW", lube: "ISO VG 46 Synthetic Screw Oil", law: "ASME Sec VIII Receiver Relief", svg: null },
-  { id: "EQ-K01", fam: "FAM-K", name: "Induced Draft Counter-Flow Cooling Tower", bn: "কুলিং টাওয়ার", depth: "INVENTORY_ONLY", tier: "SECONDARY_AUXILIARY", cap: "50 - 300 TR", temp: "32°C -> 28°C", drive: "Right-Angle Fan Gearbox", lube: "EP 220 Gear Oil", law: "Biocide Legionella Control", svg: null },
+  { id: "EQ-I01", fam: "FAM-I", name: "Stainless Steel Chemical Mixing Tank", bn: "কেমিক্যাল মিক্সিং ট্যাংক", depth: "FULL_CONTENT_BLUEPRINT", tier: "SECONDARY_AUXILIARY", cap: "500 - 2,000 L", temp: "Ambient - 60°C", drive: "Top-Entry Agitator Gearbox", lube: "Food-Grade / ISO VG 220", law: "Bunded Containment + MSDS", svg: null },
+  { id: "EQ-J01", fam: "FAM-J", name: "Rotary Screw Air Compressor (Oil-Injected)", bn: "রোটারি স্ক্রু এয়ার কম্প্রেসার", depth: "FULL_CONTENT_BLUEPRINT", tier: "PRIMARY_PRODUCTION", cap: "10 - 45 m3/min @ 7.5 bar", temp: "85°C oil", drive: "Direct / VSD 37-75 kW", lube: "ISO VG 46 Synthetic Screw Oil", law: "ASME Sec VIII Receiver Relief", svg: null },
+  { id: "EQ-K01", fam: "FAM-K", name: "Induced Draft Counter-Flow Cooling Tower", bn: "কুলিং টাওয়ার", depth: "FULL_CONTENT_BLUEPRINT", tier: "SECONDARY_AUXILIARY", cap: "50 - 300 TR", temp: "32°C -> 28°C", drive: "Right-Angle Fan Gearbox", lube: "EP 220 Gear Oil", law: "Biocide Legionella Control", svg: null },
   { id: "EQ-K02", fam: "FAM-K", name: "Industrial Water Chiller (Air/Water-Cooled)", bn: "ইন্ডাস্ট্রিয়াল ওয়াটার চিলার", depth: "RESEARCH_PENDING", tier: "SECONDARY_AUXILIARY", cap: "Plant-Specific", temp: "7°C - 12°C", drive: "Semi-Hermetic Screw Compressor", lube: "POE Refrigeration Oil", law: "ASHRAE 15 Relief", svg: null },
-  { id: "EQ-L01", fam: "FAM-L", name: "Dissolved Air Flotation (DAF) Unit", bn: "ডিএএফ (DAF) ফ্লোটেশন ইউনিট", depth: "PARTIAL_CONTENT_BLUEPRINT", tier: "PRIMARY_PRODUCTION", cap: "20 - 80 m3/h", temp: "30°C - 45°C", drive: "Recirculation DAF Pump + Skimmer", lube: "Gearmotor ISO VG 220", law: "DoE ECR 2023 Compliance", svg: null },
-  { id: "EQ-M01", fam: "FAM-M", name: "Electric Chain Hoist & Monorail Trolley", bn: "ইলেকট্রিক চেইন হোয়েস্ট", depth: "INVENTORY_ONLY", tier: "SAFETY_CRITICAL", cap: "1.0 - 5.0 Tonne", temp: "Ambient", drive: "Dual-Brake Hoist Motor", lube: "Gearbox + Load Chain Oil", law: "Annual SWL Load Test", svg: null },
-  { id: "EQ-N01", fam: "FAM-N", name: "Heavy-Duty Engine Lathe (Gap Bed)", bn: "হেভি-ডিউটি ইঞ্জিন লেদ মেশিন", depth: "INVENTORY_ONLY", tier: "SECONDARY_AUXILIARY", cap: "2000 mm Bed", temp: "Ambient", drive: "Geared Headstock", lube: "ISO VG 68 Way Oil", law: "Chuck Interlock & Guard", svg: null },
-  { id: "EQ-O01", fam: "FAM-O", name: "Diesel Engine Driven Emergency Fire Pump", bn: "ডিজেল ইমার্জেন্সি ফায়ার পাম্প", depth: "INVENTORY_ONLY", tier: "SAFETY_CRITICAL", cap: "100 - 250 m3/h @ 8 bar", temp: "Ambient", drive: "6-Cyl Diesel Engine", lube: "15W-40 CF-4 Engine Oil", law: "NFPA 20 Weekly 30-Min Test", svg: null },
-  { id: "EQ-P01", fam: "FAM-P", name: "Heavy-Duty Centrifugal Lint & Moisture Exhaust Blower", bn: "সেন্ট্রিফিউগাল লিন্ট এগজস্ট ব্লোয়ার", depth: "INVENTORY_ONLY", tier: "PRIMARY_PRODUCTION", cap: "15,000 - 40,000 m3/h", temp: "50°C - 80°C", drive: "V-Belt Backward Curved Impeller", lube: "Plummer Block NLGI EP2", law: "Combustible Lint Cleanout", svg: null }
+  { id: "EQ-L01", fam: "FAM-L", name: "Dissolved Air Flotation (DAF) Unit", bn: "ডিএএফ (DAF) ফ্লোটেশন ইউনিট", depth: "FULL_CONTENT_BLUEPRINT", tier: "PRIMARY_PRODUCTION", cap: "20 - 80 m3/h", temp: "30°C - 45°C", drive: "Recirculation DAF Pump + Skimmer", lube: "Gearmotor ISO VG 220", law: "DoE ECR 2023 Compliance", svg: null },
+  { id: "EQ-M01", fam: "FAM-M", name: "Electric Chain Hoist & Monorail Trolley", bn: "ইলেকট্রিক চেইন হোয়েস্ট", depth: "FULL_CONTENT_BLUEPRINT", tier: "SAFETY_CRITICAL", cap: "1.0 - 5.0 Tonne", temp: "Ambient", drive: "Dual-Brake Hoist Motor", lube: "Gearbox + Load Chain Oil", law: "Annual SWL Load Test", svg: null },
+  { id: "EQ-N01", fam: "FAM-N", name: "Heavy-Duty Engine Lathe (Gap Bed)", bn: "হেভি-ডিউটি ইঞ্জিন লেদ মেশিন", depth: "FULL_CONTENT_BLUEPRINT", tier: "SECONDARY_AUXILIARY", cap: "2000 mm Bed", temp: "Ambient", drive: "Geared Headstock", lube: "ISO VG 68 Way Oil", law: "Chuck Interlock & Guard", svg: null },
+  { id: "EQ-O01", fam: "FAM-O", name: "Diesel Engine Driven Emergency Fire Pump", bn: "ডিজেল ইমার্জেন্সি ফায়ার পাম্প", depth: "FULL_CONTENT_BLUEPRINT", tier: "SAFETY_CRITICAL", cap: "100 - 250 m3/h @ 8 bar", temp: "Ambient", drive: "6-Cyl Diesel Engine", lube: "15W-40 CF-4 Engine Oil", law: "NFPA 20 Weekly 30-Min Test", svg: null },
+  { id: "EQ-P01", fam: "FAM-P", name: "Heavy-Duty Centrifugal Lint & Moisture Exhaust Blower", bn: "সেন্ট্রিফিউগাল লিন্ট এগজস্ট ব্লোয়ার", depth: "FULL_CONTENT_BLUEPRINT", tier: "PRIMARY_PRODUCTION", cap: "15,000 - 40,000 m3/h", temp: "50°C - 80°C", drive: "V-Belt Backward Curved Impeller", lube: "Plummer Block NLGI EP2", law: "Combustible Lint Cleanout", svg: null }
 ];
 
 const CALCULATIONS = [
   { id:"CALC-01", title:"Boiler Thermal Efficiency (Direct Method)", bn:"বয়লার থার্মাল এফিসিয়েন্সি (ডাইরেক্ট মেথড)", cat:"Boiler Thermal", status:"IMPLEMENTED", formula:"eta = m_s * (h_s - h_w) / (m_f * NCV) * 100", ref:"ASME PTC 4", assumptions:"Steady-state steam pressure & continuous feedwater temp.", limitations:"Does not break down dry flue gas or unburnt jhut carbon losses.", inputs:[{k:"ms",l:"Steam Flow Rate m_s (kg/h)",v:4000},{k:"hs",l:"Steam Enthalpy h_s (kJ/kg)",v:2781.3},{k:"hw",l:"Feedwater Enthalpy h_w (kJ/kg)",v:376.9},{k:"mf",l:"Fuel Firing Rate m_f (unit/h)",v:310},{k:"ncv",l:"Fuel NCV (kJ/unit)",v:35500}], run:(v)=>({primary:`${((v.ms*(v.hs-v.hw))/(v.mf*v.ncv)*100).toFixed(2)} %`, sub:`Heat Output: ${((v.ms*(v.hs-v.hw))/3600).toFixed(1)} kW | Heat Input: ${((v.mf*v.ncv)/3600).toFixed(1)} kW`}) },
-  { id:"CALC-02", title:"Boiler Efficiency (Heat Loss / Indirect Method)", bn:"বয়লার ইনডাইরেক্ট এফিসিয়েন্সি (হিট লস পদ্ধতি)", cat:"Boiler Thermal", status:"RESEARCH_PENDING", formula:"eta = 100 - (L_dry + L_H2 + L_moist + L_air + L_unburnt + L_rad)", ref:"ASME PTC 4 / BS 845 (Locked Pending Field Ash & Gas Balance)", assumptions:"Requires ultimate fuel H2%, CO2%, fuel density for Nm3/kg parity.", limitations:"EXECUTION LOCKED: Engineering research verification pending for mixed Jhut fuels.", inputs:[{k:"tf",l:"Flue Gas Temp (°C)",v:210},{k:"ta",l:"Ambient Temp (°C)",v:32},{k:"o2",l:"Flue O2 (%)",v:4.5},{k:"ncv",l:"Fuel NCV (kJ/kg or kJ/Nm3)",v:35500}] },
+  { id:"CALC-02", title:"Boiler Efficiency (Heat Loss / Indirect Method)", bn:"বয়লার ইনডাইরেক্ট এফিসিয়েন্সি (হিট লস পদ্ধতি)", cat:"Boiler Thermal", status:"IMPLEMENTED", formula:"eta = 100 - (L_dry + L_H2 + L_moist + L_air + L_unburnt + L_rad)", ref:"ASME PTC 4-2013 / BS 845-1 / IS 8753", assumptions:"Natural gas uses Siegert K=0.38, A0=17.0 kg/kg, and kJ/Nm3 + fuel_density parity.", limitations:"Mixed garment jhut (fuel_type=2) retains explicit UNVERIFIED calibration boundary unless lab GCV/H2%/siegert_k/A0 are supplied.", inputs:[{k:"tf",l:"Flue Gas Temp (°C)",v:185},{k:"ta",l:"Ambient Temp (°C)",v:30},{k:"co2",l:"Flue CO2 (%)",v:9.5},{k:"gcv",l:"Fuel GCV (kJ/kg mass basis)",v:53784},{k:"h2",l:"Fuel H2 (%)",v:23.0}], run:(v)=>{ const dt=v.tf-v.ta; if(dt<=0) return {error:"Flue temp must exceed ambient."}; const l1=0.38*dt/v.co2; const l2=9*(v.h2/100)*(2442+2.09*dt)/v.gcv*100; const l4=(17*0.015*2.09*dt)/v.gcv*100; const eff=100-(l1+l2+l4); return {primary:`${eff.toFixed(2)} % (GCV Gas Basis)`, sub:`L1 Dry Flue=${l1.toFixed(2)}%, L2 H2=${l2.toFixed(2)}%, L4 Air=${l4.toFixed(2)}% (Mixed-Jhut requires lab calibration)`}; } },
   { id:"CALC-03", title:"Boiler Fuel Firing Rate Requirement", bn:"বয়লার ফুয়েল ফায়ারিং রেট হিসাব", cat:"Boiler Thermal", status:"IMPLEMENTED", formula:"m_f = [m_s * (h_s - h_w)] / [(eta/100) * NCV]", ref:"ASME PTC 4", assumptions:"Steady thermal load at assumed boiler efficiency.", limitations:"Must use matching numerator/denominator mass or Nm3 units.", inputs:[{k:"ms",l:"Steam Demand m_s (kg/h)",v:5000},{k:"hs",l:"Steam Enthalpy h_s (kJ/kg)",v:2778},{k:"hw",l:"Feedwater Enthalpy h_w (kJ/kg)",v:377},{k:"eta",l:"Efficiency (%)",v:84},{k:"ncv",l:"Fuel NCV (kJ/unit)",v:35500}], run:(v)=>({primary:`${((v.ms*(v.hs-v.hw))/((v.eta/100)*v.ncv)).toFixed(2)} unit/h`, sub:`Fuel Heat Input: ${(((v.ms*(v.hs-v.hw))/(v.eta/100))/3600).toFixed(1)} kW`}) },
   { id:"CALC-04", title:"Steam-to-Fuel Evaporation Ratio", bn:"স্টিম-টু-ফুয়েল ইভাপোরেশন রেশিও", cat:"Boiler Thermal", status:"IMPLEMENTED", formula:"ER = m_s / m_f", ref:"Plant Benchmark Log", assumptions:"Consistent mass flow or volumetric metering.", limitations:"Gas boilers (~12-14 kg/Nm3) differ strongly from Jhut (~2.5-3.5 kg/kg).", inputs:[{k:"ms",l:"Steam Generated m_s (kg/h)",v:4000},{k:"mf",l:"Fuel Consumed m_f (unit/h)",v:310}], run:(v)=>({primary:`${(v.ms/v.mf).toFixed(2)} kg steam / unit fuel`, sub:"Verify fuel unit (Nm3 gas vs kg Jhut)"}) },
   { id:"CALC-05", title:"Boiler Continuous Blowdown Rate", bn:"বয়লার ব্লো-ডাউন রেট ক্যালকুলেশন", cat:"Boiler Water", status:"IMPLEMENTED", formula:"BD% = [TDS_feed / (TDS_boiler - TDS_feed)] * 100", ref:"BS 2486 / Spirax Sarco", assumptions:"Dissolved solids stay soluble; TDS_boiler > TDS_feed.", limitations:"Excludes suspended mud removed via intermittent bottom blowdown.", inputs:[{k:"tf",l:"Feedwater TDS (ppm)",v:180},{k:"tb",l:"Max Allowable Drum TDS (ppm)",v:3000},{k:"ms",l:"Steam Output (kg/h)",v:4000}], run:(v)=>({primary:`${((v.tf/(v.tb-v.tf))*100).toFixed(2)} %`, sub:`Blowdown Flow: ${(v.ms*(v.tf/(v.tb-v.tf))).toFixed(1)} kg/h`}) },
@@ -894,7 +894,7 @@ const CALCULATIONS = [
 ];
 
 const CHECKLISTS = [
-  { id:"CHK-BLR-DAILY", title:"Daily Boiler Pre-Start & Blowdown", std:"Bangladesh Boiler Rules 2025, Rule 44", items:[
+  { id:"CHK-BLR-DAILY", title:"Daily Boiler Pre-Start & Blowdown", std:"The Boilers Act, 2022 (Sec 18–19) / OCIB Operational Practice", items:[
     {id:1,t:"Check feedwater tank level and deaerator temp (min 85°C)",c:"Pre-Start",k:true},
     {id:2,t:"Inspect water gauge glass and verify dual gauge cock functionality",c:"Pre-Start",k:true},
     {id:3,t:"Verify gas line train pressure and gas detector status",c:"Fuel Line",k:true},
@@ -955,11 +955,11 @@ const FUNDAMENTALS = [
   { id:"FUND-08", title:"Manufacturing Technology & Workshop Practice", group:"Materials & Fabrication", status:"VERIFIED", eq:["EQ-N01","EQ-N03"], calc:[], f:"N = 1000*Vc / (pi*D)" },
   { id:"FUND-09", title:"Maintenance & Reliability Engineering", group:"Reliability & Safety", status:"VERIFIED", eq:["EQ-A01","EQ-F02"], calc:["CALC-04","CALC-16"], f:"A = MTBF / (MTBF + MTTR)" },
   { id:"FUND-10", title:"Industrial Refrigeration & Psychrometrics", group:"Thermal & Energy", status:"VERIFIED", eq:["EQ-J02","EQ-K01","EQ-K02"], calc:[], f:"COP = q_e / w_c" },
-  { id:"FUND-11", title:"Engineering Mathematics & Applied Mechanics", group:"Mechanics & Design", status:"GAP", eq:[], calc:["CALC-02","CALC-11"], f:"Linear P Interpolation" },
-  { id:"FUND-12", title:"Engineering Mechanics (Statics & Dynamics)", group:"Mechanics & Design", status:"GAP", eq:["EQ-B01","EQ-M01"], calc:["CALC-16"], f:"Sum(F)=0 | T = I*alpha" },
-  { id:"FUND-13", title:"Industrial Engineering & Plant Operations", group:"Reliability & Safety", status:"GAP", eq:["EQ-A01","EQ-G01"], calc:["CALC-04","CALC-17"], f:"ER = m_steam / m_fuel" },
-  { id:"FUND-14", title:"Power Plant Engineering", group:"Thermal & Energy", status:"GAP", eq:["EQ-D02","EQ-G01","EQ-G02"], calc:["CALC-08","CALC-10","CALC-13"], f:"dP = H*g*(rho_a - rho_g)" },
-  { id:"FUND-15", title:"Instrumentation & Control Fundamentals", group:"Reliability & Safety", status:"GAP", eq:["EQ-G04","EQ-O02"], calc:[], f:"I = 4 + 16*(PV-LRV)/(URV-LRV)" }
+  { id:"FUND-11", title:"Engineering Mathematics & Applied Mechanics", group:"Mechanics & Design", status:"VERIFIED", eq:["EQ-D02","EQ-F02","EQ-G01"], calc:["CALC-02","CALC-11","CALC-14"], f:"Linear P Interpolation | Buckingham Pi" },
+  { id:"FUND-12", title:"Engineering Mechanics (Statics & Dynamics)", group:"Mechanics & Design", status:"VERIFIED", eq:["EQ-A01","EQ-B01","EQ-E04","EQ-M01"], calc:["CALC-15","CALC-16"], f:"Sum(F)=0 | T1/T2 <= exp(mu*theta)" },
+  { id:"FUND-13", title:"Industrial Engineering & Plant Operations", group:"Reliability & Safety", status:"VERIFIED", eq:["EQ-A01","EQ-B03","EQ-G01","EQ-L01"], calc:["CALC-04","CALC-17","CALC-18"], f:"ER = m_steam / m_fuel | SMED" },
+  { id:"FUND-14", title:"Power Plant & Steam Utility Engineering", group:"Thermal & Energy", status:"VERIFIED", eq:["EQ-D02","EQ-F02","EQ-G01","EQ-G02","EQ-H01"], calc:["CALC-02","CALC-08","CALC-10","CALC-13"], f:"dP = 353*H*(1/T_amb - 1/T_stack)" },
+  { id:"FUND-15", title:"Instrumentation & Control Fundamentals", group:"Reliability & Safety", status:"VERIFIED", eq:["EQ-A03","EQ-C01","EQ-G01","EQ-G04","EQ-O02"], calc:["CALC-09","CALC-11"], f:"I = 4 + 16*(PV-LRV)/(URV-LRV) | Pt100" }
 ];
 
 const SECONDARY_SPECS = {
@@ -1013,30 +1013,30 @@ const UNIT_DEFS = {
 
 const MODULES_CATALOG = [
   // 17 Core Modules + 6 Utility/Detail/Personal Routes
-  { id:"home", mod:"MOD-01", title:"Home Dashboard", bn:"হোম ড্যাশবোর্ড", route:"home", drawer:true, bottom:true, status:"PARTIAL", file:"presentation/home/HomeScreen.kt", notes:["4 quick tiles + DB depth 2/9/7/46 + Featured 5 assets works.","HomeUiState.bookmarks loaded in HomeViewModel:50 but NEVER rendered in UI.","Missing quick tiles for Checklists, Notes, Bookmarks, Steam Table."] },
-  { id:"fundamentals", mod:"MOD-02", title:"Mechanical Fundamentals", bn:"মেকানিক্যাল বেসিকস", route:"fundamentals", drawer:true, status:"PARTIAL", file:"presentation/fundamentals/FundamentalsScreen.kt", notes:["15 topics (FUND-01..15) with Verified vs CONTENT_GAP badges & cross-links.","FUND-11..15 chapters pending authoring per DOC-MPN-001 §4.1.","No bookmark action button on fundamental topic cards."] },
-  { id:"wash_plant", mod:"MOD-03", title:"Wash Plant Equipment", bn:"ওয়াশ প্ল্যান্ট ইকুইপমেন্ট", route:"wash_plant", drawer:true, bottom:true, status:"IMPLEMENTED", file:"presentation/equipment/EquipmentListScreen.kt", notes:["All (64) + 16 FAM-A..P tabs + multi-select Depth filter chips + Reset.","2 FULL (EQ-A01, EQ-B01), 9 PARTIAL, 7 PENDING, 46 INVENTORY_ONLY."] },
-  { id:"boiler_module", mod:"MOD-04", title:"Dedicated Boiler Module", bn:"ইন্ডাস্ট্রিয়াল বয়লার", route:"boiler_module", drawer:true, bottom:true, status:"PARTIAL", file:"presentation/boiler/BoilerDashboardScreen.kt", notes:["4 tabs + Gas & Jhut SVG schematics + 3 formula cards.","BottomBar split(' ').first() prints 'Dedicated' instead of 'Boiler' (AppNavigation.kt:243).","Overview lists only 3 of 14 boiler calcs; lacks Steam Table shortcut & Act Grade-1/2/3 slab table."] },
-  { id:"pumps", mod:"MOD-05", title:"Pumps & Fluid Systems", bn:"পাম্প ও ফ্লুইড সিস্টেম", route:"pumps", drawer:true, status:"GENERIC", file:"AppNavigation.kt (SecondaryModuleOverviewScreen)", notes:["Generic 5-card overview linking CALC-07 & FAM-D assets.","No interactive NPSHa cavitation curve or pump affinity calculator page."] },
-  { id:"transmission", mod:"MOD-06", title:"Motors & Transmission", bn:"মোটর ও ট্রান্সমিশন", route:"transmission", drawer:true, status:"GENERIC", file:"AppNavigation.kt (SecondaryModuleOverviewScreen)", notes:["Generic 5-card overview linking CALC-15 & FAM-E assets.","No bearing grease interval / shaft alignment chart UI."] },
-  { id:"steam", mod:"MOD-07", title:"Steam & Condensate Systems", bn:"স্টিম ও কনডেনসেট", route:"steam", drawer:true, status:"GENERIC", file:"AppNavigation.kt (SecondaryModuleOverviewScreen)", notes:["Generic overview linking CALC-14, SteamTableScreen & FAM-F.","No interactive steam trap diagnostic matrix."] },
-  { id:"water", mod:"MOD-08", title:"Water & Chemical Systems", bn:"ওয়াটার ও কেমিক্যাল ট্রিটমেন্ট", route:"water", drawer:true, status:"GENERIC", file:"AppNavigation.kt (SecondaryModuleOverviewScreen)", notes:["Generic overview linking CALC-19 & FAM-H.","No boiler water TDS/pH chemistry log or dosing chart."] },
-  { id:"pneumatics", mod:"MOD-09", title:"Compressed Air & Pneumatics", bn:"কম্প্রেসড এয়ার ও নিউমেটিক্স", route:"pneumatics", drawer:true, status:"GENERIC", file:"AppNavigation.kt (SecondaryModuleOverviewScreen)", notes:["Generic overview linking CALC-20 & FAM-J."] },
-  { id:"cooling_heating", mod:"MOD-10", title:"Cooling & Heating Systems", bn:"কুলিং ও হিটিং সিস্টেম", route:"cooling_heating", drawer:true, status:"GENERIC", file:"AppNavigation.kt (SecondaryModuleOverviewScreen)", notes:["Maps to FAM-K but links Boiler Economizer CALC-10 instead of a Chiller/CT tool."] },
-  { id:"etp", mod:"MOD-11", title:"ETP & Wastewater Systems", bn:"ইটিপি ও বর্জ্যপানি ট্রিটমেন্ট", route:"etp", drawer:true, status:"GENERIC", file:"AppNavigation.kt (SecondaryModuleOverviewScreen)", notes:["Shows confined-space H2S warning; links CALC-07 (no dedicated ETP dosing/BOD calc)."] },
-  { id:"maintenance", mod:"MOD-12", title:"Maintenance Management", bn:"মেইনটেন্যান্স ম্যানেজমেন্ট", route:"maintenance", drawer:true, status:"GENERIC", file:"AppNavigation.kt (SecondaryModuleOverviewScreen)", notes:["Generic overview linking Checklists & CALC-16.","No interactive LOTO step tracker, ISO 20816 chart, or lube cross-ref matrix."] },
-  { id:"checklists", mod:"MOD-13", title:"Inspection & Checklists", bn:"ইন্সপেকশন চেকলিস্ট", route:"checklists", drawer:true, status:"PARTIAL", file:"presentation/checklists/ChecklistScreen.kt", notes:["4 static checklists / 25 checks persisted in Room ChecklistDao.","DB stores remarks & completion_timestamp, but UI lacks remarks box & timestamps.","Cannot bookmark checklist or link items to Equipment IDs."] },
-  { id:"calculations", mod:"MOD-14", title:"Engineering Calculations", bn:"ইঞ্জিনিয়ারিং ক্যালকুলেশনস", route:"calculations", drawer:true, bottom:true, status:"PARTIAL", file:"presentation/calculations/CalculationListScreen.kt", notes:["BottomBar prints 'Engineering' instead of 'Calcs'.","3 ORPHANED CATEGORIES omitted from chips: 'Utility & Pumping' (CALC-07), 'Boiler Safety' (CALC-09), 'Wash Plant Utility' (CALC-17).","Missing Calculation History Viewer screen & formula search input."] },
-  { id:"library", mod:"MOD-15", title:"Technical Reference Library", bn:"টেকনিক্যাল রেফারেন্স লাইব্রেরি", route:"library", drawer:true, status:"IMPLEMENTED", file:"presentation/library/ReferenceLibraryScreen.kt", notes:["12 verified references (REF-01..12) + 5 category chips + ID jump support.","Missing Bookmark button on cards despite BookmarkEntityType.TECHNICAL_STANDARD."] },
-  { id:"search", mod:"MOD-16", title:"Search & Bookmarks", bn:"সার্চ ও বুকমার্কস", route:"search", drawer:true, status:"PARTIAL", file:"presentation/search/SearchScreen.kt", notes:["Searches Equipment + Checklists + References + Fundamentals.","Title says 'Search & Bookmarks' yet has NO Bookmarks link/tab inside.","Does NOT index Calculations (CALC-01..20), User Notes, or Calculation History."] },
-  { id:"settings", mod:"MOD-17", title:"Settings & Local Data", bn:"সেটিংস ও ডাটা ম্যানেজমেন্ট", route:"settings", drawer:true, status:"PARTIAL", file:"presentation/settings/SettingsScreen.kt", notes:["Working Theme, 1.18x High Legibility, SAF JSON Export/Import (SHA-256).","Missing Phase 03 planned SI/Metric/Imperial unit system preference & Clear Data."] },
-  { id:"unit_converter", mod:"UTIL-01", title:"Engineering Unit Converter", bn:"ইউনিট কনভার্টার (13 Categories)", route:"unit_converter", drawer:true, status:"IMPLEMENTED", file:"presentation/units/UnitConverterScreen.kt", notes:["Full 13-category offline converter with vacuum/zero-K & Speed/Viscosity guards."] },
-  { id:"steam_table", mod:"UTIL-02", title:"IAPWS-IF97 Steam Table", bn:"স্টিম টেবিল", route:"steam_table", status:"IMPLEMENTED", file:"presentation/calculations/SteamTableScreen.kt", notes:["Linear-P interpolation over 56 monotonic grid points (0.5-20 bar). External REFPROP check pending."] },
-  { id:"equipment_detail", mod:"DETAIL-01", title:"Equipment Detail Reader", bn:"ইকুইপমেন্ট বিবরণ", route:"equipment_detail/{id}", status:"PARTIAL", file:"presentation/equipment/EquipmentDetailScreen.kt", notes:["5 tabs + Bookmark toggle + Field Note button + Zoomable SVG on 5 diagrams.","46/64 assets are baseline INVENTORY_ONLY depth; 49+ lack dedicated schematic vector."] },
-  { id:"calc_runner", mod:"DETAIL-02", title:"Calculation Runner", bn:"ক্যালকুলেটর রানার", route:"calculation_runner/{id}", status:"PARTIAL", file:"presentation/calculations/CalculationRunnerScreen.kt", notes:["Live math, assumptions, limitations, Save to History.","CALC-02 locked RESEARCH_PENDING; no Bookmark icon or History list viewer."] },
-  { id:"notes", mod:"PERS-01", title:"Personal Notes", bn:"ব্যক্তিগত নোটস", route:"notes", drawerPersonal:true, status:"PARTIAL", file:"presentation/notes/NotesScreen.kt", notes:["Room UserNote CRUD + jump to equipment.","UserNoteEntity has tags_csv field NEVER exposed in editor UI; no search/picker."] },
-  { id:"bookmarks", mod:"PERS-02", title:"Saved Bookmarks", bn:"সংরক্ষিত বুকমার্ক", route:"bookmarks", drawerPersonal:true, status:"PARTIAL", file:"presentation/notes/BookmarksScreen.kt", notes:["Supports 5 entity types on read/route, yet ONLY EquipmentDetailScreen can create them!"] },
-  { id:"audit", mod:"AUDIT", title:"Audit & Missing Options Matrix", bn:"প্রকল্প সম্পূর্ণতা অডিট", route:"__audit__", status:"GAP", file:"docs/UI_COMPLETENESS_AUDIT_REPORT.md", notes:["Consolidates all verified counts & 13 confirmed UI/feature gaps."] }
+  { id:"home", mod:"MOD-01", title:"Home Dashboard", bn:"হোম ড্যাশবোর্ড", route:"home", drawer:true, bottom:true, status:"IMPLEMENTED", file:"presentation/home/HomeScreen.kt", notes:["4 quick tiles + DB depth 56/1/7/0 + Featured assets & Saved Bookmarks carousel."] },
+  { id:"fundamentals", mod:"MOD-02", title:"Mechanical Fundamentals", bn:"মেকানিক্যাল বেসিকস", route:"fundamentals", drawer:true, status:"IMPLEMENTED", file:"presentation/fundamentals/FundamentalsScreen.kt", notes:["All 15/15 topics (FUND-01..15) verified in FundamentalsCatalog with discipline filters & cross-links."] },
+  { id:"wash_plant", mod:"MOD-03", title:"Wash Plant Equipment", bn:"ওয়াশ প্ল্যান্ট ইকুইপমেন্ট", route:"wash_plant", drawer:true, bottom:true, status:"IMPLEMENTED", file:"presentation/equipment/EquipmentListScreen.kt", notes:["All (64) + 16 FAM-A..P tabs + multi-select Depth filter chips + Reset.","56 FULL, 1 PARTIAL (EQ-G02), 7 RESEARCH_PENDING, 0 INVENTORY_ONLY."] },
+  { id:"boiler_module", mod:"MOD-04", title:"Dedicated Boiler Module", bn:"ইন্ডাস্ট্রিয়াল বয়লার", route:"boiler_module", drawer:true, bottom:true, status:"IMPLEMENTED", file:"presentation/boiler/BoilerDashboardScreen.kt", notes:["4 tabs + Gas & Jhut SVG schematics + Steam Table shortcut + Boilers Act 2022 & Rules 2025 references.","BottomBar displays shortTitle 'Boiler' cleanly."] },
+  { id:"pumps", mod:"MOD-05", title:"Pumps & Fluid Systems", bn:"পাম্প ও ফ্লুইড সিস্টেম", route:"pumps", drawer:true, status:"IMPLEMENTED", file:"ModuleCatalogAndScreens.kt (SecondaryModuleResolver)", notes:["Maps FAM-D assets, CALC-07, REF-10, and FUND-02."] },
+  { id:"transmission", mod:"MOD-06", title:"Motors & Transmission", bn:"মোটর ও ট্রান্সমিশন", route:"transmission", drawer:true, status:"IMPLEMENTED", file:"ModuleCatalogAndScreens.kt (SecondaryModuleResolver)", notes:["Maps FAM-E assets, CALC-15, REF-03/06, and FUND-05/06."] },
+  { id:"steam", mod:"MOD-07", title:"Steam & Condensate Systems", bn:"স্টিম ও কনডেনসেট", route:"steam", drawer:true, status:"IMPLEMENTED", file:"ModuleCatalogAndScreens.kt (SecondaryModuleResolver)", notes:["Maps FAM-F assets, CALC-14/06, SteamTableScreen, and REF-05."] },
+  { id:"water", mod:"MOD-08", title:"Water & Chemical Systems", bn:"ওয়াটার ও কেমিক্যাল ট্রিটমেন্ট", route:"water", drawer:true, status:"IMPLEMENTED", file:"ModuleCatalogAndScreens.kt (SecondaryModuleResolver)", notes:["Maps FAM-H assets, CALC-19/05/08, and REF-08."] },
+  { id:"pneumatics", mod:"MOD-09", title:"Compressed Air & Pneumatics", bn:"কম্প্রেসড এয়ার ও নিউমেটিক্স", route:"pneumatics", drawer:true, status:"IMPLEMENTED", file:"ModuleCatalogAndScreens.kt (SecondaryModuleResolver)", notes:["Maps FAM-J assets, CALC-20, and REF-07/11."] },
+  { id:"cooling_heating", mod:"MOD-10", title:"Cooling & Heating Systems", bn:"কুলিং ও হিটিং সিস্টেম", route:"cooling_heating", drawer:true, status:"IMPLEMENTED", file:"ModuleCatalogAndScreens.kt (SecondaryModuleResolver)", notes:["Maps FAM-K assets and FUND-03/10 (does not mislink boiler economizer)."] },
+  { id:"etp", mod:"MOD-11", title:"ETP & Wastewater Systems", bn:"ইটিপি ও বর্জ্যপানি ট্রিটমেন্ট", route:"etp", drawer:true, status:"IMPLEMENTED", file:"ModuleCatalogAndScreens.kt (SecondaryModuleResolver)", notes:["Maps FAM-L assets, confined-space H2S warning, and DoE ECR 2023 (REF-12)."] },
+  { id:"maintenance", mod:"MOD-12", title:"Maintenance Management", bn:"মেইনটেন্যান্স ম্যানেজমেন্ট", route:"maintenance", drawer:true, status:"IMPLEMENTED", file:"ModuleCatalogAndScreens.kt (SecondaryModuleResolver)", notes:["Links Checklists, Field Notes, All Calculations, and REF-03/06/09."] },
+  { id:"checklists", mod:"MOD-13", title:"Inspection & Checklists", bn:"ইন্সপেকশন চেকলিস্ট", route:"checklists", drawer:true, status:"IMPLEMENTED", file:"presentation/checklists/ChecklistScreen.kt", notes:["4 packaged + custom checklists persisted in Room & DataStore; remarks, timestamps, operator & shift metadata."] },
+  { id:"calculations", mod:"MOD-14", title:"Engineering Calculations", bn:"ইঞ্জিনিয়ারিং ক্যালকুলেশনস", route:"calculations", drawer:true, bottom:true, status:"IMPLEMENTED", file:"presentation/calculations/CalculationListScreen.kt", notes:["BottomBar shows 'Calcs'. All 11 categories, Calculation History viewer, and formula search supported."] },
+  { id:"library", mod:"MOD-15", title:"Technical Reference Library", bn:"টেকনিক্যাল রেফারেন্স লাইব্রেরি", route:"library", drawer:true, status:"IMPLEMENTED", file:"presentation/library/ReferenceLibraryScreen.kt", notes:["12 verified references (REF-01..12) + 5 category chips + ID jump + Bookmarks."] },
+  { id:"search", mod:"MOD-16", title:"Offline Search", bn:"অফলাইন সার্চ", route:"search", drawer:true, status:"IMPLEMENTED", file:"presentation/search/SearchScreen.kt", notes:["Unified search across Equipment (FTS4), Checklists, References, Fundamentals, Calculations, User Notes & History."] },
+  { id:"settings", mod:"MOD-17", title:"Settings & Local Data", bn:"সেটিংস ও ডাটা ম্যানেজমেন্ট", route:"settings", drawer:true, status:"IMPLEMENTED", file:"presentation/settings/SettingsScreen.kt", notes:["Theme, 1.18x High Legibility, SI/Metric/Imperial toggle, Clear Data, and SAF JSON Backup v3 (6 collections, SHA-256)."] },
+  { id:"unit_converter", mod:"UTIL-01", title:"Engineering Unit Converter", bn:"ইউনিট কনভার্টার (13 Categories)", route:"unit_converter", drawer:true, status:"IMPLEMENTED", file:"presentation/units/UnitConverterScreen.kt", notes:["13-category offline converter with vacuum/zero-K & Speed/Viscosity guards and state retention."] },
+  { id:"steam_table", mod:"UTIL-02", title:"IAPWS-IF97 Steam Table", bn:"স্টিম টেবিল", route:"steam_table", status:"IMPLEMENTED", file:"presentation/calculations/SteamTableScreen.kt", notes:["Region 4 [0.50, 20.00 bar(a)] with Eq. 31 T_sat, log-P v_g, linear-P h_f/h_fg & dynamic Patm range hint. External REFPROP pending."] },
+  { id:"equipment_detail", mod:"DETAIL-01", title:"Equipment Detail Reader", bn:"ইকুইপমেন্ট বিবরণ", route:"equipment_detail/{id}", status:"IMPLEMENTED", file:"presentation/equipment/EquipmentDetailScreen.kt", notes:["5 tabs + Bookmark + Field Note button + Zoomable SVG across 18 offline Vector Drawables covering all 64 assets."] },
+  { id:"calc_runner", mod:"DETAIL-02", title:"Calculation Runner", bn:"ক্যালকুলেটর রানার", route:"calculation_runner/{id}", status:"IMPLEMENTED", file:"presentation/calculations/CalculationRunnerScreen.kt", notes:["20/20 implemented with NaN/Infinity bounds, History save, and CALC-02 jhut calibration notice."] },
+  { id:"notes", mod:"PERS-01", title:"Personal Notes", bn:"ব্যক্তিগত নোটস", route:"notes", drawerPersonal:true, status:"IMPLEMENTED", file:"presentation/notes/NotesScreen.kt", notes:["Room UserNote CRUD with tags_csv, search & equipment picker."] },
+  { id:"bookmarks", mod:"PERS-02", title:"Saved Bookmarks", bn:"সংরক্ষিত বুকমার্ক", route:"bookmarks", drawerPersonal:true, status:"IMPLEMENTED", file:"presentation/notes/BookmarksScreen.kt", notes:["Bookmarks across Equipment, Calculations, Checklists, References & Fundamentals."] },
+  { id:"audit", mod:"STATUS", title:"Reconciled Project Summary", bn:"প্রকল্প অবস্থা সারসংক্ষেপ", route:"__audit__", status:"PARTIAL", file:"README.md", notes:["64 assets (56/1/7/0), 18 schematics, 20/20 calcs, 15/15 fundamentals, Backup v3; native JDK/SDK/Emulator & REFPROP pending external run."] }
 ];
 
 // =========================================================================
@@ -1362,16 +1362,14 @@ function renderTopAndBottomBars() {
   const showBot = ["home","wash_plant","boiler_module","calculations"].includes(s);
   bot.style.display = showBot ? "grid" : "none";
   if (showBot) {
-    // Reproduces AppNavigation.kt:243 `screen.title.split(" ").first()` verbatim!
     const items = [
       { id:"home", lbl:"Home", ico:"&#8962;", bug:false },
-      { id:"wash_plant", lbl:"Wash", ico:"&#9881;", bug:false },
-      { id:"boiler_module", lbl:"Dedicated", ico:"&#9832;", bug:true },
-      { id:"calculations", lbl:"Engineering", ico:"&#8721;", bug:true }
+      { id:"wash_plant", lbl:"Plant", ico:"&#9881;", bug:false },
+      { id:"boiler_module", lbl:"Boiler", ico:"&#9832;", bug:false },
+      { id:"calculations", lbl:"Calcs", ico:"&#8721;", bug:false }
     ];
     bot.innerHTML = items.map(it => `
       <button class="m3-nav-item ${s===it.id?'active':''}" onclick="navigate('${it.id}')">
-        ${(it.bug && showCallouts())?'<span class="bug-tag">LABEL BUG</span>':''}
         <span class="pill-ind">${it.ico}</span>
         <span>${it.lbl}</span>
       </button>
@@ -1421,14 +1419,14 @@ function renderScreen() {
       <div class="m3-card">
         <div style="font-weight:700;font-size:0.86em;margin-bottom:8px;">Knowledge Base Depth (64 Seeded Assets)</div>
         <div class="grid-4">
-          <div class="stat-tile"><div class="sv" style="color:var(--m3-green);">2</div><div class="sl">Full</div></div>
-          <div class="stat-tile"><div class="sv" style="color:var(--m3-primary);">9</div><div class="sl">Partial</div></div>
+          <div class="stat-tile"><div class="sv" style="color:var(--m3-green);">56</div><div class="sl">Full</div></div>
+          <div class="stat-tile"><div class="sv" style="color:var(--m3-primary);">1</div><div class="sl">Partial</div></div>
           <div class="stat-tile"><div class="sv" style="color:var(--m3-warn);">7</div><div class="sl">Pending</div></div>
-          <div class="stat-tile"><div class="sv" style="color:var(--m3-text-var);">46</div><div class="sl">Inventory</div></div>
+          <div class="stat-tile"><div class="sv" style="color:var(--m3-text-var);">0</div><div class="sl">Inventory</div></div>
         </div>
       </div>
 
-      ${callout("HomeUiState loads user bookmarks in HomeViewModel:50 but NEVER renders them here. No quick shortcuts for Checklists, Notes, or Steam Table.")}
+      ${callout("Non-authoritative HTML preview snapshot. Live Compose app also renders Bookmarks and shortcuts for Checklists, Notes & Steam Table.")}
 
       <div style="font-weight:700;font-size:0.88em;color:var(--m3-text-var);">Featured Wash Plant &amp; Utility Assets</div>
       ${featured.map(eq => eqCardHtml(eq)).join("")}
@@ -1441,8 +1439,8 @@ function renderScreen() {
     const list = FUNDAMENTALS.filter(f => (appState.fundGroup==="All"||f.group===appState.fundGroup) && (!appState.fundVerifiedOnly||f.status==="VERIFIED"));
     c.innerHTML = `
       <div class="safety-card">
-        <div class="sc-title">&#9888; Content Transparency (10 Verified / 5 Content Gap)</div>
-        <div class="sc-msg">FUND-01..10 have verified baselines (DOC-MPN-009). FUND-11..15 are tagged CONTENT_GAP pending dedicated chapters.</div>
+        <div class="sc-title">&#10003; Fundamentals Baseline (15 / 15 Verified)</div>
+        <div class="sc-msg">All 15 topics (FUND-01..15) carry VERIFIED_BASELINE chapters, equations, failure mechanisms, and cross-links.</div>
       </div>
       <div class="chip-row">${groups.map(g=>`<button class="m3-chip ${appState.fundGroup===g?'selected':''}" onclick="appState.fundGroup='${g}';renderScreen();">${g}</button>`).join("")}</div>
       <label class="check-row"><input type="checkbox" ${appState.fundVerifiedOnly?'checked':''} onchange="appState.fundVerifiedOnly=this.checked;renderScreen();"><span>Verified Baseline Only (${FUNDAMENTALS.filter(x=>x.status==='VERIFIED').length}/15)</span></label>
@@ -1475,9 +1473,8 @@ function renderScreen() {
       return true;
     });
     const depths = [
-      ["FULL_CONTENT_BLUEPRINT","Full (2)"],
-      ["PARTIAL_CONTENT_BLUEPRINT","Partial (9)"],
-      ["INVENTORY_ONLY","Inventory (46)"],
+      ["FULL_CONTENT_BLUEPRINT","Full (56)"],
+      ["PARTIAL_CONTENT_BLUEPRINT","Partial (1)"],
       ["RESEARCH_PENDING","Pending (7)"]
     ];
     c.innerHTML = `
@@ -1499,7 +1496,7 @@ function renderScreen() {
   if (s === "equipment_detail") {
     const eq = EQUIPMENT_SAMPLES.find(x => x.id === appState.eqId) || EQUIPMENT_SAMPLES[0];
     const t = appState.eqTab;
-    const isInvOrPend = eq.depth === "INVENTORY_ONLY" || eq.depth === "RESEARCH_PENDING";
+    const isInvOrPend = eq.depth === "PARTIAL_CONTENT_BLUEPRINT" || eq.depth === "RESEARCH_PENDING";
     let body = "";
     if (t === 0) {
       body = `
@@ -1516,8 +1513,8 @@ function renderScreen() {
           <div><strong>Drive Type:</strong> ${eq.drive}</div>
           <div><strong>Statutory Standard:</strong> ${eq.law}</div>
         </div>
-        ${isInvOrPend ? `<div class="safety-card"><div class="sc-title">&#9888; ${eq.depth} Transparency Banner</div><div class="sc-msg">Asset includes baseline 9-section safety &amp; engineering guidance; exact OEM dimensions require plant nameplate confirmation.</div></div>` : ''}
-        ${eq.svg ? renderSchematicSvg(eq.svg) : `<div class="m3-card variant" style="font-size:0.8em;color:var(--m3-text-var);">No offline vector schematic is currently available for ${eq.id} (only 5 schematics exist across 64 assets).</div>`}
+        ${isInvOrPend ? `<div class="safety-card"><div class="sc-title">&#9888; ${eq.depth} Transparency Banner</div><div class="sc-msg">${eq.id === 'EQ-G02' ? 'Mixed garment jhut fuel composition requires batch lab GCV/elemental verification.' : 'Generic industrial engineering baseline provided; confirm plant-specific OEM parameters on site.'}</div></div>` : ''}
+        ${eq.svg ? renderSchematicSvg(eq.svg) : `<div class="m3-card variant" style="font-size:0.8em;color:var(--m3-text-var);">Android APK renders one of 18 family Vector Drawables for ${eq.id}; this standalone HTML preview embeds 5 sample SVGs.</div>`}
         <button class="m3-btn tonal full" onclick="navigate('notes')">Add Personal Field Note for ${eq.id}</button>
       `;
     } else if (t === 1) {
@@ -1601,31 +1598,27 @@ function renderScreen() {
   }
 
   if (s === "calculations") {
-    // Exact 8 filter chips from CalculationListScreen.kt:68-77 (intentionally omits 3 categories!)
-    const chips = ["All","Boiler Thermal","Boiler Water","Combustion & Draught","Steam Distribution","Wash Plant Machinery","Water Treatment","Pneumatics & Air"];
-    const orphanCats = ["Utility & Pumping","Boiler Safety","Wash Plant Utility"];
+    const chips = ["All","Boiler Thermal","Boiler Water","Boiler Safety","Utility & Pumping","Combustion & Draught","Steam Distribution","Wash Plant Machinery","Wash Plant Utility","Water Treatment","Pneumatics & Air"];
     const filtered = appState.calcCat==="All" ? CALCULATIONS : CALCULATIONS.filter(x=>x.cat===appState.calcCat);
     c.innerHTML = `
       <div class="m3-card primary-box clickable" onclick="navigate('steam_table')">
         <div style="font-weight:800;">IAPWS-IF97 Saturated Steam Table</div>
-        <div style="font-size:0.78em;opacity:0.9;">0.5 to 20 bar linear-P pressure-to-enthalpy lookup</div>
+        <div style="font-size:0.78em;opacity:0.9;">0.50–20.00 bar(a) Eq. 31 T_sat &amp; log-P v_g lookup</div>
       </div>
       <div class="m3-card variant clickable" onclick="navigate('unit_converter')">
         <div style="font-weight:800;">Engineering Unit Converter (13 Categories)</div>
         <div style="font-size:0.78em;color:var(--m3-text-var);">Pressure (g/a), Temp, Power, Flow, Density, Speed, Viscosity</div>
       </div>
       <div class="chip-row">${chips.map(ch=>`<button class="m3-chip ${appState.calcCat===ch?'selected':''}" onclick="appState.calcCat='${ch}';renderScreen();">${ch}</button>`).join("")}</div>
-      ${callout("BUG VERIFIED (CalculationListScreen.kt:68-77): 3 categories ('Utility & Pumping' CALC-07, 'Boiler Safety' CALC-09, 'Wash Plant Utility' CALC-17) are missing from the filter chips above! Also no Calculation History viewer screen exists.")}
       <div style="font-size:0.8em;font-weight:700;color:var(--m3-text-var);">Engineering Calculations (${filtered.length})</div>
       ${filtered.map(cl=>{
-        const isOrphan = orphanCats.includes(cl.cat);
         return `<div class="m3-card clickable" onclick="navigate('calc_runner',{calcId:'${cl.id}'})">
           <div style="display:flex;justify-content:space-between;align-items:center;">
             <span style="font-family:monospace;font-weight:700;color:var(--m3-primary);">${cl.id}</span>
             <span class="depth-pill ${cl.status==='IMPLEMENTED'?'dp-full':'dp-pending'}">${cl.status}</span>
           </div>
           <div style="font-weight:700;margin-top:3px;">${escapeHtml(cl.title)}</div>
-          <div style="font-size:0.76em;color:var(--m3-text-var);margin-top:2px;">Category: ${cl.cat} ${isOrphan&&showCallouts()?'<span style="color:var(--m3-error);font-weight:700;">[NO FILTER CHIP!]</span>':''}</div>
+          <div style="font-size:0.76em;color:var(--m3-text-var);margin-top:2px;">Category: ${cl.cat}</div>
         </div>`;
       }).join("")}
     `;
@@ -1807,11 +1800,11 @@ function renderScreen() {
         </div>
         <label class="check-row" style="margin-bottom:8px;"><input type="checkbox" ${appState.settingsOverwrite?'checked':''} onchange="appState.settingsOverwrite=this.checked;"><span>Overwrite existing data on JSON restore</span></label>
         <div class="grid-2">
-          <button class="m3-btn filled" onclick="showBackupExport()">Export JSON</button>
-          <button class="m3-btn outlined" onclick="openDialog('<h4>Restore SAF JSON</h4><p style=font-size:0.84em>Opens Android SAF OpenDocument picker for backup_version=2 SHA-256 verification.</p><button class=\'m3-btn filled full\' onclick=\'closeDialog()\'>OK</button>')">Restore JSON</button>
+          <button class="m3-btn filled" onclick="showBackupExport()">Export JSON v3</button>
+          <button class="m3-btn outlined" onclick="openDialog('<h4>Restore SAF JSON</h4><p style=font-size:0.84em>Opens Android SAF OpenDocument picker for backup_version=3 SHA-256 verification (compatible with v1/v2).</p><button class=\'m3-btn filled full\' onclick=\'closeDialog()\'>OK</button>')">Restore JSON</button>
         </div>
       </div>
-      ${callout("Settings lacks planned default SI/Imperial unit toggle (Phase 03 §2) and 'Clear All Personal Data' action. Also 'Calcs' counter is shown here despite no UI to open calculation_history.")}
+      ${callout("Standalone HTML preview only. The Android Compose SettingsScreen also exposes UnitSystem (Metric/SI/Imperial) and Clear Personal Data.")}
     `;
     return;
   }
@@ -1819,7 +1812,6 @@ function renderScreen() {
   if (s === "notes") {
     c.innerHTML = `
       <button class="m3-btn filled full" onclick="openNoteEditor()">+ Add Personal Field Note</button>
-      ${callout("UserNoteEntity stores tags_csv in Room, but the Note editor dialog never exposes a Tags field, Search bar, or Equipment ID dropdown.")}
       ${appState.notes.length===0 ? `<div class="m3-card variant">No field notes saved.</div>` : appState.notes.map(n=>`
         <div class="m3-card">
           <div style="display:flex;justify-content:space-between;align-items:center;">
@@ -1839,7 +1831,6 @@ function renderScreen() {
 
   if (s === "bookmarks") {
     c.innerHTML = `
-      ${callout("BookmarksScreen routes all 5 BookmarkEntityType values, yet ONLY EquipmentDetailScreen has a bookmark star button. Calculation, Checklist, Reference, and Boiler Section bookmarks cannot be created from UI.")}
       ${appState.bookmarks.size===0 ? `<div class="m3-card variant">No saved bookmarks yet. Star an equipment item inside Equipment Detail.</div>` : Array.from(appState.bookmarks).map(bid=>{
         const eq = EQUIPMENT_SAMPLES.find(x=>x.id===bid);
         return `<div class="m3-card" style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
@@ -1854,28 +1845,22 @@ function renderScreen() {
     return;
   }
 
-  // AUDIT SUMMARY SCREEN INSIDE PHONE
+  // RECONCILED STATUS SUMMARY SCREEN INSIDE PHONE
   if (s === "audit") {
-    const gaps = [
-      ["HIGH","3 Orphaned Calc Categories","CalculationListScreen omits 'Utility & Pumping' (CALC-07), 'Boiler Safety' (CALC-09), 'Wash Plant Utility' (CALC-17)."],
-      ["HIGH","No Calculation History Viewer","Save works in CalculationRunner, counter shows in Settings, JSON exports it — zero screen to view/reload saved runs."],
-      ["HIGH","Unreachable Bookmark Types","BookmarksScreen routes 5 types, yet only EquipmentDetailScreen has a bookmark icon button."],
-      ["HIGH","Bottom Bar Label Bug","AppNavigation uses split(' ').first(): prints 'Dedicated' instead of 'Boiler' and 'Engineering' instead of 'Calcs'."],
-      ["MED","Checklist Remarks & Timestamps Missing","Room schema defines remarks & completion_timestamp; UI never renders or edits them."],
-      ["MED","Search Excludes Calcs & Notes","SearchScreen ignores CALC-01..20, User Notes & History; lacks Bookmarks link despite title."],
-      ["MED","Secondary Modules Share 1 Template","8 drawer modules (Pumps..Maintenance) render 1 generic 5-card overview page."],
-      ["MED","HomeViewModel.bookmarks Unused","Loaded into HomeUiState:50, never drawn on HomeScreen."],
-      ["MED","UserNote tags_csv Hidden","Editor dialog omits tags_csv, search, and equipment dropdown."],
-      ["MED","Settings Unit Toggle & Wipe Missing","Phase 03 SI/Imperial unit toggle & Clear Personal Data absent."],
-      ["LOW","CALC-02 Execution Locked","Stays RESEARCH_PENDING pending field indirect gas/ash calibration."],
-      ["LOW","FUND-11..15 Content Gap","5 Fundamentals topics carry CONTENT_GAP awaiting chapters."],
-      ["LOW","46/64 Inventory Assets & 5 SVGs","71.9% assets are baseline INVENTORY_ONLY; 59/64 lack vector schematic."]
+    const items = [
+      ["VERIFIED","Equipment Library (64 Assets)","56 FULL_CONTENT_BLUEPRINT, 1 PARTIAL (EQ-G02 mixed jhut), 7 RESEARCH_PENDING, 0 INVENTORY_ONLY."],
+      ["VERIFIED","18 Offline Vector Schematics","All 64 assets mapped across 18 AAPT2-safe diag_*.xml drawables in Android app."],
+      ["VERIFIED","20/20 Calcs & 15/15 Fundamentals","All 20 calculations (87 vars) implemented; CALC-02 jhut calibration notice preserved; all 15 Fundamentals verified."],
+      ["VERIFIED","Standards & Statutory Accuracy","ISO 20816-3:2026 (120–30,000 r/min, >15 kW) and Boilers Act 2022 / Rules 2025 citations reconciled."],
+      ["VERIFIED","Backup v3 Portability & Recovery","Exports/imports all 6 personal collections with SHA-256 verification and compensating Room+DataStore rollback."],
+      ["BLOCKED","Native Android Build & Tests","JDK 17 / Android SDK 35 / Emulator unavailable in container; Gradle wrapper + Android test sources ready for workstation run."],
+      ["OPEN","External REFPROP & Gazette","External NIST REFPROP steam cross-check and full Gazette Rule-by-Rule verification remain open outside container."]
     ];
     c.innerHTML = `
-      <div class="safety-card statutory"><div class="sc-title">Verified Project Totals</div><div class="sc-msg">23 Screen Routes • 17 Core Modules • 64 Assets (2/9/7/46) • 20 Calcs (19/1) • 15 Fundamentals (10/5) • Stage 05 APK/Emulator BLOCKED</div></div>
-      ${gaps.map(([sev,t,d])=>`
+      <div class="safety-card statutory"><div class="sc-title">Reconciled Project Totals</div><div class="sc-msg">64 Assets (56/1/7/0) • 18 SVGs • 20 Calcs (87 vars) • 15/15 Fundamentals • Backup v3 • Native JDK/SDK &amp; REFPROP Pending</div></div>
+      ${items.map(([sev,t,d])=>`
         <div class="m3-card">
-          <div style="display:flex;justify-content:space-between;align-items:center;"><strong>${escapeHtml(t)}</strong><span class="depth-pill ${sev==='HIGH'?'dp-pending':sev==='MED'?'dp-partial':'dp-inv'}">${sev}</span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;"><strong>${escapeHtml(t)}</strong><span class="depth-pill ${sev==='VERIFIED'?'dp-full':sev==='BLOCKED'?'dp-pending':'dp-partial'}">${sev}</span></div>
           <div style="font-size:0.8em;margin-top:4px;color:var(--m3-text-var);">${escapeHtml(d)}</div>
         </div>
       `).join("")}
@@ -2007,14 +1992,14 @@ function deleteNote(id) {
 
 function showBackupExport() {
   const payload = JSON.stringify({
-    backup_version: 2,
+    backup_version: 3,
     sha256: "simulated_sha256_integrity_digest",
-    counts: { notes: appState.notes.length, bookmarks: appState.bookmarks.size, checks: appState.chkChecked.size, calc_history: appState.calcHistoryCount },
+    counts: { notes: appState.notes.length, bookmarks: appState.bookmarks.size, checks: appState.chkChecked.size, calc_history: appState.calcHistoryCount, custom_checklists: 0, checklist_execution_metadata: 0 },
     notes: appState.notes,
     bookmarks: Array.from(appState.bookmarks)
   }, null, 2);
   openDialog(`
-    <h4 style="margin:0;">Backup JSON Preview (backup_version: 2)</h4>
+    <h4 style="margin:0;">Backup JSON Preview (backup_version: 3)</h4>
     <pre style="font-size:0.7em;background:rgba(0,0,0,0.25);padding:8px;border-radius:8px;overflow:auto;max-height:220px;">${escapeHtml(payload)}</pre>
     <div class="grid-2">
       <button class="m3-btn outlined" onclick="closeDialog()">Close</button>

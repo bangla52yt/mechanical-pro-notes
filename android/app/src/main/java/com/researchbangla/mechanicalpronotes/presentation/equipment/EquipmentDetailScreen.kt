@@ -6,6 +6,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -113,7 +114,7 @@ fun EquipmentDetailContent(
                 },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },
                 actions = {
@@ -1180,14 +1181,15 @@ private object EquipmentDetailPreviewData {
     )
 
     val researchPendingAsset = Equipment(
-        id = "EQ-P02",
-        categoryId = "CAT-P1",
-        familyId = "FAM-P",
-        name = "Centrifugal Lint Exhaust Collector Unit",
-        bengaliName = "সেন্ট্রিফিউগাল লিন্ট এক্সহস্ট কালেক্টর",
+        id = "EQ-A05",
+        categoryId = "CAT-A01",
+        familyId = "FAM-A",
+        name = "Barrier Sanitary Washing Machine",
+        bengaliName = "ব্যারিয়ার স্যানিটারি ওয়াশিং মেশিন",
+        aliases = listOf("Sanitary Washer", "Pass-Through Cleanroom Washer"),
         contentDepth = ContentDepth.RESEARCH_PENDING,
         criticalityTier = CriticalityTier.SECONDARY_AUXILIARY,
-        capacityRange = "Plant-site airflow rating pending"
+        capacityRange = "Awaiting owner confirmation & nameplate"
     )
 }
 
@@ -1213,7 +1215,7 @@ private fun EquipmentDetailDarkPreview() {
 private fun EquipmentDetailLightResearchPendingPreview() {
     MechanicalProTheme(themeMode = ThemeMode.LIGHT) {
         EquipmentDetailContent(
-            equipmentId = "EQ-P02",
+            equipmentId = "EQ-A05",
             state = EquipmentDetailUiState(
                 isLoading = false,
                 equipment = EquipmentDetailPreviewData.researchPendingAsset,
